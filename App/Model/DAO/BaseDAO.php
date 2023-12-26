@@ -21,43 +21,43 @@ abstract class BaseDAO
         }
     }
 
-    public function insert($table, $cols, $values) 
+    public function insert($tabela, $colunas, $valores) 
     {
-        if(!empty($table) && !empty($cols) && !empty($values))
+        if(!empty($tabela) && !empty($colunas) && !empty($valores))
         {
-            $parametros    = $cols;
-            $colunas       = str_replace(":", "", $cols);
+            $parametros = $colunas;
+            $colunas = str_replace(":", "", $colunas);
 
-            $stmt = $this->conexao->prepare("INSERT INTO $table ($colunas) VALUES ($parametros)");
-            $stmt->execute($values);
+            $pdoStatement = $this->conexao->prepare("INSERT INTO $tabela ($colunas) VALUES ($parametros)");
+            $resultado = $pdoStatement->execute($valores);
 
-            return $this->conexao->lastInsertId();
+            return $resultado;
         }else{
             return false;
         }
     }
 
-    public function update($table, $cols, $values, $where=null)
+    public function update($tabela, $colunas, $valores, $where=null)
     {
-        if(!empty($table) && !empty($cols) && !empty($values))
+        if(!empty($tabela) && !empty($colunas) && !empty($valores))
         {
             if($where)
             {
                 $where = " WHERE $where ";
             }
 
-            $stmt = $this->conexao->prepare("UPDATE $table SET $cols $where");
-            $stmt->execute($values);
+            $pdoStatement = $this->conexao->prepare("UPDATE $tabela SET $colunas $where");
+            $resultado = $pdoStatement->execute($valores);
 
-            return $stmt->rowCount();
+            return $resultado;
         }else{
             return false;
         }
     }
 
-    public function delete($table, $where=null)
+    public function delete($tabela, $where=null)
     {
-        if(!empty($table))
+        if(!empty($tabela))
         {
 
             if($where)
@@ -65,10 +65,10 @@ abstract class BaseDAO
                 $where = " WHERE $where ";
             }
 
-            $stmt = $this->conexao->prepare("DELETE FROM $table $where");
-            $stmt->execute();
+            $pdoStatement = $this->conexao->prepare("DELETE FROM $tabela $where");
+            $resultado = $pdoStatement->execute();
 
-            return $stmt->rowCount();
+            return $resultado;
         }else{
             return false;
         }

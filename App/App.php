@@ -3,7 +3,8 @@
 namespace App;
 
 use App\Controller\HomeController;
-
+use App\Lib\Erro;
+use Exception;
 
 class App
 {
@@ -28,37 +29,58 @@ class App
 
     public function identificarController()
     {
-        if (isset($_GET['caminho']))
+        try
         {
-            $caminho = $_GET['caminho'];
-            $arrayCaminho = explode('/', $caminho);
-
-            $this->setController($arrayCaminho[0]);
-            $this->setAcao($arrayCaminho[1]);
-            if (isset($arrayCaminho[2]) && !empty($arrayCaminho[2]))
+            if (isset($_GET['caminho']))
             {
-                unset($arrayCaminho[0]);
-                unset($arrayCaminho[1]);
-                $this->setParametros(array_values($arrayCaminho));
+                $caminho = $_GET['caminho'];
+                $arrayCaminho = explode('/', $caminho);
+
+                $this->setController($arrayCaminho[0]);
+                if (!empty($arrayCaminho[1]))
+                    $this->setAcao($arrayCaminho[1]);
+                if (isset($arrayCaminho[2]) && !empty($arrayCaminho[2]))
+                {
+                    unset($arrayCaminho[0]);
+                    unset($arrayCaminho[1]);
+                    $this->setParametros(array_values($arrayCaminho));
+                }
             }
+        } catch (Exception $excecao) {
+            throw new Exception("Erro " . $excecao->getCode() . " Erro no processamento da URL");
         }
     }
 
     public function executarController()
     {
-        if ($this->getController()){
-            $nomeController = ucwords($this->getController()) . 'Controller';
-            $classeController = "App\\Controller\\" . $nomeController;
-            $objetoController = new $classeController();
-            $acao = $this->getAcao();
-            $parametros = $this->getParametros();
-            if(!$this->getParametros())
-                $objetoController->$acao();
-            else
-                $objetoController->$acao($parametros);
-        } else {
-            $homeController = new HomeController();
-            $homeController->index();
+        try
+        {
+            if ($this->getController()){
+                $nomeController = ucwords($this->getController()) . 'Controller';
+
+                if (file_exists("App/Controller/" . $nomeController . ".php"))
+                {
+                    $classeController = "App\\Controller\\" . $nomeController;
+                    $objetoController = new $classeController();
+                    $acao = $this->getAcao();
+                    $parametros = $this->getParametros();
+                    if (!empty($this->getController()) && empty($this->getAcao()))
+                        $objetoController->index();
+                    else if (!empty($this->getAcao()) && empty($this->getParametros()))
+                        $objetoController->$acao();
+                    else if (!empty($this->getAcao()) && !empty($this->getParametros()))
+                        $objetoController->$acao($parametros);
+                }
+                else {
+                    $erro = new Erro("Erro de acesso aos arquivos");
+                    $erro->index();
+                }
+            } else {
+                $homeController = new HomeController();
+                $homeController->index();
+            }
+        } catch (Exception $excecao) {
+            throw new Exception("Erro " . $excecao->getCode() . ". Erro na execução dos módulos do sistema");
         }
     }
 

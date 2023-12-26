@@ -4,19 +4,61 @@
 namespace App\Model\Entidades;
 
 use App\Model\DAO\FornecedorDAO;
+use App\Model\Entidades\Departamento;
 
 class Fornecedor
 {
     private int $codigo;
     private string $cnpj;
     private string $nome;
-    private string $categoria;
+    private Departamento $departamento;
+    
+    public function __construct(int $codigo = 0, string $cnpj = "", string $nome = "", int $cod_departamento = 0, string $nome_departamento = "")
+    {
+        $this->codigo = $codigo;
+        $this->cnpj = $cnpj;
+        $this->nome = $nome;
+        $this->departamento = new Departamento($cod_departamento, $nome_departamento);
+    }
+    
+    public function localizar()
+    {
+        $fornecedorDAO = new FornecedorDAO();
+        $resultado = $fornecedorDAO->localizar($this->getCodigo());
+
+        return $resultado;
+    }
     
     public function listar()
     {
         $fornecedorDAO = new FornecedorDAO();
-        $fornecedores = $fornecedorDAO->listar();
-        return $fornecedores;
+        $resultado = $fornecedorDAO->listar();
+        
+        return $resultado;
+    }
+
+    public function cadastrar()
+    {
+        $fornecedorDAO = new FornecedorDAO();
+        $resultado = $fornecedorDAO->cadastrar($this);
+
+        return $resultado;
+    }
+
+    public function atualizar()
+    {
+        $fornecedorDAO = new FornecedorDAO();
+        $resultado = $fornecedorDAO->atualizar($this);
+
+        return $resultado;
+    }
+
+    public function excluir()
+    {
+        $fornecedorDAO = new FornecedorDAO();
+        $resultado = $fornecedorDAO->excluir($this);
+
+        return $resultado;
     }
 
     public function getCodigo() : int
@@ -49,13 +91,13 @@ class Fornecedor
         $this->nome = $valor;
     }
 
-    public function getCategoria() : string
+    public function getDepartamento() : Departamento
     {
-        return $this->categoria;
+        return $this->departamento;
     }
 
-    public function setCategoria(string $valor)
+    public function setDepartamento(Departamento $valor)
     {
-        $this->categoria = $valor;
+        $this->departamento = $valor;
     }
 }

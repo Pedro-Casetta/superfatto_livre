@@ -3,6 +3,9 @@
 
 namespace App\Controller;
 
+use App\Lib\Sessao;
+
+
 abstract class BaseController
 {
     protected array $dados;
@@ -15,12 +18,18 @@ abstract class BaseController
     public function renderizar(string $view)
     {
         $dados = $this->getDados();
+        $sessao = Sessao::class;
         
         require_once PATH . '/App/View/layout/header.php';
         require_once PATH . '/App/View/layout/menu.php';
         require_once PATH . '/App/View/' . $view . '.php';
         require_once PATH . '/App/View/layout/footer.php';
 
+    }
+
+    public function redirecionar($caminho)
+    {
+        header('Location: http://' . APP_HOST . $caminho);
     }
 
     public function getDados()
