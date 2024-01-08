@@ -36,13 +36,13 @@
           <div class="row mb-3">
             <div class="col-auto">
               <label for="departamento" class="form-label">Departamento</label>
-              <input class="form-control" id="departamento" name="departamento"
+              <input class="form-control border border-primary" id="departamento" name="departamento"
               value="<?= $dados['fornecedor']->getDepartamento()->getNome(); ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
             <div class="col-auto">
-              <h3>Tem certeza que quer excluir esse funcionário ?</h3>
+              <h3>Tem certeza que quer excluir esse fornecedor ?</h3>
             </div>
           </div>
           <div class="row">

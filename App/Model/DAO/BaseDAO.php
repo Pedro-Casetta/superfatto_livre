@@ -73,4 +73,9 @@ abstract class BaseDAO
             return false;
         }
     }
+
+    public function getConexao()
+    {
+        return $this->conexao;
+    }
 }

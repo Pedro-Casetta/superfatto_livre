@@ -7,9 +7,9 @@ class Administrador extends Conta
     private string $credencial;
 
     public function __construct(int $codigo = 0, string $nome = "", string $email = "", string $nomeUsuario = "", string $senha = "",
-        string $credencial = "")
+        string $tipo = "", string $credencial = "")
     {
-        parent::__construct($codigo, $nome, $email, $nomeUsuario, $senha);
+        parent::__construct($codigo, $nome, $email, $nomeUsuario, $senha, $tipo);
         $this->credencial = $credencial;
     }
 

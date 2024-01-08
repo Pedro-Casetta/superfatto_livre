@@ -11,20 +11,63 @@ abstract class Conta
     private string $email;
     private string $nomeUsuario;
     private string $senha;
+    private string $tipo;
 
-    public function __construct(int $codigo = 0, string $nome = "", string $email = "", string $nomeUsuario = "", string $senha = "")
+    public function __construct(int $codigo = 0, string $nome = "", string $email = "", string $nomeUsuario = "", string $senha = "",
+        string $tipo = "")
     {
         $this->codigo = $codigo;
         $this->nome = $nome;
         $this->email = $email;
         $this->nomeUsuario = $nomeUsuario;
         $this->senha = $senha;
+        $this->tipo = $tipo;
     }
     
     public function cadastrar()
     {
         $contaDAO = new ContaDAO();
         $resultado = $contaDAO->cadastrar($this);
+
+        return $resultado;
+    }
+
+    public static function acessar($nome_usuario, $senha)
+    {
+        $contaDAO = new ContaDAO();
+        $resultado = $contaDAO->acessar($nome_usuario, $senha);
+        
+        return $resultado;
+    }
+
+    public static function localizar($codigo, $tipo)
+    {
+        $contaDAO = new ContaDAO();
+        $resultado = $contaDAO->localizar($codigo, $tipo);
+
+        return $resultado;
+    }
+
+    public function atualizar()
+    {
+        $contaDAO = new ContaDAO();
+        $resultado = $contaDAO->atualizar($this);
+
+        return $resultado;
+    }
+
+    public static function excluir($codigo)
+    {
+        $contaDAO = new ContaDAO();
+        $resultado = $contaDAO->excluir($codigo);
+
+        return $resultado;
+    }
+
+    public static function trocarSenha($codigo, $senha)
+    {
+        $contaDAO = new ContaDAO();
+        $resultado = $contaDAO->trocarSenha($codigo, $senha);
 
         return $resultado;
     }
@@ -77,5 +120,15 @@ abstract class Conta
     public function setSenha(string $valor)
     {
         $this->senha = $valor;
-    }    
+    }
+
+    public function getTipo() : string
+    {
+        return $this->tipo;
+    }
+
+    public function setTipo(string $valor)
+    {
+        $this->tipo = $valor;
+    }
 }
