@@ -3,26 +3,25 @@
 namespace App\Controller;
 
 use App\Lib\Sessao;
-use App\Model\DAO\FornecedorDAO;
-use App\Model\Entidades\Fornecedor;
+use App\Model\Entidades\Funcionario;
 use Exception;
 
-class FornecedorController extends BaseController
+class FuncionarioController extends BaseController
 {
 
     public function index()
     {
         if (Sessao::verificarAcesso('administrador'))
         {
-            $fornecedor = new Fornecedor();
-            $resultado = $fornecedor->listar();
+            $funcionario = new Funcionario();
+            $resultado = $funcionario->listar();
 
             if(is_array($resultado))
-                $this->setDados('fornecedores', $resultado);
+                $this->setDados('funcionarios', $resultado);
             else
                 Sessao::setMensagem($resultado->getMessage());
             
-            $this->renderizar('fornecedor/index');
+            $this->renderizar('funcionario/index');
 
             Sessao::setMensagem(null);
         }
@@ -34,18 +33,7 @@ class FornecedorController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
-            $fornecedorDAO = new FornecedorDAO();
-            $resultado = $fornecedorDAO->listarDepartamentos();
-            
-            if (is_array($resultado))
-            {
-                $this->setDados('departamentos', $resultado);
-                Sessao::setMensagem(null);
-            }
-            else
-                Sessao::setMensagem($resultado->getMessage());
-        
-            $this->renderizar('fornecedor/cadastro');
+            $this->renderizar('funcionario/cadastro');
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -55,22 +43,22 @@ class FornecedorController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
-            $fornecedor = new Fornecedor(
-                0 ,
-                $_POST['cnpj'],
+            $funcionario = new Funcionario(
+                0,
+                $_POST['cpf'],
                 $_POST['nome'],
-                $_POST['departamento'],
-                ""
+                $_POST['setor'],
+                $_POST['salario']
             );
 
-            $resultado = $fornecedor->cadastrar();
+            $resultado = $funcionario->cadastrar();
 
             if (is_bool($resultado) && $resultado)
                 Sessao::setMensagem("Dados inseridos com sucesso!");
             else
                 Sessao::setMensagem($resultado->getMessage());
 
-            $this->redirecionar('/fornecedor');
+            $this->redirecionar('/funcionario');
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -81,24 +69,19 @@ class FornecedorController extends BaseController
         if (Sessao::verificarAcesso('administrador'))
         {
             $codigo = $parametros[0];
-            $fornecedor = new Fornecedor($codigo);
-            $resultado_fornecedor = $fornecedor->localizar();
+            $funcionario = new Funcionario($codigo);
+            $resultado = $funcionario->localizar();
 
-            $fornecedorDAO = new FornecedorDAO();
-            $resultado_departamento = $fornecedorDAO->listarDepartamentos();
 
-            if ($resultado_fornecedor instanceof Fornecedor && is_array($resultado_departamento))
+            if ($resultado instanceof Funcionario)
             {
-                $this->setDados('departamentos', $resultado_departamento);
-                $this->setDados('fornecedor', $resultado_fornecedor);
+                $this->setDados('funcionario', $resultado);
                 Sessao::setMensagem(null);
             }
-            else if ($resultado_fornecedor instanceof Exception)
-                Sessao::setMensagem($resultado_fornecedor->getMessage());
             else
-                Sessao::setMensagem($resultado_departamento->getMessage());
+                Sessao::setMensagem($resultado->getMessage());
 
-            $this->renderizar('fornecedor/edicao');
+            $this->renderizar('funcionario/edicao');
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -108,21 +91,22 @@ class FornecedorController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
-            $fornecedor = new Fornecedor(
+            $funcionario = new Funcionario(
                 $_POST['codigo'],
-                $_POST['cnpj'],
+                $_POST['cpf'],
                 $_POST['nome'],
-                $_POST['departamento']
+                $_POST['setor'],
+                $_POST['salario']
             );
 
-            $resultado = $fornecedor->atualizar();
+            $resultado = $funcionario->atualizar();
 
             if (is_bool($resultado) && $resultado)
                 Sessao::setMensagem("Dados atualizados com sucesso!");
             else
                 Sessao::setMensagem($resultado->getMessage());
 
-            $this->redirecionar('/fornecedor');
+            $this->redirecionar('/funcionario');
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -134,18 +118,18 @@ class FornecedorController extends BaseController
         {
             $codigo = $parametros[0];
 
-            $fornecedor = new Fornecedor($codigo);
-            $resultado = $fornecedor->localizar();
+            $funcionario = new Funcionario($codigo);
+            $resultado = $funcionario->localizar();
 
-            if ($resultado instanceof Fornecedor)
+            if ($resultado instanceof Funcionario)
             {
-                $this->setDados('fornecedor', $resultado);
+                $this->setDados('funcionario', $resultado);
                 Sessao::setMensagem(null);
             }
             else
                 Sessao::setMensagem($resultado->getMessage());
 
-            $this->renderizar('fornecedor/exclusao');
+            $this->renderizar('funcionario/exclusao');
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -156,15 +140,15 @@ class FornecedorController extends BaseController
         if (Sessao::verificarAcesso('administrador'))
         {
             $codigo = $_POST['codigo'];
-            $fornecedor = new Fornecedor($codigo);
-            $resultado = $fornecedor->excluir();
+            $funcionario = new Funcionario($codigo);
+            $resultado = $funcionario->excluir();
 
             if (is_bool($resultado) && $resultado)
                 Sessao::setMensagem("Dados excluídos com sucesso!");
             else
                 Sessao::setMensagem($resultado->getMessage());
 
-            $this->redirecionar('/fornecedor');
+            $this->redirecionar('/funcionario');
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');

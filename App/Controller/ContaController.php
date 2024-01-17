@@ -13,6 +13,8 @@ class ContaController extends BaseController
     public function encaminharCadastro()
     {
         $this->renderizar('conta/cadastro');
+
+        Sessao::setMensagem(null);
     }
     
     public function cadastrar()
@@ -55,6 +57,8 @@ class ContaController extends BaseController
     public function encaminharAcesso()
     {
         $this->renderizar('conta/acesso');
+
+        Sessao::setMensagem(null);
     }
 
     public function acessar()

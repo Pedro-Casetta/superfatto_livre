@@ -6,12 +6,12 @@ use App\Model\DAO\ContaDAO;
 
 abstract class Conta
 {
-    private int $codigo;
-    private string $nome;
-    private string $email;
-    private string $nomeUsuario;
-    private string $senha;
-    private string $tipo;
+    protected int $codigo;
+    protected string $nome;
+    protected string $email;
+    protected string $nomeUsuario;
+    protected string $senha;
+    protected string $tipo;
 
     public function __construct(int $codigo = 0, string $nome = "", string $email = "", string $nomeUsuario = "", string $senha = "",
         string $tipo = "")

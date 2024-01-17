@@ -11,7 +11,7 @@
       <?php if ($sessao::getNomeUsuario() && $sessao::getTipoConta() == "administrador") { ?>
         <ul class="navbar-nav mx-auto">
           <li class="nav-item bg-success me-lg-1">
-            <a class="nav-link text-warning" href="#">
+            <a class="nav-link text-warning" href="http://<?=APP_HOST?>/funcionario">
               <i class="bi bi-people fs-3">&nbsp;</i>Funcionários
             </a>
           </li>
@@ -21,12 +21,12 @@
             </a>
           </li>
           <li class="nav-item bg-success me-lg-1">
-            <a class="nav-link text-warning" href="#">
+            <a class="nav-link text-warning" href="http://<?=APP_HOST?>/lote">
               <i class="bi bi-box-seam fs-3">&nbsp;</i>Lote
             </a>
           </li>
           <li class="nav-item bg-success">
-            <a class="nav-link text-warning" href="#">
+            <a class="nav-link text-warning" href="http://<?=APP_HOST?>/produto">
               <i class="bi bi-shop fs-3">&nbsp;</i>Produtos
             </a>
           </li>

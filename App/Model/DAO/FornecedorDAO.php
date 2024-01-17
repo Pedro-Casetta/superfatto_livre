@@ -138,7 +138,10 @@ class FornecedorDAO extends BaseDAO
             return $resultado;
         }
         catch (Exception $excecao) {
-            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro na exclusão dos dados");
+            if ($excecao->getCode() == 23000)
+                $erro = new Exception("Erro " . $excecao->getCode() . ". Fornecedor não foi excluído pois está em um lote.");
+            else
+                $erro = new Exception("Erro " . $excecao->getCode() . ". Erro na exclusão dos dados");
             return $erro;
         }
     }

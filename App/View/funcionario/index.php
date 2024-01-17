@@ -11,7 +11,7 @@
 
   <div class="row mb-3">
     <div class="col-auto">
-      <h1>Fornecedores</h1>
+      <h1>Funcionários</h1>
     </div>
   </div>
   <div class="row mb-3">
@@ -21,37 +21,39 @@
       </a>
     </div>
     <div class="col-auto">
-      <a href="http://<?=APP_HOST?>/fornecedor/encaminharCadastro" class="btn btn-success">
+      <a href="http://<?=APP_HOST?>/funcionario/encaminharCadastro" class="btn btn-success">
         <i class="bi bi-plus-lg">&ensp;</i>Adicionar
       </a>
     </div>
   </div>
 
-  <?php if (isset($dados['fornecedores']) && !empty($dados['fornecedores'])) { ?>
+  <?php if (isset($dados['funcionarios']) && !empty($dados['funcionarios'])) { ?>
     <div class="row">
       <div class="col table-responsive-md">
         <table class="table table-bordered align-middle">
           <thead class="table-dark text-center">
             <tr>
               <th scope="col" style="width:5%;">Código</th>
-              <th scope="col" style="width:15%;">CNPJ</th>
+              <th scope="col" style="width:15%;">CPF</th>
               <th scope="col" style="width:25%;">Nome</th>
-              <th scope="col" style="width:20%;">Departamento</th>
+              <th scope="col" style="width:15%;">Setor</th>
+              <th scope="col" style="width:10%;">Salário (R$)</th>
               <th scope="col" style="width:15%;">Opções</th>
             </tr>
           </thead>
           <tbody class="table-group-divider table-warning border-success text-center">
-            <?php foreach ($dados['fornecedores'] as $fornecedor) { ?>
+            <?php foreach ($dados['funcionarios'] as $funcionario) { ?>
               <tr>
-                <th scope="row"><?= $fornecedor->getCodigo() ?></th>
-                <td><?= $fornecedor->getCnpj() ?></td>
-                <td><?= $fornecedor->getNome() ?></td>
-                <td><?= $fornecedor->getDepartamento()->getNome() ?></td>
+                <th scope="row"><?= $funcionario->getCodigo() ?></th>
+                <td><?= $funcionario->getCpf() ?></td>
+                <td><?= $funcionario->getNome() ?></td>
+                <td><?= $funcionario->getSetor() ?></td>
+                <td><?= $funcionario->getSalario() ?></td>
                 <td>
-                  <a href="http://<?=APP_HOST?>/fornecedor/encaminharEdicao/<?= $fornecedor->getCodigo() ?>" class="btn btn-info">
+                  <a href="http://<?=APP_HOST?>/funcionario/encaminharEdicao/<?= $funcionario->getCodigo() ?>" class="btn btn-info">
                     <i class="bi bi-pencil">&ensp;</i>Editar
                   </a>
-                  <a href="http://<?=APP_HOST?>/fornecedor/encaminharExclusao/<?= $fornecedor->getCodigo() ?>"
+                  <a href="http://<?=APP_HOST?>/funcionario/encaminharExclusao/<?= $funcionario->getCodigo() ?>"
                   class="btn btn-danger margem_celular">
                     <i class="bi bi-x-lg">&ensp;</i>Excluir
                   </a>
@@ -63,7 +65,7 @@
       </div>
     </div>
 
-  <?php } else if (isset($dados['fornecedores']) && empty($dados['fornecedores'])) { ?>
+  <?php } else if (isset($dados['funcionarios']) && empty($dados['funcionarios'])) { ?>
     <div class="row">
       <div class="col alert alert-dark">
         <h2>Não há cadastros.</h2>
