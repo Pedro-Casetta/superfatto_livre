@@ -25,11 +25,36 @@
         <i class="bi bi-plus-lg">&ensp;</i>Adicionar
       </a>
     </div>
+    <div class="col-auto dropdown mx-auto me-0 pe-0">
+      <a class="btn btn-warning dropdown-toggle" href="#" data-bs-toggle="dropdown">
+        Departamento
+      </a>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="http://<?=APP_HOST?>/fornecedor">
+          Todos
+        </a></li>
+        <?php if (isset($dados['departamentos']) && !empty($dados['departamentos'])) { ?>
+          <?php foreach($dados['departamentos'] as $departamento) { ?>
+            <li><a class="dropdown-item" href="http://<?=APP_HOST?>/fornecedor?departamento=<?=$departamento->getNome()?>">
+              <?= $departamento->getNome() ?>
+            </a></li>
+        <?php } } ?>
+      </ul>
+    </div>
+    <div class="col-auto mx-auto me-0 ms-0">
+      <form class="d-flex" method="GET" action="http://<?=APP_HOST?>/fornecedor">
+        <input type="hidden" id="departamento" name="departamento" value="<?=(isset($_GET['departamento'])) ? $_GET['departamento'] : ''?>">
+        <input class="form-control me-2" type="search" size="25" id="busca" name="busca" placeholder="Nome do fornecedor">
+        <button class="btn btn-primary" type="submit">
+          <i class="bi bi-search"></i>
+        </button>
+      </form>
+    </div>
   </div>
 
   <?php if (isset($dados['fornecedores']) && !empty($dados['fornecedores'])) { ?>
     <div class="row">
-      <div class="col table-responsive-md">
+      <div class="col table-responsive-md px-0">
         <table class="table table-bordered align-middle">
           <thead class="table-dark text-center">
             <tr>
@@ -62,6 +87,7 @@
         </table>
       </div>
     </div>
+    <?= $dados['paginacao'] ?>
 
   <?php } else if (isset($dados['fornecedores']) && empty($dados['fornecedores'])) { ?>
     <div class="row">

@@ -35,10 +35,10 @@ class ProdutoLote extends Produto
         return $resultado;
     }
     
-    public function listar()
+    public function listarPaginacao($indice, $limitePorPagina, $busca = "", $departamento = "")
     {
         $produtoLoteDAO = new ProdutoLoteDAO();
-        $resultado = $produtoLoteDAO->listar($this->getLote()->getCodigo());
+        $resultado = $produtoLoteDAO->listarPaginacao($indice, $limitePorPagina, $busca, $this->getLote()->getCodigo());
         
         return $resultado;
     }
@@ -77,9 +77,10 @@ class ProdutoLote extends Produto
         $this->quantidade = $valor;
     }
 
-    public function getSubtotal() : float
+    public function getSubtotal() : string
     {
-        return $this->subtotal;
+        $subtotal_formatado = number_format($this->subtotal, 2, ',', '.');
+        return $subtotal_formatado;
     }
 
     public function setSubtotal(float $valor)

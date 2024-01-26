@@ -3,6 +3,7 @@
 namespace App\Model\DAO;
 
 use App\Lib\Conexao;
+use Exception;
 
 abstract class BaseDAO
 {
@@ -74,8 +75,27 @@ abstract class BaseDAO
         }
     }
 
+    public function contarTotalRegistros($coluna, $where = "")
+    {
+        try {
+            if (empty($where))
+                $pdoStatement = $this->select("SELECT * FROM $coluna");
+            else
+                $pdoStatement = $this->select("SELECT * FROM " . $coluna . " WHERE " . $where);
+
+            $resultado = $pdoStatement->rowCount();
+
+            return $resultado;
+        }
+        catch (Exception $excecao) {
+            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
+            return $erro;
+        }
+    }
+
     public function getConexao()
     {
         return $this->conexao;
     }
+    
 }

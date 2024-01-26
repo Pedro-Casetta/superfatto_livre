@@ -33,12 +33,46 @@ class ProdutoDAO extends BaseDAO
             return $erro;
         }
     }
-    
+
     public function listar()
     {
         try {
             $pdoStatement = $this->select("SELECT p.*, d.nome nome_departamento FROM produto p, departamento d
                 WHERE d.codigo = p.cod_departamento");
+
+            $arrayProdutos = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
+
+            $produtos = [];
+
+            foreach($arrayProdutos as $produtoEncontrado)
+            {
+                $produto = new Produto(
+                    $produtoEncontrado['codigo'],
+                    $produtoEncontrado['nome'],
+                    $produtoEncontrado['preco'],
+                    $produtoEncontrado['estoque'],
+                    $produtoEncontrado['imagem'],
+                    $produtoEncontrado['cod_departamento'],
+                    $produtoEncontrado['nome_departamento']
+                );
+
+                $produtos[] = $produto;
+            }
+
+            return $produtos;
+        }
+        catch (Exception $excecao) {
+            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
+            return $erro;
+        }
+    }
+
+    public function listarPaginacao($indice, $limitePorPagina, $busca = "", $departamento = "")
+    {
+        try {
+            $pdoStatement = $this->select("SELECT p.*, d.nome nome_departamento FROM produto p, departamento d
+                WHERE d.codigo = p.cod_departamento
+            AND p.nome LIKE '%$busca%' AND d.nome LIKE '%$departamento%' LIMIT $indice, $limitePorPagina");
 
             $arrayProdutos = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
 

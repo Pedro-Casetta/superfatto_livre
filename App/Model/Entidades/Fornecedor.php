@@ -33,6 +33,22 @@ class Fornecedor
     {
         $fornecedorDAO = new FornecedorDAO();
         $resultado = $fornecedorDAO->listar();
+
+        return $resultado;
+    }
+    
+    public function listarPaginacao($indice, $limitePorPagina, $busca = "", $departamento = "")
+    {
+        $fornecedorDAO = new FornecedorDAO();
+        $resultado = $fornecedorDAO->listarPaginacao($indice, $limitePorPagina, $busca, $departamento);
+        
+        return $resultado;
+    }
+
+    public function contarTotalRegistros($coluna, $where = "")
+    {
+        $fornecedorDAO = new FornecedorDAO();
+        $resultado = $fornecedorDAO->contarTotalRegistros($coluna, $where);
         
         return $resultado;
     }

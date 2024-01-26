@@ -23,11 +23,13 @@ class FuncionarioDAO extends BaseDAO
             return $erro;
         }
     }
-    
-    public function listar()
+
+    public function listarPaginacao($indice, $limitePorPagina, $busca = "")
     {
         try {
-            $pdoStatement = $this->select("SELECT * FROM funcionario");
+            $pdoStatement = $this->select("SELECT * FROM funcionario
+                WHERE nome LIKE '%$busca%' OR setor LIKE '%$busca%' LIMIT $indice, $limitePorPagina");
+
             $pdoStatement->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "App\\Model\\Entidades\\Funcionario");
 
             $funcionarios = $pdoStatement->fetchAll();

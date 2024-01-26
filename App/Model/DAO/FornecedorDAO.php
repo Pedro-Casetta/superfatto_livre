@@ -63,6 +63,38 @@ class FornecedorDAO extends BaseDAO
         }
     }
 
+    public function listarPaginacao($indice, $limitePorPagina, $busca = "", $departamento = "")
+    {
+        try {
+            $pdoStatement = $this->select("SELECT f.*, d.nome nome_departamento FROM fornecedor f, departamento d
+                WHERE d.codigo = f.cod_departamento
+            AND f.nome LIKE '%$busca%' AND d.nome LIKE '%$departamento%' LIMIT $indice, $limitePorPagina");
+
+            $arrayFornecedores = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
+
+            $fornecedores = [];
+
+            foreach($arrayFornecedores as $fornecedorEncontrado)
+            {
+                $fornecedor = new Fornecedor(
+                    $fornecedorEncontrado['codigo'],
+                    $fornecedorEncontrado['cnpj'],
+                    $fornecedorEncontrado['nome'],
+                    $fornecedorEncontrado['cod_departamento'],
+                    $fornecedorEncontrado['nome_departamento']
+                );
+
+                $fornecedores[] = $fornecedor;
+            }
+
+            return $fornecedores;
+        }
+        catch (Exception $excecao) {
+            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
+            return $erro;
+        }
+    }
+
     public function listarDepartamentos()
     {
         try {

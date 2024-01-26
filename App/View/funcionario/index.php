@@ -25,11 +25,19 @@
         <i class="bi bi-plus-lg">&ensp;</i>Adicionar
       </a>
     </div>
+    <div class="col-auto mx-auto me-0">
+      <form class="d-flex" method="GET" action="http://<?=APP_HOST?>/funcionario">
+        <input class="form-control me-2" type="search" size="30" id="busca" name="busca" placeholder="Nome ou setor do funcionário">
+        <button class="btn btn-primary" type="submit">
+          <i class="bi bi-search"></i>
+        </button>
+      </form>
+    </div>
   </div>
 
   <?php if (isset($dados['funcionarios']) && !empty($dados['funcionarios'])) { ?>
     <div class="row">
-      <div class="col table-responsive-md">
+      <div class="col table-responsive-md px-0">
         <table class="table table-bordered align-middle">
           <thead class="table-dark text-center">
             <tr>
@@ -64,6 +72,7 @@
         </table>
       </div>
     </div>
+    <?= $dados['paginacao'] ?>
 
   <?php } else if (isset($dados['funcionarios']) && empty($dados['funcionarios'])) { ?>
     <div class="row">

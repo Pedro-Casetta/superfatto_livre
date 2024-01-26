@@ -6,12 +6,21 @@ use App\Lib\Sessao;
 use App\Model\Entidades\Conta\Conta;
 use App\Model\Entidades\Conta\Administrador;
 use App\Model\Entidades\Conta\Cliente;
+use App\Model\DAO\ProdutoDAO;
 
 class ContaController extends BaseController
 {
 
     public function encaminharCadastro()
     {
+        $produtoDAO = new ProdutoDAO();
+        $resultado = $produtoDAO->listarDepartamentos();
+        
+        if(is_array($resultado))
+                $this->setDados('departamentos', $resultado);
+        else
+            Sessao::setMensagem($resultado->getMessage());
+        
         $this->renderizar('conta/cadastro');
 
         Sessao::setMensagem(null);
@@ -56,6 +65,14 @@ class ContaController extends BaseController
 
     public function encaminharAcesso()
     {
+        $produtoDAO = new ProdutoDAO();
+        $resultado = $produtoDAO->listarDepartamentos();
+        
+        if(is_array($resultado))
+                $this->setDados('departamentos', $resultado);
+        else
+            Sessao::setMensagem($resultado->getMessage());
+        
         $this->renderizar('conta/acesso');
 
         Sessao::setMensagem(null);

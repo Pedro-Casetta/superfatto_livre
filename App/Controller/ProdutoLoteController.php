@@ -2,22 +2,27 @@
 
 namespace App\Controller;
 
+use App\Lib\Paginacao;
 use App\Lib\Sessao;
 use App\Model\Entidades\ProdutoLote;
 use App\Model\Entidades\Produto;
 use App\Model\Entidades\Lote;
 use Exception;
 
-class LoteController extends BaseController
+class ProdutoLoteController extends BaseController
 {
 
     public function index($parametros)
     {
         if (Sessao::verificarAcesso('administrador'))
         {
+            $paginaSelecionada = (isset($_GET['paginaSelecionada'])) ? $_GET['paginaSelecionada'] : 1;
+            $busca = (isset($_GET['busca'])) ? $_GET['busca'] : "";
+            $indice = Paginacao::calcularIndice($paginaSelecionada);
+            
             $cod_lote = $parametros[0];
             $produtoLote = new ProdutoLote(0, $cod_lote);
-            $resultado_produto_lote = $produtoLote->listar();
+            $resultado_produto_lote = $produtoLote->listarPaginacao($indice, Paginacao::$limitePorPagina, $busca);
             
             $produto = new Produto();
             $resultado_produto = $produto->listar();
@@ -25,11 +30,18 @@ class LoteController extends BaseController
             $lote = new Lote($cod_lote);
             $resultado_lote = $lote->localizar();
 
+            $totalRegistros = $produto->contarTotalRegistros(
+                "produto_lote pl, produto p",
+                "pl.cod_produto = p.codigo AND pl.cod_lote = $cod_lote AND p.nome LIKE '%$busca%'");
+            $totalPaginas = ceil($totalRegistros / Paginacao::$limitePorPagina);
+            $paginacao = Paginacao::criarPaginacao('/produtoLote/index/' . $cod_lote, $paginaSelecionada, $totalPaginas, $busca);
+
             if (is_array($resultado_produto_lote) && is_array($resultado_produto) && $resultado_lote instanceof Lote)
             {
                     $this->setDados('produtos_lote', $resultado_produto_lote);
                     $this->setDados('produtos', $resultado_produto);
                     $this->setDados('lote', $resultado_lote);
+                    $this->setDados('paginacao', $paginacao);
             }
             else if ($resultado_produto_lote instanceof Exception)
                 Sessao::setMensagem($resultado_produto_lote->getMessage());
@@ -63,7 +75,7 @@ class LoteController extends BaseController
             else
                 Sessao::setMensagem($resultado->getMessage());
 
-            $this->redirecionar('/lote');
+            $this->redirecionar('/produtoLote/index/' . $_POST['lote']);
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -121,7 +133,7 @@ class LoteController extends BaseController
             else
                 Sessao::setMensagem($resultado->getMessage());
 
-            $this->redirecionar('/produto_lote');
+            $this->redirecionar('/produtoLote/index/' . $_POST['lote']);
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -145,7 +157,7 @@ class LoteController extends BaseController
             else
                 Sessao::setMensagem($resultado->getMessage());
 
-            $this->renderizar('lote/exclusao');
+            $this->renderizar('produto_lote/exclusao');
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -165,7 +177,7 @@ class LoteController extends BaseController
             else
                 Sessao::setMensagem($resultado->getMessage());
 
-            $this->redirecionar('/produto_lote');
+            $this->redirecionar('/produtoLote/index/' . $cod_lote);
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');

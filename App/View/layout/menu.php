@@ -37,56 +37,72 @@
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" href="http://<?=APP_HOST?>/conta/encaminharPerfil">Perfil</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="http://<?=APP_HOST?>/conta/logout">Logout</a></li>
           </ul>
         </div>
       <?php } else if ($sessao::getNomeUsuario() && $sessao::getTipoConta() == "cliente") { ?>
-        <ul class="navbar-nav mx-auto">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-              Dropdown
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-          </li>
-          <form class="d-flex">
-            <input class="form-control me-2" type="search" placeholder="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
+        <div class="col-auto dropdown mx-auto me-0 pe-2">
+          <a class="btn btn-secondary dropdown-toggle" href="#" data-bs-toggle="dropdown">
+            Departamento
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="http://<?=APP_HOST?>/">
+              Todos
+            </a></li>
+            <?php if (isset($dados['departamentos']) && !empty($dados['departamentos'])) { ?>
+              <?php foreach($dados['departamentos'] as $departamento) { ?>
+                <li><a class="dropdown-item" href="http://<?=APP_HOST?>/?departamento=<?=$departamento->getNome()?>">
+                  <?= $departamento->getNome() ?>
+                </a></li>
+            <?php } } ?>
+          </ul>
+        </div>
+        <div class="col-auto mx-auto ms-0">
+          <form class="d-flex" method="GET" action="http://<?=APP_HOST?>/">
+            <input type="hidden" id="departamento" name="departamento" value="<?=(isset($_GET['departamento'])) ? $_GET['departamento'] : ''?>">
+            <input class="form-control me-2" type="search" size="30" id="busca" name="busca" placeholder="Nome do produto">
+            <button class="btn btn-primary" type="submit">
+              <i class="bi bi-search"></i>
+            </button>
           </form>
-        </ul>
+        </div>
         <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
             <?= $sessao::getNomeUsuario() ?>
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" href="http://<?=APP_HOST?>/conta/encaminharPerfil">Perfil</a></li>
-            <li><a class="dropdown-item" href="#">Another action</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="http://<?=APP_HOST?>/conta/logout">Logout</a></li>
           </ul>
         </div>
       <?php } else { ?>
-        <ul class="navbar-nav mx-auto">
-          <li class="nav-item dropdown">
-            <a class="nav-link dropdown-toggle" href="#" data-bs-toggle="dropdown">
-              Dropdown
-            </a>
-            <ul class="dropdown-menu">
-              <li><a class="dropdown-item" href="#">Action</a></li>
-              <li><a class="dropdown-item" href="#">Another action</a></li>
-              <li><a class="dropdown-item" href="#">Something else here</a></li>
-            </ul>
-          </li>
-          <form class="d-flex">
-            <input class="form-control me-2" type="search" placeholder="Search">
-            <button class="btn btn-outline-success" type="submit">Search</button>
+        <div class="col-auto dropdown mx-auto me-0 pe-2">
+          <a class="btn btn-secondary dropdown-toggle" href="#" data-bs-toggle="dropdown">
+            Departamento
+          </a>
+          <ul class="dropdown-menu">
+            <li><a class="dropdown-item" href="http://<?=APP_HOST?>/">
+              Todos
+            </a></li>
+            <?php if (isset($dados['departamentos']) && !empty($dados['departamentos'])) { ?>
+              <?php foreach($dados['departamentos'] as $departamento) { ?>
+                <li><a class="dropdown-item" href="http://<?=APP_HOST?>/?departamento=<?=$departamento->getNome()?>">
+                  <?= $departamento->getNome() ?>
+                </a></li>
+            <?php } } ?>
+          </ul>
+        </div>
+        <div class="col-auto mx-auto ms-0">
+          <form class="d-flex" method="GET" action="http://<?=APP_HOST?>/">
+            <input type="hidden" id="departamento" name="departamento" value="<?=(isset($_GET['departamento'])) ? $_GET['departamento'] : ''?>">
+            <input class="form-control me-2" type="search" size="30" id="busca" name="busca" placeholder="Nome do produto">
+            <button class="btn btn-primary" type="submit">
+              <i class="bi bi-search"></i>
+            </button>
           </form>
-        </ul>
+        </div>
         <ul class="navbar-nav">
           <li class="nav-item">
             <a class="nav-link" href="http://<?=APP_HOST?>/conta/encaminharCadastro">Cadastrar-se</a>

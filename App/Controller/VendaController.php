@@ -4,7 +4,8 @@ namespace App\Controller;
 
 use App\Lib\Paginacao;
 use App\Lib\Sessao;
-use App\Model\Entidades\Lote;
+use App\Model\Entidades\Venda;
+use App\Model\Entidades\ProdutoVenda;
 use App\Model\Entidades\Fornecedor;
 use App\Model\DAO\FornecedorDAO;
 use Exception;
@@ -59,25 +60,69 @@ class LoteController extends BaseController
             $this->redirecionar('/conta/encaminharAcesso');
     }
 
-    public function cadastrar()
+    public function iniciarVenda()
     {
-        if (Sessao::verificarAcesso('administrador'))
+        if (!Sessao::verificarAcesso('administrador'))
         {
-            $lote = new Lote(
+            $venda = new Venda(
                 0 ,
-                $_POST['data'],
+                "",
                 0.0,
-                $_POST['fornecedor'],
+                $_POST['cliente'],
             );
 
-            $resultado = $lote->cadastrar();
+            $resultado = $venda->cadastrar();
 
-            if (is_bool($resultado) && $resultado)
-                Sessao::setMensagem("Dados inseridos com sucesso!");
+            if (is_bool($resultado['resultado']) && $resultado['resultado'])
+            {                
+                $produtoVenda = new ProdutoVenda(
+                    $_POST['produto'],
+                    $resultado['cod_venda'],
+                    $_POST['quantidade']
+                );
+
+                $resultado_produto_venda = $produtoVenda->cadastrar();
+
+                if (is_bool($resultado_produto_venda) && $resultado_produto_venda)
+                {
+                    $resultado_produtos = $produtoVenda->listar($resultado['cod_venda']);
+                    $venda->setCodigo($resultado['cod_venda']);
+                    $resultado_venda = $venda->localizar();
+
+                    if (is_array($resultado_produtos) && $resultado_venda instanceof Venda)
+                    {
+                        $this->setDados('venda', $resultado_venda);
+                        $this->setDados('produtos', $resultado_produtos);
+                        Sessao::setMensagem(null);
+                    }
+                    else if ($resultado_venda instanceof Exception)
+                        Sessao::setMensagem($resultado_venda->getMessage());
+                    else
+                        Sessao::setMensagem($resultado_produtos->getMessage());
+                
+                    $this->renderizar('venda/endereco');
+                }
+                else
+                {
+                    Sessao::setMensagem($resultado_produto_venda->getMessage());
+                    $this->redirecionar('/');
+                }
+            }
             else
-                Sessao::setMensagem($resultado->getMessage());
+            {
+                Sessao::setMensagem($resultado['resultado']->getMessage());
+                $this->redirecionar('/');
+            }
 
-            $this->redirecionar('/lote');
+        }
+        else
+            $this->redirecionar('/conta/encaminharAcesso');
+    }
+
+    public function salvarEndereco()
+    {
+        if (!Sessao::verificarAcesso('administrador'))
+        {
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');

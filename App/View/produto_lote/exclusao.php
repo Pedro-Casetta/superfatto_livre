@@ -18,8 +18,8 @@
               <h1>Exclusão de produto do lote</h1>
             </div>
           </div>
-          <input type="hidden" name="produto" value="<?= $dados['produto_lote']->getCodigo() ?>">
-          <input type="hidden" name="lote" value="<?= $dados['produto_lote']->getLote()->getCodigo() ?>">
+          <input type="hidden" id="produto" name="produto" value="<?= $dados['produto_lote']->getCodigo() ?>">
+          <input type="hidden" id="lote" name="lote" value="<?= $dados['produto_lote']->getLote()->getCodigo() ?>">
           <div class="row mb-3">
             <div class="col-11 col-md-9 col-lg-6">
               <label for="nome" class="form-label">Nome</label>
@@ -66,7 +66,7 @@
               </button>
             </div>
             <div class="col-auto">
-              <a href="http://<?=APP_HOST?>/produtoLote/index/<?= $dados['lote']->getCodigo() ?>" class="btn btn-secondary">
+              <a href="http://<?=APP_HOST?>/produtoLote/index/<?= $dados['produto_lote']->getLote()->getCodigo() ?>" class="btn btn-secondary">
                 <i class="bi bi-x-lg">&ensp;</i>Cancelar
                   </a>
             </div>

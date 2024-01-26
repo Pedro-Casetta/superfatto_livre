@@ -2,13 +2,13 @@
 
 namespace App\Model\DAO;
 
-use App\Model\Entidades\ProdutoLote;
+use App\Model\Entidades\ProdutoVenda;
 use Exception;
 use PDO;
 
-class ProdutoLoteDAO extends BaseDAO
+class ProdutoVendaDAO extends BaseDAO
 {
-    public function localizar($cod_produto, $cod_lote)
+    public function localizar($cod_produto, $cod_venda)
     {
         try {
             $pdoStatement = $this->select(
@@ -30,6 +30,40 @@ class ProdutoLoteDAO extends BaseDAO
             );
             
             return $produtoLote;
+        }
+        catch (Exception $excecao) {
+            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
+            return $erro;
+        }
+    }
+
+    public function listar($cod_venda)
+    {
+        try {
+            $pdoStatement = $this->select("SELECT pv.*, p.nome, p.preco, p.imagem
+                FROM produto_venda pv, produto p
+                WHERE pv.cod_produto = p.codigo AND pv.cod_venda = $cod_venda");
+
+            $arrayProdutosVenda = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
+
+            $produtosVenda = [];
+
+            foreach($arrayProdutosVenda as $produtoVendaEncontrado)
+            {
+                $produtoVenda = new ProdutoVenda(
+                    $produtoVendaEncontrado['cod_produto'],
+                    $produtoVendaEncontrado['cod_venda'],
+                    $produtoVendaEncontrado['quantidade'],
+                    $produtoVendaEncontrado['subtotal'],
+                    $produtoVendaEncontrado['nome'],
+                    $produtoVendaEncontrado['preco'],
+                    $produtoVendaEncontrado['imagem']
+                );
+
+                $produtosVenda[] = $produtoVenda;
+            }
+
+            return $produtosVenda;
         }
         catch (Exception $excecao) {
             $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
@@ -72,29 +106,26 @@ class ProdutoLoteDAO extends BaseDAO
         }
     }
 
-    public function cadastrar(ProdutoLote $produtoLote)
+    public function cadastrar(ProdutoVenda $produtoVenda)
     {
         try {
-            $cod_produto = $produtoLote->getCodigo();
-            $cod_lote = $produtoLote->getLote()->getCodigo();
-            $quantidade = $produtoLote->getQuantidade();
+            $cod_produto = $produtoVenda->getCodigo();
+            $cod_venda = $produtoVenda->getVenda()->getCodigo();
+            $quantidade = $produtoVenda->getQuantidade();
 
             $resultado = $this->insert(
-                'produto_lote',
-                ':cod_produto, :cod_lote, :quantidade',
+                'produto_venda',
+                ':cod_produto, :cod_venda, :quantidade',
                 [
                     ':cod_produto' => $cod_produto,
-                    ':cod_lote' => $cod_lote,
+                    ':cod_venda' => $cod_venda,
                     ':quantidade' => $quantidade
             ]);
             
             return $resultado;
         }
         catch (Exception $excecao) {
-            if ($excecao->getCode() == 23000)
-                $erro = new Exception("Erro " . $excecao->getCode() . ". Esse produto já existe nesse lote.");
-            else
-                $erro = new Exception("Erro " . $excecao->getCode() . ". Erro na inserção dos dados");
+            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro na inserção dos dados");
             return $erro;
         }
     }

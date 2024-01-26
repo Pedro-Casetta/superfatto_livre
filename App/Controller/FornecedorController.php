@@ -2,6 +2,7 @@
 
 namespace App\Controller;
 
+use App\Lib\Paginacao;
 use App\Lib\Sessao;
 use App\Model\DAO\FornecedorDAO;
 use App\Model\Entidades\Fornecedor;
@@ -14,11 +15,30 @@ class FornecedorController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
+            $paginaSelecionada = (isset($_GET['paginaSelecionada'])) ? $_GET['paginaSelecionada'] : 1;
+            $busca = (isset($_GET['busca'])) ? $_GET['busca'] : "";
+            $departamento = (isset($_GET['departamento'])) ? $_GET['departamento'] : "";
+            $indice = Paginacao::calcularIndice($paginaSelecionada);
+            
             $fornecedor = new Fornecedor();
-            $resultado = $fornecedor->listar();
+            $resultado = $fornecedor->listarPaginacao($indice, Paginacao::$limitePorPagina, $busca, $departamento);
 
-            if(is_array($resultado))
+            $fornecedorDAO = new FornecedorDAO();
+            $resultado_departamento = $fornecedorDAO->listarDepartamentos();
+
+            $totalRegistros = $fornecedor->contarTotalRegistros(
+                "fornecedor f, departamento d",
+                "d.codigo = f.cod_departamento
+            AND f.nome LIKE '%$busca%' AND d.nome LIKE '%$departamento%'");
+            $totalPaginas = ceil($totalRegistros / Paginacao::$limitePorPagina);
+            $paginacao = Paginacao::criarPaginacao('/fornecedor', $paginaSelecionada, $totalPaginas, $busca, $departamento);
+
+            if(is_array($resultado) && is_array($resultado_departamento))
+            {
                 $this->setDados('fornecedores', $resultado);
+                $this->setDados('paginacao', $paginacao);
+                $this->setDados('departamentos', $resultado_departamento);
+            }
             else
                 Sessao::setMensagem($resultado->getMessage());
             

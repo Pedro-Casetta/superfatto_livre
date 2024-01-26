@@ -16,21 +16,21 @@
   </div>
   <div class="row mb-1">
     <div class="col-auto">
-      <h4>Lote <?=$dados['lote']->getCodigo() ?></h4>
+      <h4>Lote: <?=$dados['lote']->getCodigo() ?></h4>
     </div>
     <div class="col-auto">
-      <h4>Data <?=$dados['lote']->getData() ?></h4>
+      <h4>Data: <?=$dados['lote']->getData() ?></h4>
     </div>
     <div class="col-auto">
-      <h4>Fornecedor <?=$dados['lote']->getFornecedor() ?></h4>
+      <h4>Fornecedor: <?=$dados['lote']->getFornecedor()->getNome() ?></h4>
     </div>
   </div>
   <div class="row mb-3">
     <div class="col-auto">
-      <h4>Departamento <?=$dados['lote']->getFornecedor()->getDepartamento()->getNome() ?></h4>
+      <h4>Departamento: <?=$dados['lote']->getFornecedor()->getDepartamento()->getNome() ?></h4>
     </div>
     <div class="col-auto">
-      <h4>Total <?=$dados['lote']->getTotal() ?></h4>
+      <h4>Total: R$ <?=$dados['lote']->getTotal() ?></h4>
     </div>
   </div>
   <div class="row mb-3">
@@ -38,6 +38,14 @@
       <a href="http://<?=APP_HOST?>/lote" class="btn btn-secondary">
         <i class="bi bi-arrow-left">&ensp;</i>Voltar
       </a>
+    </div>
+    <div class="col-auto mx-auto me-0">
+      <form class="d-flex" method="GET" action="http://<?=APP_HOST?>/produtoLote/index/<?=$dados['lote']->getCodigo()?>">
+        <input class="form-control me-2" type="search" size="25" id="busca" name="busca" placeholder="Nome do produto">
+        <button class="btn btn-primary" type="submit">
+          <i class="bi bi-search"></i>
+        </button>
+      </form>
     </div>
   </div>
   
@@ -48,9 +56,9 @@
         <option value="" selected>Selecione o produto</option>
           <?php if (isset($dados['produtos']) && !empty($dados['produtos'])) { ?>
             <?php foreach($dados['produtos'] as $produto) {
-              if ($produto->getDepartamento()->getCodigo() == $dados['lote']->getFornecedor()->getDepartamento()->getCodigo()) ?>
+              if ($produto->getDepartamento()->getCodigo() == $dados['lote']->getFornecedor()->getDepartamento()->getCodigo()) { ?>
                 <option value="<?= $produto->getCodigo() ?>"><?= $produto->getNome() ?></option>
-          <?php } } ?>
+          <?php } } } ?>
       </select>
     </div>
     <div class="col-4">
@@ -65,7 +73,7 @@
 
   <?php if (isset($dados['produtos_lote']) && !empty($dados['produtos_lote'])) { ?>
     <div class="row">
-      <div class="col table-responsive-md">
+      <div class="col table-responsive-md px-0">
         <table class="table table-bordered align-middle">
           <thead class="table-dark text-center">
             <tr>
@@ -88,12 +96,12 @@
                 <td><?= $produtoLote->getQuantidade() ?></td>
                 <td><?= $produtoLote->getSubtotal() ?></td>
                 <td>
-                  <a href="http://<?=APP_HOST?>/produto_lote/encaminharEdicao/<?= $produtoLote->getLote()->getCodigo() ?>
-                  /<?= $produtosLote->getCodigo() ?>" class="btn btn-info">
+                  <a href="http://<?=APP_HOST?>/produtoLote/encaminharEdicao/<?= $produtoLote->getLote()->getCodigo() .
+                  '/' . $produtoLote->getCodigo() ?>" class="btn btn-info">
                     <i class="bi bi-pencil">&ensp;</i>Editar
                   </a>
-                  <a href="http://<?=APP_HOST?>/produto_lote/encaminharExclusao/<?= $produtoLote->getLote()->getCodigo() ?>
-                  /<?= $produtosLote->getCodigo() ?>" class="btn btn-danger margem_celular">
+                  <a href="http://<?=APP_HOST?>/produtoLote/encaminharExclusao/<?= $produtoLote->getLote()->getCodigo() .
+                  '/' . $produtoLote->getCodigo() ?>" class="btn btn-danger margem_celular">
                     <i class="bi bi-x-lg">&ensp;</i>Excluir
                   </a>
                 </td>
@@ -103,6 +111,7 @@
         </table>
       </div>
     </div>
+    <?= $dados['paginacao'] ?>
 
   <?php } else if (isset($dados['produtos_lote']) && empty($dados['produtos_lote'])) { ?>
     <div class="row">

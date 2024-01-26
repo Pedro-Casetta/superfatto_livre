@@ -2,33 +2,30 @@
 
 namespace App\Model\DAO;
 
-use App\Model\Entidades\Lote;
+use App\Model\Entidades\Venda;
 use Exception;
 use PDO;
 
-class LoteDAO extends BaseDAO
+class VendaDAO extends BaseDAO
 {
     public function localizar($codigo)
     {
         try {
-            $pdoStatement = $this->select("SELECT l.*, f.nome nome_fornecedor, f.cod_departamento, d.nome nome_departamento
-                FROM lote l, fornecedor f, departamento d
-            WHERE l.codigo = $codigo AND f.codigo = l.cod_fornecedor AND d.codigo = f.cod_departamento");
+            $pdoStatement = $this->select("SELECT v.* c.nome FROM venda v, conta c
+            WHERE v.codigo = $codigo AND c.codigo = v.cod_cliente");
             
             $arrayResultado = $pdoStatement->fetch(PDO::FETCH_ASSOC);
 
-            $lote = new Lote(
+            $venda = new Venda(
                 $arrayResultado['codigo'],
                 $arrayResultado['data'],
                 $arrayResultado['total'],
-                $arrayResultado['cod_fornecedor'],
-                "",
-                $arrayResultado['nome_fornecedor'],
-                $arrayResultado['cod_departamento'],
-                $arrayResultado['nome_departamento']
+                $arrayResultado['situacao'],
+                $arrayResultado['cod_cliente'],
+                $arrayResultado['nome']
             );
             
-            return $lote;
+            return $venda;
         }
         catch (Exception $excecao) {
             $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
@@ -36,35 +33,32 @@ class LoteDAO extends BaseDAO
         }
     }
 
-    public function listarPaginacao($indice, $limitePorPagina, $busca = "", $departamento = "")
+    public function listarPaginacao($indice, $limitePorPagina, $busca = "", $data = "")
     {
         try {
-            $pdoStatement = $this->select("SELECT l.*, f.cnpj, f.nome, f.cod_departamento, d.nome nome_departamento
-                FROM lote l, fornecedor f, departamento d
-                WHERE l.cod_fornecedor = f.codigo AND f.cod_departamento = d.codigo
-            AND l.data LIKE '%$busca%' AND d.nome LIKE '%$departamento%' LIMIT $indice, $limitePorPagina");
+            $pdoStatement = $this->select("SELECT v.*, c.nome FROM venda v, conta c
+                WHERE v.cod_cliente = c.codigo
+            AND c.nome LIKE '%$busca%' AND v.data LIKE '%$data%' LIMIT $indice, $limitePorPagina");
 
-            $arrayLotes = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
+            $arrayVendas = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
 
-            $lotes = [];
+            $vendas = [];
 
-            foreach($arrayLotes as $loteEncontrado)
+            foreach($arrayVendas as $vendaEncontrada)
             {
-                $lote = new Lote(
-                    $loteEncontrado['codigo'],
-                    $loteEncontrado['data'],
-                    $loteEncontrado['total'],
-                    $loteEncontrado['cod_fornecedor'],
-                    $loteEncontrado['cnpj'],
-                    $loteEncontrado['nome'],
-                    $loteEncontrado['cod_departamento'],
-                    $loteEncontrado['nome_departamento']
+                $venda = new Venda(
+                    $vendaEncontrada['codigo'],
+                    $vendaEncontrada['data'],
+                    $vendaEncontrada['total'],
+                    $vendaEncontrada['situacao'],
+                    $vendaEncontrada['cod_cliente'],
+                    $vendaEncontrada['nome']
                 );
 
-                $lotes[] = $lote;
+                $vendas[] = $venda;
             }
 
-            return $lotes;
+            return $vendas;
         }
         catch (Exception $excecao) {
             $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
@@ -72,21 +66,21 @@ class LoteDAO extends BaseDAO
         }
     }
 
-    public function cadastrar(Lote $lote)
+    public function cadastrar(Venda $venda)
     {
         try {
-            $data = $lote->getData();
-            $cod_fornecedor = $lote->getFornecedor()->getCodigo();
-
-            $resultado = $this->insert(
-                'lote',
-                ':data, :cod_fornecedor',
-                [
-                    ':data' => $data,
-                    ':cod_fornecedor' => $cod_fornecedor
-            ]);
+            $data = $venda->getData();
+            $cod_cliente = $venda->getCliente()->getCodigo();
             
-            return $resultado;
+            $resultado = $this->insert(
+                'venda',
+                ':cod_cliente',
+                [':cod_cliente' => $cod_cliente]);
+                
+            $cod_venda = $this->getConexao()->lastInsertId();
+            $arrayRetorno = ['resultado' => $resultado, 'cod_venda' => $cod_venda];
+
+            return $arrayRetorno;
         }
         catch (Exception $excecao) {
             $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no cadastro dos dados");

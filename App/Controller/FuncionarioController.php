@@ -2,9 +2,9 @@
 
 namespace App\Controller;
 
+use App\Lib\Paginacao;
 use App\Lib\Sessao;
 use App\Model\Entidades\Funcionario;
-use Exception;
 
 class FuncionarioController extends BaseController
 {
@@ -13,11 +13,22 @@ class FuncionarioController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
+            $paginaSelecionada = (isset($_GET['paginaSelecionada'])) ? $_GET['paginaSelecionada'] : 1;
+            $busca = (isset($_GET['busca'])) ? $_GET['busca'] : "";
+            $indice = Paginacao::calcularIndice($paginaSelecionada);
+            
             $funcionario = new Funcionario();
-            $resultado = $funcionario->listar();
+            $resultado = $funcionario->listarPaginacao($indice, Paginacao::$limitePorPagina, $busca);
+
+            $totalRegistros = $funcionario->contarTotalRegistros("funcionario", "nome LIKE '%$busca%'");
+            $totalPaginas = ceil($totalRegistros / Paginacao::$limitePorPagina);
+            $paginacao = Paginacao::criarPaginacao('/funcionario', $paginaSelecionada, $totalPaginas, $busca);
 
             if(is_array($resultado))
+            {
                 $this->setDados('funcionarios', $resultado);
+                $this->setDados('paginacao', $paginacao);
+            }
             else
                 Sessao::setMensagem($resultado->getMessage());
             

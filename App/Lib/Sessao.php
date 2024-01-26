@@ -4,6 +4,19 @@ namespace App\Lib;
 
 class Sessao
 {
+    public static function verificarAcesso($tipo)
+    {
+        if (self::getNomeUsuario() && self::getTipoConta() == $tipo)
+            return true;
+        else
+            return false;
+    }
+    
+    public static function logout()
+    {
+        unset($_SESSION['nome_usuario'], $_SESSION['tipo']);
+    }
+    
     public static function getMensagem()
     {
         if (isset($_SESSION['mensagem']))
@@ -52,16 +65,4 @@ class Sessao
         $_SESSION['codigo'] = $valor;
     }
     
-    public static function verificarAcesso($tipo)
-    {
-        if (self::getNomeUsuario() && self::getTipoConta() == $tipo)
-            return true;
-        else
-            return false;
-    }
-
-    public static function logout()
-    {
-        unset($_SESSION['nome_usuario'], $_SESSION['tipo']);
-    }
 }

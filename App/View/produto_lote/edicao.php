@@ -26,12 +26,12 @@
               <select class="form-select border border-primary" id="produto" name="produto" required>
                 <?php if (isset($dados['produtos']) && !empty($dados['produtos'])) { ?>
                   <?php foreach($dados['produtos'] as $produto) {
-                    if ($produto->getDepartamento()->getCodigo() == $dados['lote']->getFornecedor()->getDepartamento()->getCodigo()) ?>
+                    if ($produto->getDepartamento()->getCodigo() == $dados['lote']->getFornecedor()->getDepartamento()->getCodigo()) { ?>
                       <option value="<?= $produto->getCodigo() ?>"
                         <?= ($produto->getCodigo() == $dados['produto_lote']->getCodigo()) ? 'selected' : '' ?>>
                         <?= $produto->getNome() ?>
                       </option>
-                <?php } } ?>
+                <?php } } } ?>
               </select>
             </div>
           </div>

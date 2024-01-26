@@ -29,11 +29,19 @@ class Funcionario
 
         return $resultado;
     }
-    
-    public function listar()
+
+    public function listarPaginacao($indice, $limitePorPagina, $busca = "")
     {
         $funcionarioDAO = new FuncionarioDAO();
-        $resultado = $funcionarioDAO->listar();
+        $resultado = $funcionarioDAO->listarPaginacao($indice, $limitePorPagina, $busca);
+        
+        return $resultado;
+    }
+
+    public function contarTotalRegistros($coluna, $where = "")
+    {
+        $funcionarioDAO = new FuncionarioDAO();
+        $resultado = $funcionarioDAO->contarTotalRegistros($coluna, $where);
         
         return $resultado;
     }
@@ -102,9 +110,10 @@ class Funcionario
         $this->setor = $valor;
     }
 
-    public function getSalario() : float
+    public function getSalario() : string
     {
-        return $this->salario;
+        $salario_formatado = number_format($this->salario, 2, ',', '.');
+        return $salario_formatado;
     }
 
     public function setSalario(float $valor)

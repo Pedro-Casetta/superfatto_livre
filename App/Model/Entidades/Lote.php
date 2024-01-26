@@ -29,11 +29,19 @@ class Lote
 
         return $resultado;
     }
-    
-    public function listar()
+
+    public function listarPaginacao($indice, $limitePorPagina, $busca = "", $departamento = "")
     {
         $loteDAO = new LoteDAO();
-        $resultado = $loteDAO->listar();
+        $resultado = $loteDAO->listarPaginacao($indice, $limitePorPagina, $busca, $departamento);
+        
+        return $resultado;
+    }
+
+    public function contarTotalRegistros($coluna, $where = "")
+    {
+        $loteDAO = new LoteDAO();
+        $resultado = $loteDAO->contarTotalRegistros($coluna, $where);
         
         return $resultado;
     }
@@ -82,9 +90,10 @@ class Lote
         $this->data = $valor;
     }
 
-    public function getTotal() : float
+    public function getTotal() : string
     {
-        return $this->total;
+        $total_formatado = number_format($this->total, 2, ',', '.');
+        return $total_formatado;
     }
 
     public function setTotal(float $valor)

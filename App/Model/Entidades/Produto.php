@@ -41,6 +41,22 @@ class Produto
         
         return $resultado;
     }
+    
+    public function listarPaginacao($indice, $limitePorPagina, $busca = "", $departamento = "")
+    {
+        $produtoDAO = new ProdutoDAO();
+        $resultado = $produtoDAO->listarPaginacao($indice, $limitePorPagina, $busca, $departamento);
+        
+        return $resultado;
+    }
+
+    public function contarTotalRegistros($coluna, $where = "")
+    {
+        $produtoDAO = new ProdutoDAO();
+        $resultado = $produtoDAO->contarTotalRegistros($coluna, $where);
+        
+        return $resultado;
+    }
 
     public function cadastrar()
     {
@@ -86,9 +102,10 @@ class Produto
         $this->nome = $valor;
     }
 
-    public function getPreco() : float
+    public function getPreco() : string
     {
-        return $this->preco;
+        $preco_formatado = number_format($this->preco, 2, ',', '.');
+        return $preco_formatado;
     }
 
     public function setPreco(float $valor)

@@ -20,6 +20,31 @@
         <i class="bi bi-arrow-left">&ensp;</i>Voltar
       </a>
     </div>
+    <div class="col-auto dropdown mx-auto me-0 pe-0">
+      <a class="btn btn-warning dropdown-toggle" href="#" data-bs-toggle="dropdown">
+        Departamento
+      </a>
+      <ul class="dropdown-menu">
+        <li><a class="dropdown-item" href="http://<?=APP_HOST?>/lote">
+          Todos
+        </a></li>
+        <?php if (isset($dados['departamentos']) && !empty($dados['departamentos'])) { ?>
+          <?php foreach($dados['departamentos'] as $departamento) { ?>
+            <li><a class="dropdown-item" href="http://<?=APP_HOST?>/lote?departamento=<?=$departamento->getNome()?>">
+              <?= $departamento->getNome() ?>
+            </a></li>
+        <?php } } ?>
+      </ul>
+    </div>
+    <div class="col-auto mx-auto me-0 ms-0">
+      <form class="d-flex" method="GET" action="http://<?=APP_HOST?>/lote">
+        <input type="hidden" id="departamento" name="departamento" value="<?=(isset($_GET['departamento'])) ? $_GET['departamento'] : ''?>">
+        <input class="form-control me-2" type="date" size="25" id="busca" name="busca">
+        <button class="btn btn-primary" type="submit">
+          <i class="bi bi-search"></i>
+        </button>
+      </form>
+    </div>
   </div>
   
   <form action="http://<?=APP_HOST?>/lote/cadastrar" method="POST" class="row mb-3 form-inline">
@@ -44,7 +69,7 @@
 
   <?php if (isset($dados['lotes']) && !empty($dados['lotes'])) { ?>
     <div class="row">
-      <div class="col table-responsive-md">
+      <div class="col table-responsive-md px-0">
         <table class="table table-bordered align-middle">
           <thead class="table-dark text-center">
             <tr>
@@ -52,7 +77,7 @@
               <th scope="col" style="width:15%;">Data</th>
               <th scope="col" style="width:20%;">Fornecedor</th>
               <th scope="col" style="width:10%;">Total (R$)</th>
-              <th scope="col" style="width:20%;">Opções</th>
+              <th scope="col" style="width:10%;">Opções</th>
             </tr>
           </thead>
           <tbody class="table-group-divider table-warning border-success text-center">
@@ -63,14 +88,14 @@
                 <td><?= $lote->getFornecedor()->getNome() ?></td>
                 <td><?= $lote->getTotal() ?></td>
                 <td>
-                  <a href="http://<?=APP_HOST?>/produtoLote/index/<?= $lote->getCodigo() ?>" class="btn btn-warning">
+                  <a href="http://<?=APP_HOST?>/produtoLote/index/<?= $lote->getCodigo() ?>" class="btn btn-warning d-block mb-1">
                     <i class="bi bi-eye">&ensp;</i>Visualizar Produtos
                   </a>
-                  <a href="http://<?=APP_HOST?>/lote/encaminharEdicao/<?= $lote->getCodigo() ?>" class="btn btn-info">
+                  <a href="http://<?=APP_HOST?>/lote/encaminharEdicao/<?= $lote->getCodigo() ?>" class="btn btn-info d-block mb-1">
                     <i class="bi bi-pencil">&ensp;</i>Editar
                   </a>
                   <a href="http://<?=APP_HOST?>/lote/encaminharExclusao/<?= $lote->getCodigo() ?>"
-                  class="btn btn-danger margem_celular">
+                  class="btn btn-danger d-block">
                     <i class="bi bi-x-lg">&ensp;</i>Excluir
                   </a>
                 </td>
@@ -80,6 +105,7 @@
         </table>
       </div>
     </div>
+    <?= $dados['paginacao'] ?>
 
   <?php } else if (isset($dados['lotes']) && empty($dados['lotes'])) { ?>
     <div class="row">
