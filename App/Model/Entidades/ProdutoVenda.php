@@ -36,7 +36,7 @@ class ProdutoVenda extends Produto
     public function listar()
     {
         $produtoVendaDAO = new ProdutoVendaDAO();
-        $resultado = $produtoVendaDAO->listar($this->getLote()->getCodigo());
+        $resultado = $produtoVendaDAO->listar($this->getVenda()->getCodigo());
         
         return $resultado;
     }

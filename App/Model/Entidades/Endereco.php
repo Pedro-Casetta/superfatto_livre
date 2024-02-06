@@ -17,7 +17,7 @@ class Endereco
     private Cliente $cliente;
     
     public function __construct(int $codigo = 0, string $rua = "", int $numero = 0, string $bairro = "",
-    string $cidade = "", string $estado = "", int $cod_cliente)
+    string $cidade = "", string $estado = "", int $cod_cliente = 0)
     {
         $this->codigo = $codigo;
         $this->rua = $rua;
@@ -39,15 +39,15 @@ class Endereco
     public function listar()
     {
         $enderecoDAO = new EnderecoDAO();
-        $resultado = $enderecoDAO->listar();
+        $resultado = $enderecoDAO->listar($this->getCliente()->getCodigo());
 
         return $resultado;
     }
     
-    public function listarPaginacao($indice, $limitePorPagina, $busca = "", $departamento = "")
+    public function listarPaginacao($indice, $limitePorPagina, $busca = "")
     {
         $enderecoDAO = new EnderecoDAO();
-        $resultado = $enderecoDAO->listarPaginacao($indice, $limitePorPagina, $busca, $departamento);
+        $resultado = $enderecoDAO->listarPaginacao($indice, $limitePorPagina, $busca, $this->getCliente()->getCodigo());
         
         return $resultado;
     }

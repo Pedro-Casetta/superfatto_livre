@@ -6,11 +6,12 @@ use App\Lib\Paginacao;
 use App\Lib\Sessao;
 use App\Model\Entidades\Venda;
 use App\Model\Entidades\ProdutoVenda;
-use App\Model\Entidades\Fornecedor;
-use App\Model\DAO\FornecedorDAO;
+use App\Model\Entidades\Endereco;
+use App\Model\Entidades\Produto;
+use App\Model\Entidades\Pagamento;
 use Exception;
 
-class LoteController extends BaseController
+class VendaController extends BaseController
 {
 
     public function index()
@@ -19,19 +20,13 @@ class LoteController extends BaseController
         {
             $paginaSelecionada = (isset($_GET['paginaSelecionada'])) ? $_GET['paginaSelecionada'] : 1;
             $busca = (isset($_GET['busca'])) ? $_GET['busca'] : "";
-            $departamento = (isset($_GET['departamento'])) ? $_GET['departamento'] : "";
+            $data = (isset($_GET['data'])) ? $_GET['data'] : "";
             $indice = Paginacao::calcularIndice($paginaSelecionada);
             
-            $lote = new Lote();
-            $resultado_lote = $lote->listarPaginacao($indice, Paginacao::$limitePorPagina, $busca, $departamento);
-            
-            $fornecedor = new Fornecedor();
-            $resultado_fornecedor = $fornecedor->listar();
+            $venda = new Venda();
+            $resultado_venda = $venda->listarPaginacao($indice, Paginacao::$limitePorPagina, $busca, $data);
 
-            $fornecedorDAO = new FornecedorDAO();
-            $resultado_departamento = $fornecedorDAO->listarDepartamentos();
-
-            $totalRegistros = $lote->contarTotalRegistros(
+            $totalRegistros = $venda->contarTotalRegistros(
                 "lote l, fornecedor f, departamento d",
                 "l.cod_fornecedor = f.codigo AND f.cod_departamento = d.codigo
             AND l.data LIKE '%$busca%' AND d.nome LIKE '%$departamento%'");
@@ -62,55 +57,88 @@ class LoteController extends BaseController
 
     public function iniciarVenda()
     {
-        if (!Sessao::verificarAcesso('administrador'))
-        {
-            $venda = new Venda(
-                0 ,
-                "",
-                0.0,
-                $_POST['cliente'],
-            );
-
-            $resultado = $venda->cadastrar();
-
-            if (is_bool($resultado['resultado']) && $resultado['resultado'])
-            {                
+        if (Sessao::verificarAcesso('cliente'))
+        {            
+            $produto = new Produto($_POST['produto']);
+            $resultado = $produto->localizar();
+            
+            if ($resultado instanceof Produto)
+            {
+                $preco_float = floatval($resultado->getPreco());
+                $subtotal = $_POST['quantidade'] * $preco_float;
+                
                 $produtoVenda = new ProdutoVenda(
-                    $_POST['produto'],
-                    $resultado['cod_venda'],
-                    $_POST['quantidade']
+                    $resultado->getCodigo(),
+                    0,
+                    $_POST['quantidade'],
+                    $subtotal,
+                    $resultado->getNome(),
+                    $preco_float,
+                    $resultado->getImagem(),
                 );
 
-                $resultado_produto_venda = $produtoVenda->cadastrar();
+                $this->setDados('produto', $produtoVenda);
+                Sessao::setMensagem(null);
+            }
+            else
+                Sessao::setMensagem($resultado->getMessage());
+            
+            $this->renderizar('venda/endereco');
+        }
+        else
+            $this->redirecionar('/conta/encaminharAcesso');
+    }
 
-                if (is_bool($resultado_produto_venda) && $resultado_produto_venda)
-                {
-                    $resultado_produtos = $produtoVenda->listar($resultado['cod_venda']);
-                    $venda->setCodigo($resultado['cod_venda']);
-                    $resultado_venda = $venda->localizar();
+    public function salvarEndereco()
+    {
+        if (Sessao::verificarAcesso('cliente'))
+        {
+            $endereco = new Endereco(
+                0,
+                $_POST['rua'],
+                $_POST['numero'],
+                $_POST['bairro'],
+                $_POST['cidade'],
+                $_POST['estado'],
+                $_POST['cliente']
+            );
 
-                    if (is_array($resultado_produtos) && $resultado_venda instanceof Venda)
-                    {
-                        $this->setDados('venda', $resultado_venda);
-                        $this->setDados('produtos', $resultado_produtos);
-                        Sessao::setMensagem(null);
-                    }
-                    else if ($resultado_venda instanceof Exception)
-                        Sessao::setMensagem($resultado_venda->getMessage());
-                    else
-                        Sessao::setMensagem($resultado_produtos->getMessage());
+            $resultado = $endereco->cadastrar();
+
+            if (is_array($resultado) && is_bool($resultado['resultado']) && $resultado['resultado'])
+            {
+                $endereco->setCodigo($resultado['codigo']);
                 
-                    $this->renderizar('venda/endereco');
+                $produto = new Produto($_POST['produto']);
+                $resultado_produto = $produto->localizar();
+
+                if ($resultado_produto instanceof Produto)
+                {
+                    $preco_float = floatval($resultado_produto->getPreco());
+                    $subtotal = $_POST['quantidade'] * $preco_float;
+                    
+                    $produtoVenda = new ProdutoVenda(
+                        $resultado_produto->getCodigo(),
+                        0,
+                        $_POST['quantidade'],
+                        $subtotal,
+                        $resultado_produto->getNome(),
+                        $preco_float,
+                        $resultado_produto->getImagem()
+                    );
+
+                    $this->setDados('produto', $produtoVenda);
+                    $this->setDados('endereco', $endereco);
+                    Sessao::setMensagem(null);
                 }
                 else
-                {
-                    Sessao::setMensagem($resultado_produto_venda->getMessage());
-                    $this->redirecionar('/');
-                }
+                    Sessao::setMensagem($resultado_produto->getMessage());
+            
+                $this->renderizar('venda/pagamento');
             }
             else
             {
-                Sessao::setMensagem($resultado['resultado']->getMessage());
+                Sessao::setMensagem($resultado->getMessage());
                 $this->redirecionar('/');
             }
 
@@ -119,106 +147,20 @@ class LoteController extends BaseController
             $this->redirecionar('/conta/encaminharAcesso');
     }
 
-    public function salvarEndereco()
+    public function realizarPagamento()
     {
-        if (!Sessao::verificarAcesso('administrador'))
+        $totalVenda = $_POST['subtotal'];
+        $pagamento = new Pagamento();
+        $respostaToken = $pagamento->getAcessToken();
+        $objetoToken = $respostaToken->result;
+        $token = $objetoToken->access_token;
+        
+        if (!empty($token))
         {
+            $respostaPedido = $pagamento->createOrder($token, $totalVenda);
+            $objetoPedido = $respostaPedido->result;
+            $urlPedido = $objetoPedido->links[1]->href;
+            header("Location: " . $urlPedido);
         }
-        else
-            $this->redirecionar('/conta/encaminharAcesso');
-    }
-
-    public function encaminharEdicao($parametros)
-    {
-        if (Sessao::verificarAcesso('administrador'))
-        {
-            $codigo = $parametros[0];
-            $lote = new Lote($codigo);
-            $resultado_lote = $lote->localizar();
-
-            $fornecedor = new Fornecedor();
-            $resultado_fornecedor = $fornecedor->listar();
-
-            if ($resultado_lote instanceof Lote && is_array($resultado_fornecedor))
-            {
-                $this->setDados('lote', $resultado_lote);
-                $this->setDados('fornecedores', $resultado_fornecedor);
-                Sessao::setMensagem(null);
-            }
-            else if ($resultado_lote instanceof Exception)
-                Sessao::setMensagem($resultado_lote->getMessage());
-            else
-                Sessao::setMensagem($resultado_fornecedor->getMessage());
-
-            $this->renderizar('lote/edicao');
-        }
-        else
-            $this->redirecionar('/conta/encaminharAcesso');
-    }
-
-    public function atualizar()
-    {
-        if (Sessao::verificarAcesso('administrador'))
-        {
-            $lote = new Lote(
-                $_POST['codigo'],
-                $_POST['data'],
-                0.0,
-                $_POST['fornecedor']
-            );
-
-            $resultado = $lote->atualizar();
-
-            if (is_bool($resultado) && $resultado)
-                Sessao::setMensagem("Dados atualizados com sucesso!");
-            else
-                Sessao::setMensagem($resultado->getMessage());
-
-            $this->redirecionar('/lote');
-        }
-        else
-            $this->redirecionar('/conta/encaminharAcesso');
-    }
-
-    public function encaminharExclusao($parametros)
-    {
-        if (Sessao::verificarAcesso('administrador'))
-        {
-            $codigo = $parametros[0];
-
-            $lote = new Lote($codigo);
-            $resultado = $lote->localizar();
-
-            if ($resultado instanceof Lote)
-            {
-                $this->setDados('lote', $resultado);
-                Sessao::setMensagem(null);
-            }
-            else
-                Sessao::setMensagem($resultado->getMessage());
-
-            $this->renderizar('lote/exclusao');
-        }
-        else
-            $this->redirecionar('/conta/encaminharAcesso');
-    }
-
-    public function excluir()
-    {
-        if (Sessao::verificarAcesso('administrador'))
-        {
-            $codigo = $_POST['codigo'];
-            $lote = new Lote($codigo);
-            $resultado = $lote->excluir();
-
-            if (is_bool($resultado) && $resultado)
-                Sessao::setMensagem("Dados excluídos com sucesso!");
-            else
-                Sessao::setMensagem($resultado->getMessage());
-
-            $this->redirecionar('/lote');
-        }
-        else
-            $this->redirecionar('/conta/encaminharAcesso');
     }
 }

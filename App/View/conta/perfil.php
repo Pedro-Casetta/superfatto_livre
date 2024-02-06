@@ -51,6 +51,13 @@
             <i class="bi bi-pencil">&ensp;</i>Editar
         </a>
       </div>
+      <?php if ($sessao::getTipoConta() == "cliente") { ?>
+        <div class="col-auto">
+          <a href="http://<?=APP_HOST?>/endereco" class="btn btn-dark">
+              <i class="bi bi-geo-alt">&ensp;</i>Gerenciar endereços
+          </a>
+        </div>
+      <?php } ?>
       <div class="col-auto">
         <a href="http://<?=APP_HOST?>/conta/encaminharTrocaSenha/<?= $dados['conta']->getCodigo() ?>" class="btn btn-warning">
             <i class="bi bi-lock">&ensp;</i>Trocar senha

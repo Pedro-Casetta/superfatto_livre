@@ -35,7 +35,7 @@ class HomeController extends BaseController
             AND p.nome LIKE '%$busca%' AND d.nome LIKE '%$departamento%'");
             $totalPaginas = ceil($totalRegistros / Paginacao::$limitePorPagina);
             $paginacao = Paginacao::criarPaginacao('/', $paginaSelecionada, $totalPaginas, $busca, $departamento);
-
+            
             if(is_array($resultado) && is_array($resultado_departamento))
             {
                 $this->setDados('produtos', $resultado);

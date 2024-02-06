@@ -11,8 +11,8 @@ class VendaDAO extends BaseDAO
     public function localizar($codigo)
     {
         try {
-            $pdoStatement = $this->select("SELECT v.* c.nome FROM venda v, conta c
-            WHERE v.codigo = $codigo AND c.codigo = v.cod_cliente");
+            $pdoStatement = $this->select("SELECT v.*, c.nome, e.* FROM venda v, conta c, endereco e
+            WHERE v.codigo = $codigo AND c.codigo = v.cod_cliente AND e.codigo = v.cod_endereco");
             
             $arrayResultado = $pdoStatement->fetch(PDO::FETCH_ASSOC);
 
@@ -22,7 +22,13 @@ class VendaDAO extends BaseDAO
                 $arrayResultado['total'],
                 $arrayResultado['situacao'],
                 $arrayResultado['cod_cliente'],
-                $arrayResultado['nome']
+                "",
+                $arrayResultado['cod_endereco'],
+                $arrayResultado['rua'],
+                $arrayResultado['numero'],
+                $arrayResultado['bairro'],
+                $arrayResultado['cidade'],
+                $arrayResultado['estado']
             );
             
             return $venda;
@@ -66,10 +72,42 @@ class VendaDAO extends BaseDAO
         }
     }
 
+    public function listarPaginacaoCliente($indice, $limitePorPagina, $busca = "", $data = "", $cod_cliente)
+    {
+        try {
+            $pdoStatement = $this->select("SELECT v.*, c.nome FROM venda v, conta c
+                WHERE v.cod_cliente = c.codigo AND v.cod_cliente = $cod_cliente
+            AND c.nome LIKE '%$busca%' AND v.data LIKE '%$data%' LIMIT $indice, $limitePorPagina");
+
+            $arrayVendas = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
+
+            $vendas = [];
+
+            foreach($arrayVendas as $vendaEncontrada)
+            {
+                $venda = new Venda(
+                    $vendaEncontrada['codigo'],
+                    $vendaEncontrada['data'],
+                    $vendaEncontrada['total'],
+                    $vendaEncontrada['situacao'],
+                    $vendaEncontrada['cod_cliente'],
+                    $vendaEncontrada['nome']
+                );
+
+                $vendas[] = $venda;
+            }
+
+            return $vendas;
+        }
+        catch (Exception $excecao) {
+            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
+            return $erro;
+        }
+    }
+
     public function cadastrar(Venda $venda)
     {
         try {
-            $data = $venda->getData();
             $cod_cliente = $venda->getCliente()->getCodigo();
             
             $resultado = $this->insert(

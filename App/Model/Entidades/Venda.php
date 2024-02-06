@@ -5,6 +5,7 @@ namespace App\Model\Entidades;
 
 use App\Model\DAO\VendaDAO;
 use App\Model\Entidades\Conta\Cliente;
+use App\Model\Entidades\Endereco;
 
 class Venda
 {
@@ -13,15 +14,18 @@ class Venda
     private float $total;
     private string $situacao;
     private Cliente $cliente;
+    private Endereco $endereco;
     
     public function __construct(int $codigo = 0, string $data = "", float $total = 0.0, string $situacao = "",
-    int $cod_cliente = 0, string $nome_cliente = "")
+    int $cod_cliente = 0, string $nome_cliente = "", int $cod_endereco = 0, string $rua = "",
+    int $numero = 0, string $bairro = "", string $cidade = "", string $estado = "")
     {
         $this->codigo = $codigo;
         $this->data = $data;
         $this->total = $total;
         $this->situacao = $situacao;
         $this->cliente = new Cliente($cod_cliente, $nome_cliente);
+        $this->endereco = new Endereco($cod_endereco, $rua, $numero, $bairro, $cidade, $estado);
     }
     
     public function localizar()
@@ -36,6 +40,14 @@ class Venda
     {
         $vendaDAO = new VendaDAO();
         $resultado = $vendaDAO->listarPaginacao($indice, $limitePorPagina, $busca, $data);
+        
+        return $resultado;
+    }
+
+    public function listarPaginacaoCliente($indice, $limitePorPagina, $busca = "", $data = "")
+    {
+        $vendaDAO = new VendaDAO();
+        $resultado = $vendaDAO->listarPaginacaoCliente($indice, $limitePorPagina, $busca, $data, $this->getCliente()->getCodigo());
         
         return $resultado;
     }
@@ -113,5 +125,15 @@ class Venda
     public function setCliente(Cliente $valor)
     {
         $this->cliente = $valor;
+    }
+
+    public function getEndereco() : Endereco
+    {
+        return $this->endereco;
+    }
+
+    public function setEndereco(Endereco $valor)
+    {
+        $this->endereco = $valor;
     }
 }

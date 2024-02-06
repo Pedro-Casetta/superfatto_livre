@@ -67,6 +67,11 @@
             </button>
           </form>
         </div>
+        <div class="col-auto mx-auto me-0">
+          <a href="http://<?=APP_HOST?>/carrinho/" class="btn btn-dark">
+            <i class="bi bi-cart"></i>
+          </a>
+        </div>
         <div class="dropdown">
           <button class="btn btn-secondary dropdown-toggle" type="button" data-bs-toggle="dropdown">
             <?= $sessao::getNomeUsuario() ?>
