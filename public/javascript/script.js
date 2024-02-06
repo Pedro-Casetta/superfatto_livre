@@ -23,3 +23,9 @@ function exibirCampoCadastroConta($tipo) {
         document.getElementById('telefone').removeAttribute('required');
     }
 }
+
+function alterarQuantidadeInserirCarrinho() {
+
+    $valor_atualizado = document.getElementById('quantidade').value;
+    document.getElementById('quantidade_carrinho').value = $valor_atualizado;
+}
