@@ -49,14 +49,6 @@ class ProdutoVenda extends Produto
         return $resultado;
     }
 
-    public function excluir()
-    {
-        $produtoVendaDAO = new ProdutoVendaDAO();
-        $resultado = $produtoVendaDAO->excluir($this);
-
-        return $resultado;
-    }
-
     public function getQuantidade() : int
     {
         return $this->quantidade;

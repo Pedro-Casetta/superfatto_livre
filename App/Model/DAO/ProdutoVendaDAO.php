@@ -42,7 +42,7 @@ class ProdutoVendaDAO extends BaseDAO
         try {
             $pdoStatement = $this->select("SELECT pv.*, p.nome, p.preco, p.imagem
                 FROM produto_venda pv, produto p
-                WHERE pv.cod_produto = p.codigo AND pv.cod_venda = $cod_venda");
+                WHERE pv.cod_produto = p.codigo AND pv.cod_venda = '$cod_venda'");
 
             $arrayProdutosVenda = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -126,49 +126,6 @@ class ProdutoVendaDAO extends BaseDAO
         }
         catch (Exception $excecao) {
             $erro = new Exception("Erro " . $excecao->getCode() . ". Erro na inserção dos dados");
-            return $erro;
-        }
-    }
-
-    public function atualizar(ProdutoLote $produtoLote, $velho_cod_produto)
-    {
-        try {
-            $novo_cod_produto = $produtoLote->getCodigo();
-            $cod_lote = $produtoLote->getLote()->getCodigo();
-            $quantidade = $produtoLote->getQuantidade();
-
-            $resultado = $this->update(
-                'produto_lote',
-                'cod_produto = :cod_produto, quantidade = :quantidade',
-                [
-                 ':cod_produto' => $novo_cod_produto,
-                 ':quantidade' => $quantidade
-                ],
-                'cod_produto = ' . $velho_cod_produto . ' AND cod_lote = ' . $cod_lote
-            );
-            
-            return $resultado;
-        }
-        catch (Exception $excecao) {
-            if ($excecao->getCode() == 23000)
-                $erro = new Exception("Erro " . $excecao->getCode() . ". Esse produto já existe nesse lote.");
-            else
-                $erro = new Exception("Erro " . $excecao->getCode() . ". Erro na atualização dos dados");
-            return $erro;
-        }
-    }
-
-    public function excluir(ProdutoLote $produtoLote)
-    {
-        try {
-            $cod_produto = $produtoLote->getCodigo();
-            $cod_lote = $produtoLote->getLote()->getCodigo();
-            $resultado = $this->delete('produto_lote', 'cod_produto = ' . $cod_produto . ' AND cod_lote = ' . $cod_lote);
-
-            return $resultado;
-        }
-        catch (Exception $excecao) {
-            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro na exclusão dos dados");
             return $erro;
         }
     }

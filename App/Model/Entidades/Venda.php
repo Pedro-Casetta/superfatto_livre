@@ -13,25 +13,27 @@ class Venda
     private string $data;
     private float $total;
     private string $situacao;
+    private string $idPagamento;
     private Cliente $cliente;
     private Endereco $endereco;
     
     public function __construct(int $codigo = 0, string $data = "", float $total = 0.0, string $situacao = "",
-    int $cod_cliente = 0, string $nome_cliente = "", int $cod_endereco = 0, string $rua = "",
-    int $numero = 0, string $bairro = "", string $cidade = "", string $estado = "")
+    string $idPagamento = "", int $cod_cliente = 0, string $nome_cliente = "", int $cod_endereco = 0, string $rua = "",
+    int $numero = 0, string $bairro = "", string $cidade = "", string $estado = "", string $cep = "")
     {
         $this->codigo = $codigo;
         $this->data = $data;
         $this->total = $total;
         $this->situacao = $situacao;
+        $this->idPagamento = $idPagamento;
         $this->cliente = new Cliente($cod_cliente, $nome_cliente);
-        $this->endereco = new Endereco($cod_endereco, $rua, $numero, $bairro, $cidade, $estado);
+        $this->endereco = new Endereco($cod_endereco, $rua, $numero, $bairro, $cidade, $estado, $cep);
     }
     
     public function localizar()
     {
         $vendaDAO = new VendaDAO();
-        $resultado = $vendaDAO->localizar($this->getCodigo());
+        $resultado = $vendaDAO->localizar($this->getCodigo(), $this->getIdPagamento());
 
         return $resultado;
     }
@@ -64,14 +66,6 @@ class Venda
     {
         $vendaDAO = new VendaDAO();
         $resultado = $vendaDAO->cadastrar($this);
-
-        return $resultado;
-    }
-
-    public function atualizar()
-    {
-        $vendaDAO = new VendaDAO();
-        $resultado = $vendaDAO->atualizar($this);
 
         return $resultado;
     }
@@ -115,6 +109,16 @@ class Venda
     public function setSituacao(string $valor)
     {
         $this->situacao = $valor;
+    }
+
+    public function getIdPagamento() : string
+    {
+        return $this->idPagamento;
+    }
+
+    public function setIdPagamento(string $valor)
+    {
+        $this->idPagamento = $valor;
     }
 
     public function getCliente() : Cliente

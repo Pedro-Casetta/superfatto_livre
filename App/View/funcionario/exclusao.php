@@ -44,7 +44,7 @@
             <div class="col-11 col-md-9 col-lg-6">
               <label for="salario" class="form-label">Salário</label>
               <input type="text" class="form-control border border-primary" id="salario" name="salario"
-              value="<?= $dados['funcionario']->getSalario() ?>" readonly>
+              value="<?= $dados['funcionario']->getSalarioView() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">

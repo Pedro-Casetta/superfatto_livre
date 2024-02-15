@@ -17,7 +17,7 @@ class ContaController extends BaseController
         $resultado = $produtoDAO->listarDepartamentos();
         
         if(is_array($resultado))
-                $this->setDados('departamentos', $resultado);
+            $this->setDados('departamentos', $resultado);
         else
             Sessao::setMensagem($resultado->getMessage());
         
@@ -117,8 +117,14 @@ class ContaController extends BaseController
 
             $resultado = Conta::localizar($codigo, $tipo);
 
-            if ($resultado instanceof Conta)
+            $produtoDAO = new ProdutoDAO();
+            $resultado_departamento = $produtoDAO->listarDepartamentos();
+
+            if ($resultado instanceof Conta && is_array($resultado_departamento))
+            {
                 $this->setDados('conta', $resultado);
+                $this->setDados('departamentos', $resultado_departamento);
+            }
             else
                 Sessao::setMensagem($resultado->getMessage());
 

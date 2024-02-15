@@ -72,7 +72,7 @@
               <tr>
                 <th scope="row"><?= $produto->getCodigo() ?></th>
                 <td><?= $produto->getNome() ?></td>
-                <td><?= $produto->getPreco() ?></td>
+                <td><?= $produto->getPrecoView() ?></td>
                 <td><?= $produto->getEstoque() ?></td>
                 <td><?= $produto->getDepartamento()->getNome() ?></td>
                 <td>

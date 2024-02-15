@@ -22,61 +22,69 @@
   <div class="row mb-3">
     <div class="col-auto">
       <div class="row mb-3">
-          <h2>Venda</h2>
+        <div class="col-auto">
+          <h2>Itens</h2>
+        </div>
+        <div class="col-auto mx-auto me-0">
+            <h2>Total: R$ <?= (isset($dados['carrinho'])) ?
+              $dados['carrinho']->getTotal() : $dados['produtos'][0]->getSubtotal() ?></h2>
+        </div>
       </div>
-      <?php if (isset($dados['produto']) && !empty($dados['produto'])) { ?>
+      <?php if (isset($dados['produtos']) && !empty($dados['produtos'])) {
+        foreach ($dados['produtos'] as $produto) { ?>
       <div class="row mb-3">
         <div class="col-auto">
-            <img src="http://<?=APP_HOST?>/public/imagem/produto/<?= $dados['produto']->getImagem() ?>"
+            <img src="http://<?=APP_HOST?>/public/imagem/produto/<?= $produto->getImagem() ?>"
             class="" width="200px" height="200px">
         </div>
         <div class="col-auto">
-            <?= $dados['produto']->getNome() ?>   
+            <?= $produto->getNome() ?>   
         </div>
         <div class="col-auto">
-            <?= $dados['produto']->getPreco() ?>   
+            R$ <?= $produto->getPrecoView() ?>   
         </div>
         <div class="col-auto">
-            <?= $dados['produto']->getQuantidade() ?>   
+            <?= $produto->getQuantidade() ?>   
         </div>
         <div class="col-auto">
-            <?= $dados['produto']->getSubtotal() ?>   
+            R$ <?= $produto->getSubtotal() ?>   
         </div>
       </div>
-      <?php } if (isset($dados['endereco']) && !empty($dados['endereco'])) { ?>
+      <?php } } if (isset($dados['endereco']) && !empty($dados['endereco'])) { ?>
         <div class="row mb-3">
-            <div class="col-auto">
-                <?= $dados['endereco']->getRua() ?>
-            </div>
-            <div class="col-auto">
-                <?= $dados['endereco']->getNumero() ?>
-            </div>
-            <div class="col-auto">
-                <?= $dados['endereco']->getBairro() ?>
-            </div>
-            <div class="col-auto">
-                <?= $dados['endereco']->getCidade() ?>
-            </div>
-            <div class="col-auto">
-                <?= $dados['endereco']->getEstado() ?>
-            </div>
+          <div class="col-auto">
+              <?= $dados['endereco']->getRua() ?>
+          </div>
+          <div class="col-auto">
+              <?= $dados['endereco']->getNumero() ?>
+          </div>
+          <div class="col-auto">
+              <?= $dados['endereco']->getBairro() ?>
+          </div>
+          <div class="col-auto">
+              <?= $dados['endereco']->getCidade() ?>
+          </div>
+          <div class="col-auto">
+              <?= $dados['endereco']->getEstado() ?>
+          </div>
+          <div class="col-auto">
+              <?= $dados['endereco']->getCep() ?>
+          </div>          
         </div>
-      <?php } if (isset($dados['produto']) && !empty($dados['produto'])) { ?>
-            <div class="row mb-3">
-                <h2>Valor total: R$ <?= $dados['produto']->getSubtotal() ?></h2>
-            </div>
-        <?php } ?>
+      <?php } ?>
     </div>
     <div class="col-auto">
       <form method="POST" action="http://<?=APP_HOST?>/venda/realizarPagamento" enctype="multipart/form-data">
-        <input type="hidden" id="produto" name="produto" value="<?= $dados['produto']->getCodigo() ?>">
-        <input type="hidden" id="quantidade" name="quantidade" value="<?= $dados['produto']->getQuantidade() ?>">
-        <input type="hidden" id="subtotal" name="subtotal" value="<?= $dados['produto']->getSubtotal() ?>">
-        <input type="hidden" id="cliente" name="cliente" value="<?= $sessao::getCodigoConta() ?>">
+        <?php if(isset($_POST['produto'])) { ?>
+          <input type="hidden" id="produto" name="produto" value="<?= $dados['produtos'][0]->getCodigo() ?>">
+          <input type="hidden" id="quantidade" name="quantidade" value="<?= $dados['produtos'][0]->getQuantidade() ?>">
+          <?php } ?>
+        <input type="hidden" id="total" name="total"
+        value="<?= (isset($dados['carrinho'])) ? $dados['carrinho']->getTotal() : $dados['produtos'][0]->getSubtotal() ?>">
         <input type="hidden" id="endereco" name="endereco" value="<?= $dados['endereco']->getCodigo() ?>">
         <div class="row mb-3">
           <div class="col-auto">
-            <h5>Escolha a forma de pagamento</h1>
+            <h5>Escolha a forma de pagamento</h5>
           </div>
         </div>
         <div class="row mb-3">

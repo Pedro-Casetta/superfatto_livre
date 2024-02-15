@@ -25,7 +25,7 @@
                       class="card-img-top" width="200px" height="200px">
                       <div class="card-body">
                           <h5 class="card-title"><?= $produto->getNome() ?></h5>
-                          <p class="card-text">R$ <?= $produto->getPreco() ?></p>
+                          <p class="card-text">R$ <?= $produto->getPrecoView() ?></p>
                       </div>
                   </a>
               </div>

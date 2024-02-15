@@ -6,6 +6,8 @@ use App\Lib\Paginacao;
 use App\Lib\Sessao;
 use App\Model\Entidades\Venda;
 use App\Model\Entidades\ProdutoVenda;
+use App\Model\Entidades\ProdutoCarrinho;
+use App\Model\Entidades\Carrinho;
 use App\Model\Entidades\Endereco;
 use App\Model\Entidades\Produto;
 use App\Model\Entidades\Pagamento;
@@ -18,36 +20,29 @@ class VendaController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
-            $paginaSelecionada = (isset($_GET['paginaSelecionada'])) ? $_GET['paginaSelecionada'] : 1;
-            $busca = (isset($_GET['busca'])) ? $_GET['busca'] : "";
-            $data = (isset($_GET['data'])) ? $_GET['data'] : "";
+            $paginaSelecionada = (isset($_POST['paginaSelecionada'])) ? $_POST['paginaSelecionada'] : 1;
+            $busca = (isset($_POST['busca'])) ? $_POST['busca'] : "";
+            $data = (isset($_POST['data'])) ? $_POST['data'] : "";
             $indice = Paginacao::calcularIndice($paginaSelecionada);
             
             $venda = new Venda();
-            $resultado_venda = $venda->listarPaginacao($indice, Paginacao::$limitePorPagina, $busca, $data);
+            $resultado = $venda->listarPaginacao($indice, Paginacao::$limitePorPagina, $busca, $data);
 
             $totalRegistros = $venda->contarTotalRegistros(
-                "lote l, fornecedor f, departamento d",
-                "l.cod_fornecedor = f.codigo AND f.cod_departamento = d.codigo
-            AND l.data LIKE '%$busca%' AND d.nome LIKE '%$departamento%'");
+                "venda v, conta c",
+                "v.cod_cliente = c.codigo AND c.nome LIKE '%$busca%' AND v.data LIKE '%$data%'");
             $totalPaginas = ceil($totalRegistros / Paginacao::$limitePorPagina);
-            $paginacao = Paginacao::criarPaginacao('/lote', $paginaSelecionada, $totalPaginas, $busca, $departamento);
+            $paginacao = Paginacao::criarPaginacao('/lote', $paginaSelecionada, $totalPaginas, $busca, $data);
 
-            if (is_array($resultado_lote) && is_array($resultado_fornecedor) && is_array($resultado_departamento))
+            if (is_array($resultado))
             {
-                    $this->setDados('lotes', $resultado_lote);
-                    $this->setDados('fornecedores', $resultado_fornecedor);
+                    $this->setDados('vendas', $resultado);
                     $this->setDados('paginacao', $paginacao);
-                    $this->setDados('departamentos', $resultado_departamento);
             }
-            else if ($resultado_lote instanceof Exception)
-                Sessao::setMensagem($resultado_lote->getMessage());
-            else if ($resultado_fornecedor instanceof Exception)
-                Sessao::setMensagem($resultado_fornecedor->getMessage());
             else
-                Sessao::setMensagem($resultado_departamento->getMessage());
+                Sessao::setMensagem($resultado->getMessage());
     
-            $this->renderizar('lote/index');
+            $this->renderizar('venda/index');
 
             Sessao::setMensagem(null);
         }
@@ -55,35 +50,74 @@ class VendaController extends BaseController
             $this->redirecionar('/conta/encaminharAcesso');
     }
 
-    public function iniciarVenda()
+    public function iniciarVendaIndividual()
+    {
+        $produto = new Produto($_POST['produto']);
+        $resultado = $produto->localizar();
+
+        if ($resultado instanceof Produto)
+        {
+            $subtotal = $_POST['quantidade'] * $resultado->getPreco();
+        
+            $produtoVenda = new ProdutoVenda(
+                $resultado->getCodigo(),
+                0,
+                $_POST['quantidade'],
+                $subtotal,
+                $resultado->getNome(),
+                $resultado->getPreco(),
+                $resultado->getImagem()
+            );
+            $resultado = [];
+            $resultado[] = $produtoVenda;
+
+            $endereco = new Endereco(0,'',0,'','','','', Sessao::getCodigoConta());
+            $resultado_endereco = $endereco->listar();
+
+            if (is_array($resultado_endereco))
+            {
+                $this->setDados('produtos', $resultado);
+                $this->setDados('enderecos', $resultado_endereco);
+            }
+            else
+                Sessao::setMensagem($resultado_endereco->getMessage());
+        }
+        else
+            Sessao::setMensagem($resultado->getMessage());
+
+        $this->renderizar('venda/endereco');
+        Sessao::setMensagem(null);
+}
+    
+    public function iniciarVendaCarrinho()
     {
         if (Sessao::verificarAcesso('cliente'))
         {            
-            $produto = new Produto($_POST['produto']);
-            $resultado = $produto->localizar();
+            $carrinho = new Carrinho(Sessao::getCodigoConta());
+            $resultado = $carrinho->localizar();
             
-            if ($resultado instanceof Produto)
+            if ($resultado instanceof Carrinho)
             {
-                $preco_float = floatval($resultado->getPreco());
-                $subtotal = $_POST['quantidade'] * $preco_float;
-                
-                $produtoVenda = new ProdutoVenda(
-                    $resultado->getCodigo(),
-                    0,
-                    $_POST['quantidade'],
-                    $subtotal,
-                    $resultado->getNome(),
-                    $preco_float,
-                    $resultado->getImagem(),
-                );
-
-                $this->setDados('produto', $produtoVenda);
-                Sessao::setMensagem(null);
+                $this->setDados('carrinho', $resultado);
+                $produtoCarrinho = new ProdutoCarrinho(0, Sessao::getCodigoConta());
+                $resultado = $produtoCarrinho->listar();
             }
-            else
-                Sessao::setMensagem($resultado->getMessage());
+
+            $endereco = new Endereco(0,'',0,'','','','', Sessao::getCodigoConta());
+            $resultado_endereco = $endereco->listar();
             
+            if (is_array($resultado) && is_array($resultado_endereco))
+            {
+                $this->setDados('produtos', $resultado);
+                $this->setDados('enderecos', $resultado_endereco);
+            }
+            else if ($resultado instanceof Exception)
+                Sessao::setMensagem($resultado->getMessage());
+            else
+                Sessao::setMensagem($resultado_endereco->getMessage());
+
             $this->renderizar('venda/endereco');
+            Sessao::setMensagem(null);
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -93,53 +127,95 @@ class VendaController extends BaseController
     {
         if (Sessao::verificarAcesso('cliente'))
         {
-            $endereco = new Endereco(
-                0,
-                $_POST['rua'],
-                $_POST['numero'],
-                $_POST['bairro'],
-                $_POST['cidade'],
-                $_POST['estado'],
-                $_POST['cliente']
-            );
-
-            $resultado = $endereco->cadastrar();
-
-            if (is_array($resultado) && is_bool($resultado['resultado']) && $resultado['resultado'])
+            if (empty($_POST['endereco']) && !empty($_POST['rua']) && !empty($_POST['numero'])
+            && !empty($_POST['bairro']) && !empty($_POST['cidade']) && !empty($_POST['estado'])
+            && !empty($_POST['cep']))
             {
-                $endereco->setCodigo($resultado['codigo']);
+                $endereco = new Endereco(
+                    0,
+                    $_POST['rua'],
+                    $_POST['numero'],
+                    $_POST['bairro'],
+                    $_POST['cidade'],
+                    $_POST['estado'],
+                    $_POST['cep'],
+                    Sessao::getCodigoConta()
+                );
+            
+                $resultado = $endereco->cadastrar();
+
+                if (is_array($resultado) && is_bool($resultado['resultado'] && $resultado['resultado']))
+                    $endereco->setCodigo($resultado['codigo']);
+
+            } else if (!empty($_POST['endereco']) && empty($_POST['rua']) && empty($_POST['numero'])
+            && empty($_POST['bairro']) && empty($_POST['cidade']) && empty($_POST['estado'])
+            && empty($_POST['cep']))
+            {
+                $endereco = new Endereco($_POST['endereco']);
+                $resultado = $endereco->localizar();
                 
-                $produto = new Produto($_POST['produto']);
-                $resultado_produto = $produto->localizar();
+            }
+            else
+            {
+                Sessao::setMensagem("Selecione um endereço ou cadastre um novo!");
+                $this->redirecionar('/venda/iniciarVenda' . (isset($_POST['produto'])) ? 'Individual' : 'Carrinho');
+            }
 
-                if ($resultado_produto instanceof Produto)
+            if (is_array($resultado) || $resultado instanceof Endereco)
+            {
+                if (isset($_POST['produto']))
                 {
-                    $preco_float = floatval($resultado_produto->getPreco());
-                    $subtotal = $_POST['quantidade'] * $preco_float;
+                    $produto = new Produto($_POST['produto']);
+                    $resultado_produto = $produto->localizar();
                     
-                    $produtoVenda = new ProdutoVenda(
-                        $resultado_produto->getCodigo(),
-                        0,
-                        $_POST['quantidade'],
-                        $subtotal,
-                        $resultado_produto->getNome(),
-                        $preco_float,
-                        $resultado_produto->getImagem()
-                    );
+                    if ($resultado_produto instanceof Produto)
+                    {
+                        $subtotal = $_POST['quantidade'] * $resultado_produto->getPreco();
+                        
+                        $produtoVenda = new ProdutoVenda(
+                            $resultado_produto->getCodigo(),
+                            0,
+                            $_POST['quantidade'],
+                            $subtotal,
+                            $resultado_produto->getNome(),
+                            $resultado_produto->getPreco(),
+                            $resultado_produto->getImagem()
+                        );
+                    
+                        $resultado_produto = [];
+                        $resultado_produto[] = $produtoVenda;
+                    }
+                }
+                else
+                {
+                    $carrinho = new Carrinho(Sessao::getCodigoConta());
+                    $resultado_carrinho = $carrinho->localizar();
+                    
+                    if ($resultado_carrinho instanceof Carrinho)
+                    {
+                        $this->setDados('carrinho', $resultado_carrinho);
+                        $produtoCarrinho = new ProdutoCarrinho(0, Sessao::getCodigoConta());
+                        $resultado_produto = $produtoCarrinho->listar();
+                    }
+                    else
+                        Sessao::setMensagem($resultado_carrinho->getMessage());
+                }
 
-                    $this->setDados('produto', $produtoVenda);
-                    $this->setDados('endereco', $endereco);
-                    Sessao::setMensagem(null);
+                if (is_array($resultado_produto))
+                {
+                    $this->setDados('produtos', $resultado_produto);
+                    $this->setDados('endereco', ($resultado instanceof Endereco) ? $resultado : $endereco);
                 }
                 else
                     Sessao::setMensagem($resultado_produto->getMessage());
-            
+                
                 $this->renderizar('venda/pagamento');
+                Sessao::setMensagem(null);
             }
             else
             {
                 Sessao::setMensagem($resultado->getMessage());
-                $this->redirecionar('/');
+                $this->redirecionar('/venda/iniciarVenda' . (isset($_POST['produto'])) ? 'Individual' : 'Carrinho');
             }
 
         }
@@ -148,8 +224,8 @@ class VendaController extends BaseController
     }
 
     public function realizarPagamento()
-    {
-        $totalVenda = $_POST['subtotal'];
+    {        
+        $totalVenda = $_POST['total'];
         $pagamento = new Pagamento();
         $respostaToken = $pagamento->getAcessToken();
         $objetoToken = $respostaToken->result;
@@ -157,10 +233,115 @@ class VendaController extends BaseController
         
         if (!empty($token))
         {
-            $respostaPedido = $pagamento->createOrder($token, $totalVenda);
-            $objetoPedido = $respostaPedido->result;
-            $urlPedido = $objetoPedido->links[1]->href;
-            header("Location: " . $urlPedido);
+            $endereco = new Endereco($_POST['endereco']);
+            $resultado = $endereco->localizar();
+            
+            if ($resultado instanceof Endereco)
+            {
+                $respostaPedido = $pagamento->createOrder($token, $totalVenda, $resultado);
+                $objetoPedido = $respostaPedido->result;
+
+                $venda = new Venda(0, '', 0.0, 'Aguardando pagamento', $objetoPedido->id, Sessao::getCodigoConta(),
+                '', $_POST['endereco']);
+                $resultado = $venda->cadastrar();
+
+                if (is_array($resultado) && is_bool($resultado['resultado'] && $resultado['resultado']))
+                {
+                    if (isset($_POST['produto']))
+                    {
+                        $produtoVenda = new ProdutoVenda($_POST['produto'], $resultado['codigo'], $_POST['quantidade']);
+                        $resultado_produto = $produtoVenda->cadastrar();
+                    }
+                    else
+                    {
+                        $produtosCarrinho = new ProdutoCarrinho(0, Sessao::getCodigoConta());
+                        $resultado_produto = $produtosCarrinho->listar();
+
+                        if (is_array($resultado_produto))
+                        {
+                            foreach ($resultado_produto as $produtoCarrinho)
+                            {
+                                $produtoVenda = new ProdutoVenda(
+                                    $produtoCarrinho->getCodigo(),
+                                    $resultado['codigo'],
+                                    $produtoCarrinho->getQuantidade()
+                                );
+                                $produtoVenda->cadastrar();
+                            }
+                        }
+                    }
+
+                    if (is_array($resultado_produto) || is_bool($resultado_produto['resultado']) && $resultado_produto['resultado'])
+                    {
+                        $urlPedido = $objetoPedido->links[1]->href;
+                        header("Location: " . $urlPedido);
+                    }
+                    else
+                    {
+                        Sessao::setMensagem($resultado_produto->getMessage());
+                        $this->redirecionar('/venda/salvarEndereco');
+                    }
+                }
+                else
+                {
+                    Sessao::setMensagem($resultado->getMessage());
+                    $this->redirecionar('/venda/salvarEndereco');
+                }
+            }
+            else
+            {
+                Sessao::setMensagem($resultado->getMessage());
+                $this->redirecionar('/venda/salvarEndereco');
+            }
         }
+    }
+    
+    public function autorizarPagamento()
+    {
+        $pagamento = new Pagamento();
+        $respostaToken = $pagamento->getAcessToken();
+        $objetoToken = $respostaToken->result;
+        $token = $objetoToken->access_token;
+        
+        if (!empty($token) && isset($_GET['token']))
+        {
+            $requisicao = $pagamento->authorizePayment($token, $_GET['token']);
+            $objetoPagamento = $requisicao->result;
+
+            if ($objetoPagamento->status == "COMPLETED")
+            {
+                $this->redirecionar('/venda/encaminharConclusao?token=' . $_GET['token']);
+            }
+            else
+            {
+                Sessao::setMensagem("Erro ao capturar pagamento");
+                $this->redirecionar('/conta/visualizarCompras');
+            }
+        }
+    }
+
+    public function encaminharConclusao()
+    {
+        $venda = new Venda(0, "", 0.0, "", $_GET['token']);
+        $resultado = $venda->localizar();
+
+        if ($resultado instanceof Venda)
+        {
+            $produtosVenda = new ProdutoVenda(0, $resultado->getCodigo());
+            $resultado_produto = $produtosVenda->listar();
+
+            if (is_array($resultado_produto))
+            {
+                $this->setDados('venda', $resultado);
+                $this->setDados('produtos', $resultado_produto);
+            }
+            else
+                Sessao::setMensagem($resultado_produto->getMessage());
+        }
+        else
+            Sessao::setMensagem($resultado->getMessage());
+        
+        $this->renderizar('venda/conclusao');
+        Sessao::setMensagem(null);
     }
 }

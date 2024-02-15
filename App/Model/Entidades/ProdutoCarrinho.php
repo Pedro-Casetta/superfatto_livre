@@ -15,14 +15,12 @@ class ProdutoCarrinho extends Produto
     
     public function __construct(int $cod_produto = 0, int $cod_carrinho = 0, int $quantidade = 0, float $subtotal = 0.0,
         
-        string $nome_produto = "",  float $preco = 0.0, string $imagem = "",
-
-        float $total = 0.0)
+        string $nome_produto = "",  float $preco = 0.0, int $estoque = 0, string $imagem = "")
     {
-        parent::__construct($cod_produto, $nome_produto, $preco, 0, $imagem);
+        parent::__construct($cod_produto, $nome_produto, $preco, $estoque, $imagem);
         $this->quantidade = $quantidade;
         $this->subtotal = $subtotal;
-        $this->carrinho = new Carrinho($cod_carrinho, $total);
+        $this->carrinho = new Carrinho($cod_carrinho);
     }
     
     public function localizar()
@@ -45,14 +43,30 @@ class ProdutoCarrinho extends Produto
     {
         $produtoCarrinhoDAO = new ProdutoCarrinhoDAO();
         $resultado = $produtoCarrinhoDAO->cadastrar($this);
-
+        
         return $resultado;
     }
-
+    
+    public function diminuirQuantidade()
+    {
+        $produtoCarrinhoDAO = new ProdutoCarrinhoDAO();
+        $resultado = $produtoCarrinhoDAO->diminuirQuantidade($this);
+        
+        return $resultado;
+    }
+    
     public function atualizar(int $velho_codigo_produto = 0)
     {
         $produtoCarrinhoDAO = new ProdutoCarrinhoDAO();
         $resultado = $produtoCarrinhoDAO->atualizar($this);
+
+        return $resultado;
+    }
+
+    public function aumentarQuantidade()
+    {
+        $produtoCarrinhoDAO = new ProdutoCarrinhoDAO();
+        $resultado = $produtoCarrinhoDAO->aumentarQuantidade($this);
 
         return $resultado;
     }
@@ -64,6 +78,7 @@ class ProdutoCarrinho extends Produto
 
         return $resultado;
     }
+
 
     public function getQuantidade() : int
     {

@@ -12,7 +12,7 @@ class ProdutoCarrinhoDAO extends BaseDAO
     {
         try {
             $pdoStatement = $this->select(
-                "SELECT pc.*, p.nome, p.preco, p.imagem
+                "SELECT pc.*, p.nome, p.preco, p.estoque, p.imagem
                 FROM produto_carrinho pc, produto p
                 WHERE pc.cod_produto = $cod_produto AND pc.cod_carrinho = $cod_carrinho
                 AND p.codigo = pc.cod_produto");
@@ -26,6 +26,7 @@ class ProdutoCarrinhoDAO extends BaseDAO
                 $arrayResultado['subtotal'],
                 $arrayResultado['nome'],
                 $arrayResultado['preco'],
+                $arrayResultado['estoque'],
                 $arrayResultado['imagem']
             );
             
@@ -40,7 +41,7 @@ class ProdutoCarrinhoDAO extends BaseDAO
     public function listar($cod_carrinho)
     {
         try {
-            $pdoStatement = $this->select("SELECT pc.*, p.nome, p.preco, p.imagem
+            $pdoStatement = $this->select("SELECT pc.*, p.nome, p.preco, p.estoque, p.imagem
                 FROM produto_carrinho pc, produto p
                 WHERE pc.cod_produto = p.codigo AND pc.cod_carrinho = $cod_carrinho");
 
@@ -57,6 +58,7 @@ class ProdutoCarrinhoDAO extends BaseDAO
                     $produtoCarrinhoEncontrado['subtotal'],
                     $produtoCarrinhoEncontrado['nome'],
                     $produtoCarrinhoEncontrado['preco'],
+                    $produtoCarrinhoEncontrado['estoque'],
                     $produtoCarrinhoEncontrado['imagem']
                 );
 
@@ -98,6 +100,27 @@ class ProdutoCarrinhoDAO extends BaseDAO
         }
     }
 
+    public function diminuirQuantidade(ProdutoCarrinho $produtoCarrinho)
+    {
+        try {
+            $cod_produto = $produtoCarrinho->getCodigo();
+            $cod_carrinho = $produtoCarrinho->getCarrinho()->getCodigo();
+
+            $resultado = $this->update(
+                'produto_carrinho',
+                'quantidade = quantidade - 1',
+                null,
+                'cod_produto = ' . $cod_produto . ' AND cod_carrinho = ' . $cod_carrinho
+            );
+            
+            return $resultado;
+        }
+        catch (Exception $excecao) {
+            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro na atualização dos dados");
+            return $erro;
+        }
+    }
+    
     public function atualizar(ProdutoCarrinho $produtoCarrinho)
     {
         try {
@@ -121,6 +144,28 @@ class ProdutoCarrinhoDAO extends BaseDAO
             return $erro;
         }
     }
+
+    public function aumentarQuantidade(ProdutoCarrinho $produtoCarrinho)
+    {
+        try {
+            $cod_produto = $produtoCarrinho->getCodigo();
+            $cod_carrinho = $produtoCarrinho->getCarrinho()->getCodigo();
+
+            $resultado = $this->update(
+                'produto_carrinho',
+                'quantidade = quantidade + 1',
+                null,
+                'cod_produto = ' . $cod_produto . ' AND cod_carrinho = ' . $cod_carrinho
+            );
+            
+            return $resultado;
+        }
+        catch (Exception $excecao) {
+            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro na atualização dos dados");
+            return $erro;
+        }
+    }
+
 
     public function excluir(ProdutoCarrinho $produtoCarrinho)
     {

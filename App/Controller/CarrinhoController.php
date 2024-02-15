@@ -6,26 +6,31 @@ use App\Lib\Sessao;
 use App\Model\Entidades\ProdutoCarrinho;
 use App\Model\Entidades\Produto;
 use App\Model\Entidades\Carrinho;
+use App\Model\DAO\ProdutoDAO;
 use Exception;
 
-class ProdutoCarrinhoController extends BaseController
+class CarrinhoController extends BaseController
 {
 
-    public function index($parametros)
+    public function index()
     {
         if (Sessao::verificarAcesso('cliente'))
         {
-            $cod_carrinho = $parametros[0];
+            $cod_carrinho = Sessao::getCodigoConta();
             $produtoCarrinho = new ProdutoCarrinho(0, $cod_carrinho);
             $resultado_produto = $produtoCarrinho->listar();
             
             $carrinho = new Carrinho($cod_carrinho);
             $resultado_carrinho = $carrinho->localizar();
 
-            if (is_array($resultado_produto) && $resultado_carrinho instanceof Carrinho)
+            $produtoDAO = new ProdutoDAO();
+            $resultado_departamento = $produtoDAO->listarDepartamentos();
+
+            if (is_array($resultado_produto) && $resultado_carrinho instanceof Carrinho && is_array($resultado_departamento))
             {
                     $this->setDados('produtos_carrinho', $resultado_produto);
                     $this->setDados('carrinho', $resultado_carrinho);
+                    $this->setDados('departamentos', $resultado_departamento);
             }
             else if ($resultado_produto instanceof Exception)
                 Sessao::setMensagem($resultado_produto->getMessage());
@@ -52,9 +57,7 @@ class ProdutoCarrinhoController extends BaseController
 
             $resultado = $produtoCarrinho->cadastrar();
 
-            if (is_bool($resultado) && $resultado)
-                Sessao::setMensagem("Dados inseridos com sucesso!");
-            else
+            if ($resultado instanceof Exception)
                 Sessao::setMensagem($resultado->getMessage());
 
             $this->redirecionar('/');
@@ -63,68 +66,78 @@ class ProdutoCarrinhoController extends BaseController
             $this->redirecionar('/conta/encaminharAcesso');
     }
 
-    public function atualizar()
+    public function diminuirQuantidade($parametros)
     {
-        if (Sessao::verificarAcesso('administrador'))
+        if (Sessao::verificarAcesso('cliente'))
         {
-            $produtoLote = new ProdutoLote(
-                $_POST['produto'],
-                $_POST['lote'],
-                $_POST['quantidade'],
-            );
+            $cod_produto = $parametros[0];
+            $cod_carrinho = Sessao::getCodigoConta();
 
-            $resultado = $produtoLote->atualizar($_POST['velho_cod_produto']);
+            $produtoCarrinho = new ProdutoCarrinho($cod_produto, $cod_carrinho);
+            $resultado = $produtoCarrinho->diminuirQuantidade();
 
-            if (is_bool($resultado) && $resultado)
-                Sessao::setMensagem("Dados atualizados com sucesso!");
-            else
+            if ($resultado instanceof Exception)
                 Sessao::setMensagem($resultado->getMessage());
 
-            $this->redirecionar('/produtoLote/index/' . $_POST['lote']);
+            $this->redirecionar('/carrinho/index');
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
     }
 
-    public function encaminharExclusao($parametros)
+    public function alterarQuantidade($parametros)
     {
-        if (Sessao::verificarAcesso('administrador'))
+        if (Sessao::verificarAcesso('cliente'))
         {
-            $cod_lote = $parametros[0];
-            $cod_produto = $parametros[1];
+            $cod_produto = $parametros[0];
+            $cod_carrinho = Sessao::getCodigoConta();
+            $quantidade = $_POST['quantidade'];
 
-            $produtoLote = new ProdutoLote($cod_produto, $cod_lote);
-            $resultado = $produtoLote->localizar();
+            $produtoCarrinho = new ProdutoCarrinho($cod_produto, $cod_carrinho, $quantidade);
+            $resultado = $produtoCarrinho->atualizar();
 
-            if ($resultado instanceof ProdutoLote)
-            {
-                $this->setDados('produto_lote', $resultado);
-                Sessao::setMensagem(null);
-            }
-            else
+            if ($resultado instanceof Exception)
                 Sessao::setMensagem($resultado->getMessage());
 
-            $this->renderizar('produto_lote/exclusao');
+            $this->redirecionar('/carrinho/index');
+        }
+        else
+        $this->redirecionar('/conta/encaminharAcesso');
+}
+
+public function aumentarQuantidade($parametros)
+{
+    if (Sessao::verificarAcesso('cliente'))
+    {
+        $cod_produto = $parametros[0];
+            $cod_carrinho = Sessao::getCodigoConta();
+
+            $produtoCarrinho = new ProdutoCarrinho($cod_produto, $cod_carrinho);
+            $resultado = $produtoCarrinho->aumentarQuantidade();
+
+            if ($resultado instanceof Exception)
+                Sessao::setMensagem($resultado->getMessage());
+
+            $this->redirecionar('/carrinho/index');
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
     }
 
-    public function excluir()
-    {
-        if (Sessao::verificarAcesso('administrador'))
-        {
-            $cod_produto = $_POST['produto'];
-            $cod_lote = $_POST['lote'];
-            $produtoLote = new ProdutoLote($cod_produto, $cod_lote);
-            $resultado = $produtoLote->excluir();
 
-            if (is_bool($resultado) && $resultado)
-                Sessao::setMensagem("Dados excluídos com sucesso!");
-            else
+    public function removerProduto($parametros)
+    {
+        if (Sessao::verificarAcesso('cliente'))
+        {
+            $cod_produto = $parametros[0];
+            $cod_carrinho = Sessao::getCodigoConta();
+            $produtoCarrinho = new ProdutoCarrinho($cod_produto, $cod_carrinho);
+            $resultado = $produtoCarrinho->excluir();
+
+            if ($resultado instanceof Exception)
                 Sessao::setMensagem($resultado->getMessage());
 
-            $this->redirecionar('/produtoLote/index/' . $cod_lote);
+            $this->redirecionar('/carrinho/index');
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');

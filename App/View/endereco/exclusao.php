@@ -56,6 +56,13 @@
             </div>
           </div>
           <div class="row mb-3">
+            <div class="col-11 col-md-9 col-lg-6">
+              <label for="cep" class="form-label">CEP</label>
+              <input type="text" class="form-control border border-primary" id="cep" name="cep"
+              value="<?= $dados['endereco']->getCep() ?>" readonly>
+            </div>
+          </div>
+          <div class="row mb-3">
             <div class="col-auto">
               <h3>Tem certeza que quer excluir esse endereço ?</h3>
             </div>

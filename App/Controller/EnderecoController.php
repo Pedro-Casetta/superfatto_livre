@@ -24,7 +24,7 @@ class EnderecoController extends BaseController
             "cod_cliente = " . Sessao::getCodigoConta() . "
             AND rua LIKE '%$busca%' OR numero LIKE '%$busca%'
             OR bairro LIKE '%$busca%' OR cidade LIKE '%$busca%'
-            OR estado LIKE '%$busca%'");
+            OR estado LIKE '%$busca%' OR cep LIKE '%$busca%'");
             $totalPaginas = ceil($totalRegistros / Paginacao::$limitePorPagina);
             $paginacao = Paginacao::criarPaginacao('/endereco', $paginaSelecionada, $totalPaginas, $busca);
 
@@ -65,6 +65,7 @@ class EnderecoController extends BaseController
                 $_POST['bairro'],
                 $_POST['cidade'],
                 $_POST['estado'],
+                $_POST['cep'],
                 $_POST['cliente']
             );
 
@@ -115,6 +116,7 @@ class EnderecoController extends BaseController
                 $_POST['bairro'],
                 $_POST['cidade'],
                 $_POST['estado'],
+                $_POST['cep'],
                 $_POST['cliente']
             );
 

@@ -31,7 +31,7 @@
             <div class="col-6 col-md-4 col-lg-3">
               <label for="preco" class="form-label">Preço</label>
               <input type="text" class="form-control border border-primary" id="preco" name="preco"
-              value="<?= $dados['produto']->getPreco() ?>" readonly>
+              value="<?= $dados['produto']->getPrecoView() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">

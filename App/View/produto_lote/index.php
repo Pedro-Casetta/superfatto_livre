@@ -92,7 +92,7 @@
                   <img src="http://<?=APP_HOST?>/public/imagem/produto/<?= $produtoLote->getImagem() ?>" width="60%">
                 </td>
                 <td><?= $produtoLote->getNome() ?></td>
-                <td><?= $produtoLote->getPreco() ?></td>
+                <td><?= $produtoLote->getPrecoView() ?></td>
                 <td><?= $produtoLote->getQuantidade() ?></td>
                 <td><?= $produtoLote->getSubtotal() ?></td>
                 <td>

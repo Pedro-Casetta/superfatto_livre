@@ -14,10 +14,11 @@ class Endereco
     private string $bairro;
     private string $cidade;
     private string $estado;
+    private string $cep;
     private Cliente $cliente;
     
     public function __construct(int $codigo = 0, string $rua = "", int $numero = 0, string $bairro = "",
-    string $cidade = "", string $estado = "", int $cod_cliente = 0)
+    string $cidade = "", string $estado = "", string $cep = "", int $cod_cliente = 0)
     {
         $this->codigo = $codigo;
         $this->rua = $rua;
@@ -25,6 +26,7 @@ class Endereco
         $this->bairro = $bairro;
         $this->cidade = $cidade;
         $this->estado = $estado;
+        $this->cep = $cep;
         $this->cliente = new Cliente($cod_cliente);
     }
     
@@ -143,7 +145,17 @@ class Endereco
     {
         $this->estado = $valor;
     }
+    
+    public function getCep() : string
+    {
+        return $this->cep;
+    }
 
+    public function setCep(string $valor)
+    {
+        $this->cep = $valor;
+    }
+    
     public function getCliente() : Cliente
     {
         return $this->cliente;

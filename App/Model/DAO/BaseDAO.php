@@ -40,7 +40,7 @@ abstract class BaseDAO
 
     public function update($tabela, $colunas, $valores, $where=null)
     {
-        if(!empty($tabela) && !empty($colunas) && !empty($valores))
+        if(!empty($tabela) && !empty($colunas))
         {
             if($where)
             {

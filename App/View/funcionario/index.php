@@ -56,7 +56,7 @@
                 <td><?= $funcionario->getCpf() ?></td>
                 <td><?= $funcionario->getNome() ?></td>
                 <td><?= $funcionario->getSetor() ?></td>
-                <td><?= $funcionario->getSalario() ?></td>
+                <td><?= $funcionario->getSalarioView() ?></td>
                 <td>
                   <a href="http://<?=APP_HOST?>/funcionario/encaminharEdicao/<?= $funcionario->getCodigo() ?>" class="btn btn-info">
                     <i class="bi bi-pencil">&ensp;</i>Editar

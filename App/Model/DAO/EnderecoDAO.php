@@ -21,7 +21,8 @@ class EnderecoDAO extends BaseDAO
                 $arrayResultado['numero'],
                 $arrayResultado['bairro'],
                 $arrayResultado['cidade'],
-                $arrayResultado['estado']                
+                $arrayResultado['estado'],
+                $arrayResultado['cep']
             );
             
             return $endereco;
@@ -50,7 +51,8 @@ class EnderecoDAO extends BaseDAO
                     $enderecoEncontrado['numero'],
                     $enderecoEncontrado['bairro'],
                     $enderecoEncontrado['cidade'],
-                    $enderecoEncontrado['estado']
+                    $enderecoEncontrado['estado'],
+                    $enderecoEncontrado['cep']
                 );
 
                 $enderecos[] = $endereco;
@@ -71,7 +73,7 @@ class EnderecoDAO extends BaseDAO
                 WHERE cod_cliente = $cod_cliente
             AND rua LIKE '%$busca%' OR numero LIKE '%$busca%'
             OR bairro LIKE '%$busca%' OR cidade LIKE '%$busca%'
-            OR estado LIKE '%$busca%' LIMIT $indice, $limitePorPagina");
+            OR estado LIKE '%$busca%' OR cep LIKE '%$busca%' LIMIT $indice, $limitePorPagina");
 
             $arrayEnderecos = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -85,7 +87,8 @@ class EnderecoDAO extends BaseDAO
                     $enderecoEncontrado['numero'],
                     $enderecoEncontrado['bairro'],
                     $enderecoEncontrado['cidade'],
-                    $enderecoEncontrado['estado']
+                    $enderecoEncontrado['estado'],
+                    $enderecoEncontrado['cep']
                 );
 
                 $enderecos[] = $endereco;
@@ -107,17 +110,19 @@ class EnderecoDAO extends BaseDAO
             $bairro = $endereco->getBairro();
             $cidade = $endereco->getCidade();
             $estado = $endereco->getEstado();
+            $cep = $endereco->getCep();
             $cliente = $endereco->getCliente()->getCodigo();
 
             $resultado = $this->insert(
                 'endereco',
-                ':rua, :numero, :bairro, :cidade, :estado, :cod_cliente',
+                ':rua, :numero, :bairro, :cidade, :estado, :cep, :cod_cliente',
                 [
                     ':rua' => $rua,
                     ':numero' => $numero,
                     ':bairro' => $bairro,
                     ':cidade' => $cidade,
                     ':estado' => $estado,
+                    ':cep' => $cep,
                     ':cod_cliente' => $cliente
             ]);
 
@@ -140,16 +145,18 @@ class EnderecoDAO extends BaseDAO
             $bairro = $endereco->getBairro();
             $cidade = $endereco->getCidade();
             $estado = $endereco->getEstado();
+            $cep = $endereco->getCep();
 
             $resultado = $this->update(
                 'endereco',
-                'rua = :rua, numero = :numero, bairro = :bairro, cidade = :cidade, estado = :estado',
+                'rua = :rua, numero = :numero, bairro = :bairro, cidade = :cidade, estado = :estado, cep = :cep',
                 [
                  ':rua' => $rua,
                  ':numero' => $numero,
                  ':bairro' => $bairro,
                  ':cidade' => $cidade,
-                 ':estado' => $estado
+                 ':estado' => $estado,
+                 ':cep' => $cep
                 ],
                 'codigo = ' . $codigo
             );

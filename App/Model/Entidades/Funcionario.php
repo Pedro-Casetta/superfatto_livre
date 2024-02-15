@@ -110,10 +110,15 @@ class Funcionario
         $this->setor = $valor;
     }
 
-    public function getSalario() : string
+    public function getSalario() : float
     {
-        $salario_formatado = number_format($this->salario, 2, ',', '.');
-        return $salario_formatado;
+        return $this->salario;
+    }
+
+    public function getSalarioView() : string
+    {
+        $valor_formatado = number_format($this->salario, 2, ',', '.');
+        return $valor_formatado;
     }
 
     public function setSalario(float $valor)

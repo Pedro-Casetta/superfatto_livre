@@ -5,6 +5,7 @@ namespace App\Model\Entidades;
 use PayPalHttp\Environment;
 use PayPalHttp\HttpClient;
 use PayPalHttp\HttpRequest;
+use App\Model\Entidades\Endereco;
 
 class Pagamento implements Environment
 {
@@ -37,7 +38,7 @@ class Pagamento implements Environment
         return $response;
     }
 
-    public function createOrder($token, $totalVenda)
+    public function createOrder($token, $totalVenda, Endereco $endereco)
     {
         $total_formatado = number_format(floatval($totalVenda), 2);
         
@@ -52,16 +53,32 @@ class Pagamento implements Environment
             'shipping' => [
                 'type' => "SHIPPING",
                 'address' => [
-                    'address_line_1' => "Rua Maria Aparecida Cuisse Cesco, 431",
-                    'address_line_2' => "casa 69",
-                    'admin_area_2' => "Presidente Prudente",
-                    'admin_area_1' => "SP",
+                    'address_line_1' => $endereco->getRua() . ", " . $endereco->getNumero(),
+                    'address_line_2' => $endereco->getBairro(),
+                    'admin_area_2' => $endereco->getCidade(),
+                    'admin_area_1' => $endereco->getEstado(),
                     'postal_code' => "19025812",
                     'country_code' => "BR"
                 ]]];
         $request->body['payment_source'] = ['paypal' => ['experience_context' => []]];
-        $request->body['payment_source']['paypal']['experience_context']['return_url'] = "http://" . APP_HOST . "/";
+        $request->body['payment_source']['paypal']['experience_context']['return_url'] = "http://" . APP_HOST . "/venda/autorizarPagamento";
         $request->body['payment_source']['paypal']['experience_context']['cancel_url'] = "http://" . APP_HOST . "/";
+        $request->body['payment_source']['paypal']['experience_context']['brand_name'] = "SUPERFATTO LIVRE";
+        $request->body['payment_source']['paypal']['experience_context']['locale'] = "pt-BR";
+
+        $client = new HttpClient($this);
+        
+        $response = $client->execute($request);
+
+        return $response;
+    }
+
+    public function authorizePayment($token, $idPedido)
+    {
+        $request = new HttpRequest("v2/checkout/orders/" . $idPedido . "/capture", "POST");
+        $request->headers['Content-Type'] = "application/json";
+        $request->headers['Authorization'] = "Bearer " . $token;
+        $request->body = "";
 
         $client = new HttpClient($this);
         

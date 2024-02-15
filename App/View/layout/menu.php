@@ -11,6 +11,11 @@
       <?php if ($sessao::getNomeUsuario() && $sessao::getTipoConta() == "administrador") { ?>
         <ul class="navbar-nav mx-auto">
           <li class="nav-item bg-success me-lg-1">
+            <a class="nav-link text-warning" href="http://<?=APP_HOST?>/venda">
+              <i class="bi bi-tag fs-3">&nbsp;</i>Vendas
+            </a>
+          </li>
+          <li class="nav-item bg-success me-lg-1">
             <a class="nav-link text-warning" href="http://<?=APP_HOST?>/funcionario">
               <i class="bi bi-people fs-3">&nbsp;</i>Funcionários
             </a>
@@ -67,7 +72,7 @@
             </button>
           </form>
         </div>
-        <div class="col-auto mx-auto me-0">
+        <div class="col-auto mx-auto me-1">
           <a href="http://<?=APP_HOST?>/carrinho/" class="btn btn-dark">
             <i class="bi bi-cart"></i>
           </a>

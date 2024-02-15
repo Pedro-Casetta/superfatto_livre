@@ -51,8 +51,43 @@
           <div class="row mb-4">
             <div class="col-11 col-md-9 col-lg-6">
               <label for="estado" class="form-label">Estado</label>
-              <input type="text" class="form-control border border-primary" id="estado" name="estado"
-              value="<?= $dados['endereco']->getEstado() ?>" required>
+              <select class="form-select border border-primary" id="estado" name="estado" required>
+                <option value="" selected>Selecione o estado</option>
+                  <option>AC</option>
+                  <option>AL</option>
+                  <option>AP</option>
+                  <option>AM</option>
+                  <option>BA</option>
+                  <option>CE</option>
+                  <option>DF</option>
+                  <option>ES</option>
+                  <option>GO</option>
+                  <option>MA</option>
+                  <option>MT</option>
+                  <option>MS</option>
+                  <option>MG</option>
+                  <option>PA</option>
+                  <option>PB</option>
+                  <option>PR</option>
+                  <option>PE</option>
+                  <option>PI</option>
+                  <option>RJ</option>
+                  <option>RN</option>
+                  <option>RS</option>
+                  <option>RO</option>
+                  <option>RR</option>
+                  <option>SC</option>
+                  <option>SP</option>
+                  <option>SE</option>
+                  <option>TO</option>
+              </select>
+            </div>
+          </div>
+          <div class="row mb-4">
+            <div class="col-11 col-md-9 col-lg-6">
+              <label for="cep" class="form-label">CEP</label>
+              <input type="text" class="form-control border border-primary" id="cep" name="cep"
+              value="<?= $dados['endereco']->getCep() ?>" required>
             </div>
           </div>
           <div class="row">

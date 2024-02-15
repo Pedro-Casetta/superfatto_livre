@@ -244,15 +244,19 @@ class ProdutoController extends BaseController
             $produto = new Produto($codigo);
             $resultado = $produto->localizar();
 
-            if ($resultado instanceof Produto)
+            $produtoDAO = new ProdutoDAO();
+            $resultado_departamento = $produtoDAO->listarDepartamentos();
+
+            if ($resultado instanceof Produto && is_array($resultado_departamento))
             {
                 $this->setDados('produto', $resultado);
-                Sessao::setMensagem(null);
+                $this->setDados('departamentos', $resultado_departamento);
             }
             else
-                Sessao::setMensagem($resultado->getMessage());
-
+            Sessao::setMensagem($resultado->getMessage());
+        
             $this->renderizar('produto/detalhes');
+            Sessao::setMensagem(null);
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');

@@ -11,19 +11,32 @@ class CarrinhoDAO extends BaseDAO
     public function localizar($codigo)
     {
         try {
-            $pdoStatement = $this->select("SELECT c.*, cp.nome, cp.descricao cp.desconto FROM carrinho c, cupom cp
-                WHERE c.codigo = $codigo AND cp.codigo = c.cod_cupom");
+
+            $pdoStatement = $this->select("SELECT c.*, cp.nome, cp.descricao, cp.desconto
+            FROM carrinho c
+            LEFT OUTER JOIN cupom cp ON cp.codigo = c.cod_cupom
+            WHERE c.codigo = $codigo");
 
             $arrayResultado = $pdoStatement->fetch(PDO::FETCH_ASSOC);
 
-            $carrinho = new Carrinho(
-                $arrayResultado['codigo'],
-                0.0,
-                $arrayResultado['cod_cupom'],
-                $arrayResultado['nome'],
-                $arrayResultado['descricao'],
-                $arrayResultado['desconto']
-            );
+            if ($arrayResultado['cod_cupom'] == null)
+            {
+                $carrinho = new Carrinho(
+                    $arrayResultado['codigo'],
+                    $arrayResultado['total']
+                );
+            }
+            else
+            {
+                $carrinho = new Carrinho(
+                    $arrayResultado['codigo'],
+                    $arrayResultado['total'],
+                    $arrayResultado['cod_cupom'],
+                    $arrayResultado['nome'],
+                    $arrayResultado['descricao'],
+                    $arrayResultado['desconto']
+                );
+            }
             
             return $carrinho;
         }

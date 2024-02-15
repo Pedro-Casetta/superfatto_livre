@@ -16,7 +16,7 @@
   </div>
   <div class="row mb-3">
     <div class="col-auto">
-      <a href="http://<?=APP_HOST?>/conta/perfil" class="btn btn-secondary">
+      <a href="http://<?=APP_HOST?>/conta/encaminharPerfil" class="btn btn-secondary">
         <i class="bi bi-arrow-left">&ensp;</i>Voltar
       </a>
     </div>
@@ -46,6 +46,7 @@
               <th scope="col" style="width:20%;">Bairro</th>
               <th scope="col" style="width:15%;">Cidade</th>
               <th scope="col" style="width:15%;">Estado</th>
+              <th scope="col" style="width:10%;">CEP</th>
               <th scope="col" style="width:15%;">Opções</th>
             </tr>
           </thead>
@@ -57,6 +58,7 @@
                 <td><?= $endereco->getBairro() ?></td>
                 <td><?= $endereco->getCidade() ?></td>
                 <td><?= $endereco->getEstado() ?></td>
+                <td><?= $endereco->getCep() ?></td>
                 <td>
                   <a href="http://<?=APP_HOST?>/endereco/encaminharEdicao/<?= $endereco->getCodigo() ?>" class="btn btn-info">
                     <i class="bi bi-pencil">&ensp;</i>Editar

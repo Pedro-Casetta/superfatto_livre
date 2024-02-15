@@ -102,7 +102,12 @@ class Produto
         $this->nome = $valor;
     }
 
-    public function getPreco() : string
+    public function getPreco() : float
+    {
+        return $this->preco;
+    }
+
+    public function getPrecoView() : string
     {
         $preco_formatado = number_format($this->preco, 2, ',', '.');
         return $preco_formatado;
