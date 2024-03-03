@@ -7,6 +7,10 @@ namespace Composer\Autoload;
 class ComposerStaticInitbf45a19a0af85c2aa88ac1f389f8e1a0
 {
     public static $prefixLengthsPsr4 = array (
+        'P' => 
+        array (
+            'PayPalHttp\\' => 11,
+        ),
         'A' => 
         array (
             'App\\' => 4,
@@ -14,6 +18,10 @@ class ComposerStaticInitbf45a19a0af85c2aa88ac1f389f8e1a0
     );
 
     public static $prefixDirsPsr4 = array (
+        'PayPalHttp\\' => 
+        array (
+            0 => __DIR__ . '/..' . '/paypal/paypalhttp/lib/PayPalHttp',
+        ),
         'App\\' => 
         array (
             0 => __DIR__ . '/../..' . '/App',
