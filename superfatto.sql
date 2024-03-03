@@ -53,7 +53,8 @@ CREATE TABLE IF NOT EXISTS `superfatto`.`conta` (
   `nome_usuario` VARCHAR(45) NULL,
   `senha` VARCHAR(255) NULL,
   `tipo` VARCHAR(45) NULL,
-  PRIMARY KEY (`codigo`))
+  PRIMARY KEY (`codigo`),
+  UNIQUE INDEX `nome_usuario_UNIQUE` (`nome_usuario` ASC))
 ENGINE = InnoDB;
 
 
@@ -73,15 +74,31 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
+-- Table `superfatto`.`credencial`
+-- -----------------------------------------------------
+CREATE TABLE IF NOT EXISTS `superfatto`.`credencial` (
+  `codigo` INT NOT NULL,
+  `nome` VARCHAR(45) NULL,
+  PRIMARY KEY (`codigo`))
+ENGINE = InnoDB;
+
+
+-- -----------------------------------------------------
 -- Table `superfatto`.`administrador`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `superfatto`.`administrador` (
   `codigo` INT NOT NULL AUTO_INCREMENT,
-  `credencial` VARCHAR(45) NULL,
+  `cod_credencial` INT NOT NULL,
   PRIMARY KEY (`codigo`),
+  INDEX `fk_administrador_credencial1_idx` (`cod_credencial` ASC),
   CONSTRAINT `fk_administrador_conta1`
     FOREIGN KEY (`codigo`)
     REFERENCES `superfatto`.`conta` (`codigo`)
+    ON DELETE NO ACTION
+    ON UPDATE NO ACTION,
+  CONSTRAINT `fk_administrador_credencial1`
+    FOREIGN KEY (`cod_credencial`)
+    REFERENCES `superfatto`.`credencial` (`codigo`)
     ON DELETE NO ACTION
     ON UPDATE NO ACTION)
 ENGINE = InnoDB;
@@ -172,7 +189,7 @@ CREATE TABLE IF NOT EXISTS `superfatto`.`endereco` (
   `bairro` VARCHAR(45) NULL,
   `cidade` VARCHAR(45) NULL,
   `estado` VARCHAR(45) NULL,
-  `CEP` VARCHAR(45) NULL,
+  `cep` VARCHAR(45) NULL,
   `cod_cliente` INT NOT NULL,
   PRIMARY KEY (`codigo`),
   INDEX `fk_endereco_cliente1_idx` (`cod_cliente` ASC),
@@ -192,6 +209,7 @@ CREATE TABLE IF NOT EXISTS `superfatto`.`venda` (
   `data` DATE NOT NULL DEFAULT CURRENT_TIMESTAMP,
   `total` FLOAT NOT NULL DEFAULT 0.00,
   `situacao` VARCHAR(255) NOT NULL DEFAULT 'Aguardando preenchimento de dados',
+  `id_pagamento` VARCHAR(255) NULL,
   `cod_cliente` INT NOT NULL,
   `cod_endereco` INT NOT NULL,
   PRIMARY KEY (`codigo`),
@@ -224,8 +242,8 @@ CREATE TABLE IF NOT EXISTS `superfatto`.`produto_venda` (
   CONSTRAINT `fk_produto_venda_venda1`
     FOREIGN KEY (`cod_venda`)
     REFERENCES `superfatto`.`venda` (`codigo`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION,
+    ON DELETE CASCADE
+    ON UPDATE CASCADE,
   CONSTRAINT `fk_produto_venda_produto1`
     FOREIGN KEY (`cod_produto`)
     REFERENCES `superfatto`.`produto` (`codigo`)
@@ -235,36 +253,17 @@ ENGINE = InnoDB;
 
 
 -- -----------------------------------------------------
--- Table `superfatto`.`cupom`
--- -----------------------------------------------------
-CREATE TABLE IF NOT EXISTS `superfatto`.`cupom` (
-  `codigo` INT NOT NULL,
-  `nome` VARCHAR(45) NULL,
-  `descricao` VARCHAR(45) NULL,
-  `desconto` INT NULL,
-  PRIMARY KEY (`codigo`))
-ENGINE = InnoDB;
-
-
--- -----------------------------------------------------
 -- Table `superfatto`.`carrinho`
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `superfatto`.`carrinho` (
   `codigo` INT NOT NULL,
   `total` FLOAT NOT NULL DEFAULT 0.0,
-  `cod_cupom` INT NULL,
   PRIMARY KEY (`codigo`),
-  INDEX `fk_carrinho_cupom1_idx` (`cod_cupom` ASC),
   CONSTRAINT `fk_carrinho_cliente1`
     FOREIGN KEY (`codigo`)
     REFERENCES `superfatto`.`cliente` (`codigo`)
     ON DELETE CASCADE
-    ON UPDATE CASCADE,
-  CONSTRAINT `fk_carrinho_cupom1`
-    FOREIGN KEY (`cod_cupom`)
-    REFERENCES `superfatto`.`cupom` (`codigo`)
-    ON DELETE NO ACTION
-    ON UPDATE NO ACTION)
+    ON UPDATE CASCADE)
 ENGINE = InnoDB;
 
 
@@ -308,6 +307,17 @@ BEGIN
 END$$
 
 USE `superfatto`$$
+CREATE DEFINER = CURRENT_USER TRIGGER `superfatto`.`produto_BEFORE_UPDATE` BEFORE UPDATE ON `produto` FOR EACH ROW
+BEGIN
+    update produto_carrinho set quantidade = new.estoque
+    where cod_produto = new.codigo AND quantidade > new.estoque;
+    
+    if (new.estoque = 0) then
+		delete from produto_carrinho where cod_produto = new.codigo;
+    end if;
+END$$
+
+USE `superfatto`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `superfatto`.`produto_lote_BEFORE_INSERT` BEFORE INSERT ON `produto_lote` FOR EACH ROW
 BEGIN
     declare precoProduto float;
@@ -323,32 +333,55 @@ USE `superfatto`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `superfatto`.`produto_lote_BEFORE_UPDATE` BEFORE UPDATE ON `produto_lote` FOR EACH ROW
 BEGIN
 	declare precoProduto float;
+    declare produtoEstoque int;
     select preco into precoProduto from produto where codigo = new.cod_produto;
+    select estoque into produtoEstoque from produto where codigo = old.cod_produto;
     
     set new.subtotal = precoProduto * new.quantidade;
     
     update lote set total = total - old.subtotal + new.subtotal where codigo = new.cod_lote;
-    update produto set estoque = estoque - old.quantidade where codigo = old.cod_produto;
-    update produto set estoque = estoque + new.quantidade where codigo = new.cod_produto;
+    if (produtoEstoque >= old.quantidade and old.cod_produto != new.cod_produto) then
+		update produto set estoque = estoque - old.quantidade where codigo = old.cod_produto;
+        update produto set estoque = estoque + new.quantidade where codigo = new.cod_produto;
+	elseif (old.cod_produto = new.cod_produto and produtoEstoque >= old.quantidade) then
+		update produto set estoque = estoque - old.quantidade + new.quantidade
+        where codigo = old.cod_produto;
+    end if;
 END$$
 
 USE `superfatto`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `superfatto`.`produto_lote_BEFORE_DELETE` BEFORE DELETE ON `produto_lote` FOR EACH ROW
 BEGIN
+	declare produtoEstoque int;
+    select estoque into produtoEstoque from produto where codigo = old.cod_produto;
+    
     update lote set total = total - old.subtotal where codigo = old.cod_lote;
-    update produto set estoque = estoque - old.quantidade where codigo = old.cod_produto;
+    
+    if (produtoEstoque >= old.quantidade) then
+		update produto set estoque = estoque - old.quantidade where codigo = old.cod_produto;
+	end if;
 END$$
 
 USE `superfatto`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `superfatto`.`produto_venda_BEFORE_INSERT` BEFORE INSERT ON `produto_venda` FOR EACH ROW
 BEGIN
 	declare precoProduto float;
+    declare estoqueProduto int;
     select preco into precoProduto from produto where codigo = new.cod_produto;
     
     set new.subtotal = precoProduto * new.quantidade;
     
     update venda set total = total + new.subtotal where codigo = new.cod_venda;
     update produto set estoque = estoque - new.quantidade where codigo = new.cod_produto;
+    
+    select estoque into estoqueProduto from produto where codigo = new.cod_produto;
+    
+    update produto_carrinho set quantidade = estoqueProduto
+    where codigo = new.cod_produto AND quantidade > estoqueProduto;
+    
+    if (estoqueProduto = 0) then
+		delete from produto_carrinho where cod_produto = new.cod_produto;
+    end if;
 END$$
 
 USE `superfatto`$$
@@ -367,7 +400,6 @@ BEGIN
     set new.subtotal = precoProduto * new.quantidade;
     
     update carrinho set total = total + new.subtotal where codigo = new.cod_carrinho;
-    update produto set estoque = estoque - new.quantidade where codigo = new.cod_produto;
 END$$
 
 USE `superfatto`$$
@@ -379,15 +411,12 @@ BEGIN
     set new.subtotal = precoProduto * new.quantidade;
     
     update carrinho set total = total - old.subtotal + new.subtotal where codigo = new.cod_carrinho;
-    update produto set estoque = estoque - old.quantidade where codigo = old.cod_produto;
-    update produto set estoque = estoque + new.quantidade where codigo = new.cod_produto;
 END$$
 
 USE `superfatto`$$
 CREATE DEFINER = CURRENT_USER TRIGGER `superfatto`.`produto_carrinho_BEFORE_DELETE` BEFORE DELETE ON `produto_carrinho` FOR EACH ROW
 BEGIN
     update carrinho set total = total - old.subtotal where codigo = old.cod_carrinho;
-    update produto set estoque = estoque + old.quantidade where codigo = old.cod_produto;
 END$$
 
 
@@ -457,11 +486,25 @@ COMMIT;
 
 
 -- -----------------------------------------------------
+-- Data for table `superfatto`.`credencial`
+-- -----------------------------------------------------
+START TRANSACTION;
+USE `superfatto`;
+INSERT INTO `superfatto`.`credencial` (`codigo`, `nome`) VALUES (1, 'abc123');
+INSERT INTO `superfatto`.`credencial` (`codigo`, `nome`) VALUES (2, 'fatec321');
+INSERT INTO `superfatto`.`credencial` (`codigo`, `nome`) VALUES (3, 'cpssp246');
+INSERT INTO `superfatto`.`credencial` (`codigo`, `nome`) VALUES (4, 'djo4492');
+INSERT INTO `superfatto`.`credencial` (`codigo`, `nome`) VALUES (5, 'jfk9382');
+
+COMMIT;
+
+
+-- -----------------------------------------------------
 -- Data for table `superfatto`.`administrador`
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `superfatto`;
-INSERT INTO `superfatto`.`administrador` (`codigo`, `credencial`) VALUES (1, 'abc123');
+INSERT INTO `superfatto`.`administrador` (`codigo`, `cod_credencial`) VALUES (1, 1);
 
 COMMIT;
 
@@ -545,7 +588,7 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `superfatto`;
-INSERT INTO `superfatto`.`endereco` (`codigo`, `rua`, `numero`, `bairro`, `cidade`, `estado`, `CEP`, `cod_cliente`) VALUES (1, 'General Tenório', 1945, 'Jardim Nova Ipiranga', 'Presidente Bernardes', 'São Paulo', '47128469', 2);
+INSERT INTO `superfatto`.`endereco` (`codigo`, `rua`, `numero`, `bairro`, `cidade`, `estado`, `cep`, `cod_cliente`) VALUES (1, 'General Tenório', 1945, 'Jardim Nova Ipiranga', 'Presidente Bernardes', 'SP', '67384293', 2);
 
 COMMIT;
 
