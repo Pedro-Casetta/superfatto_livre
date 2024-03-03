@@ -26,6 +26,21 @@ function exibirCampoCadastroConta($tipo) {
 
 function alterarQuantidadeInserirCarrinho() {
 
-    $valor_atualizado = document.getElementById('quantidade').value;
-    document.getElementById('quantidade_carrinho').value = $valor_atualizado;
+    let valor_atualizado = document.getElementById('quantidade').value;
+    document.getElementById('quantidade_carrinho').value = valor_atualizado;
+}
+
+function alterarQuantidadeProdutoCarrinho(id, app_host, produtoId) {
+
+    setTimeout(() => {
+        let quantidade = document.getElementById(id).value;
+        let request = new XMLHttpRequest();
+
+        request.open('POST', 'http://' + app_host + '/carrinho/alterarQuantidade/' + produtoId, true);
+        request.setRequestHeader('Content-Type', 'application/x-www-form-urlencoded');
+
+        request.send('quantidade=' + encodeURIComponent(quantidade));
+
+        window.location.reload();
+    }, 1500);
 }
