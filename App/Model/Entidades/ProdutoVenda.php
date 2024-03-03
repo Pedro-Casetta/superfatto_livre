@@ -59,10 +59,15 @@ class ProdutoVenda extends Produto
         $this->quantidade = $valor;
     }
 
-    public function getSubtotal() : string
+    public function getSubtotalView() : string
     {
         $subtotal_formatado = number_format($this->subtotal, 2, ',', '.');
         return $subtotal_formatado;
+    }
+
+    public function getSubtotal() : float
+    {
+        return $this->subtotal;
     }
 
     public function setSubtotal(float $valor)

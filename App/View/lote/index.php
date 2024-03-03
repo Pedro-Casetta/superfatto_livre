@@ -84,7 +84,7 @@
             <?php foreach ($dados['lotes'] as $lote) { ?>
               <tr>
                 <th scope="row"><?= $lote->getCodigo() ?></th>
-                <td><?= $lote->getData() ?></td>
+                <td><?= $lote->getDataView() ?></td>
                 <td><?= $lote->getFornecedor()->getNome() ?></td>
                 <td><?= $lote->getTotal() ?></td>
                 <td>

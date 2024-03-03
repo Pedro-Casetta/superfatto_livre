@@ -84,6 +84,13 @@ class Lote
     {
         return $this->data;
     }
+    
+    public function getDataView() : string
+    {
+        $data_formatada = explode("-", $this->data);
+        $data_formatada = $data_formatada[2] . '/' . $data_formatada[1] . '/' . $data_formatada[0];
+        return $data_formatada;
+    }
 
     public function setData(string $valor)
     {

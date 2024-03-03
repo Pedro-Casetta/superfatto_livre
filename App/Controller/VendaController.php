@@ -11,6 +11,7 @@ use App\Model\Entidades\Carrinho;
 use App\Model\Entidades\Endereco;
 use App\Model\Entidades\Produto;
 use App\Model\Entidades\Pagamento;
+use App\Model\Entidades\NotaFiscal;
 use Exception;
 
 class VendaController extends BaseController
@@ -32,7 +33,7 @@ class VendaController extends BaseController
                 "venda v, conta c",
                 "v.cod_cliente = c.codigo AND c.nome LIKE '%$busca%' AND v.data LIKE '%$data%'");
             $totalPaginas = ceil($totalRegistros / Paginacao::$limitePorPagina);
-            $paginacao = Paginacao::criarPaginacao('/lote', $paginaSelecionada, $totalPaginas, $busca, $data);
+            $paginacao = Paginacao::criarPaginacao('/venda', $paginaSelecionada, $totalPaginas, $busca, $data);
 
             if (is_array($resultado))
             {
@@ -50,19 +51,22 @@ class VendaController extends BaseController
             $this->redirecionar('/conta/encaminharAcesso');
     }
 
-    public function iniciarVendaIndividual()
+    public function iniciarVendaIndividual($parametros = null)
     {
-        $produto = new Produto($_POST['produto']);
+        $cod_produto = (isset($_POST['produto'])) ? $_POST['produto'] : $parametros[0];
+        $quantidade = (isset($_POST['quantidade'])) ? $_POST['quantidade'] : $parametros[1];
+        
+        $produto = new Produto($cod_produto);
         $resultado = $produto->localizar();
 
         if ($resultado instanceof Produto)
         {
-            $subtotal = $_POST['quantidade'] * $resultado->getPreco();
+            $subtotal = $quantidade * $resultado->getPreco();
         
             $produtoVenda = new ProdutoVenda(
                 $resultado->getCodigo(),
                 0,
-                $_POST['quantidade'],
+                $quantidade,
                 $subtotal,
                 $resultado->getNome(),
                 $resultado->getPreco(),
@@ -87,7 +91,7 @@ class VendaController extends BaseController
 
         $this->renderizar('venda/endereco');
         Sessao::setMensagem(null);
-}
+    }
     
     public function iniciarVendaCarrinho()
     {
@@ -153,12 +157,12 @@ class VendaController extends BaseController
             {
                 $endereco = new Endereco($_POST['endereco']);
                 $resultado = $endereco->localizar();
-                
             }
             else
             {
                 Sessao::setMensagem("Selecione um endereço ou cadastre um novo!");
-                $this->redirecionar('/venda/iniciarVenda' . (isset($_POST['produto'])) ? 'Individual' : 'Carrinho');
+                $this->redirecionar('/venda/iniciarVenda' . 
+                (isset($_POST['produto']) ? 'Individual/' . $_POST['produto'] . '/' . $_POST['quantidade'] : 'Carrinho'));
             }
 
             if (is_array($resultado) || $resultado instanceof Endereco)
@@ -215,7 +219,8 @@ class VendaController extends BaseController
             else
             {
                 Sessao::setMensagem($resultado->getMessage());
-                $this->redirecionar('/venda/iniciarVenda' . (isset($_POST['produto'])) ? 'Individual' : 'Carrinho');
+                $this->redirecionar('/venda/iniciarVenda' . 
+                (isset($_POST['produto']) ? 'Individual/' . $_POST['produto'] . '/' . $_POST['quantidade'] : 'Carrinho'));
             }
 
         }
@@ -224,7 +229,7 @@ class VendaController extends BaseController
     }
 
     public function realizarPagamento()
-    {        
+    {
         $totalVenda = $_POST['total'];
         $pagamento = new Pagamento();
         $respostaToken = $pagamento->getAcessToken();
@@ -238,18 +243,22 @@ class VendaController extends BaseController
             
             if ($resultado instanceof Endereco)
             {
-                $respostaPedido = $pagamento->createOrder($token, $totalVenda, $resultado);
-                $objetoPedido = $respostaPedido->result;
-
-                $venda = new Venda(0, '', 0.0, 'Aguardando pagamento', $objetoPedido->id, Sessao::getCodigoConta(),
+                $venda = new Venda(0, '', 0.0, 'Aguardando pagamento', "", Sessao::getCodigoConta(),
                 '', $_POST['endereco']);
-                $resultado = $venda->cadastrar();
+                $resultado_venda = $venda->cadastrar();
+                
+                if (is_array($resultado_venda) && is_bool($resultado_venda['resultado'] && $resultado_venda['resultado']))
+                {                    
+                    $respostaPedido = $pagamento->createOrder($token, $totalVenda, $resultado, $resultado_venda['codigo']);
+                    $objetoPedido = $respostaPedido->result;
 
-                if (is_array($resultado) && is_bool($resultado['resultado'] && $resultado['resultado']))
-                {
+                    $venda->setCodigo($resultado_venda['codigo']);
+                    $venda->setIdPagamento($objetoPedido->id);
+                    $venda->atualizar();
+                    
                     if (isset($_POST['produto']))
                     {
-                        $produtoVenda = new ProdutoVenda($_POST['produto'], $resultado['codigo'], $_POST['quantidade']);
+                        $produtoVenda = new ProdutoVenda($_POST['produto'], $resultado_venda['codigo'], $_POST['quantidade']);
                         $resultado_produto = $produtoVenda->cadastrar();
                     }
                     else
@@ -263,15 +272,16 @@ class VendaController extends BaseController
                             {
                                 $produtoVenda = new ProdutoVenda(
                                     $produtoCarrinho->getCodigo(),
-                                    $resultado['codigo'],
+                                    $resultado_venda['codigo'],
                                     $produtoCarrinho->getQuantidade()
                                 );
                                 $produtoVenda->cadastrar();
+                                $produtoCarrinho->excluir();
                             }
                         }
                     }
 
-                    if (is_array($resultado_produto) || is_bool($resultado_produto['resultado']) && $resultado_produto['resultado'])
+                    if (is_array($resultado_produto) || is_bool($resultado_produto) && $resultado_produto)
                     {
                         $urlPedido = $objetoPedido->links[1]->href;
                         header("Location: " . $urlPedido);
@@ -284,7 +294,7 @@ class VendaController extends BaseController
                 }
                 else
                 {
-                    Sessao::setMensagem($resultado->getMessage());
+                    Sessao::setMensagem($resultado_venda->getMessage());
                     $this->redirecionar('/venda/salvarEndereco');
                 }
             }
@@ -294,6 +304,31 @@ class VendaController extends BaseController
                 $this->redirecionar('/venda/salvarEndereco');
             }
         }
+    }
+
+    public function realizarPagamentoPendente($parametros)
+    {
+        if (Sessao::verificarAcesso('cliente'))
+        {
+            $pagamento = new Pagamento();
+            $respostaToken = $pagamento->getAcessToken();
+            $objetoToken = $respostaToken->result;
+            $token = $objetoToken->access_token;
+
+            $venda = new Venda($parametros[0]);
+            $resultado = $venda->localizar();
+
+            if ($resultado instanceof Venda)
+            {
+                $respostaPedido = $pagamento->getOrder($resultado->getIdPagamento(), $token);
+                $objetoPedido = $respostaPedido->result;
+
+                $urlPedido = $objetoPedido->links[1]->href;
+                header("Location: " . $urlPedido);
+            }
+        }
+        else
+            $this->redirecionar('/conta/encaminharAcesso');
     }
     
     public function autorizarPagamento()
@@ -327,10 +362,15 @@ class VendaController extends BaseController
 
         if ($resultado instanceof Venda)
         {
+            $venda = $resultado;
+            $venda->setSituacao("Pagamento efetuado, entrega em andamento.");
+            
             $produtosVenda = new ProdutoVenda(0, $resultado->getCodigo());
             $resultado_produto = $produtosVenda->listar();
+            
+            $resultado_venda = $venda->atualizar();
 
-            if (is_array($resultado_produto))
+            if (is_array($resultado_produto) && is_bool($resultado_venda) && $resultado_venda)
             {
                 $this->setDados('venda', $resultado);
                 $this->setDados('produtos', $resultado_produto);
@@ -343,5 +383,85 @@ class VendaController extends BaseController
         
         $this->renderizar('venda/conclusao');
         Sessao::setMensagem(null);
+    }
+
+    public function indexCompras()
+    {
+        if (Sessao::verificarAcesso('cliente'))
+        {
+            $paginaSelecionada = (isset($_GET['paginaSelecionada'])) ? $_GET['paginaSelecionada'] : 1;
+            $busca = (isset($_GET['busca'])) ? $_GET['busca'] : "";
+            $data = (isset($_GET['data'])) ? $_GET['data'] : "";
+            $indice = Paginacao::calcularIndice($paginaSelecionada);
+            
+            $venda = new Venda(0,'',0.0,'','',Sessao::getCodigoConta());
+            $resultado = $venda->listarPaginacaoCliente($indice, Paginacao::$limitePorPagina, $busca, $data);
+            
+            $totalRegistros = $venda->contarTotalRegistros(
+                "venda v, endereco e",
+                "v.cod_endereco = e.codigo AND v.cod_cliente = " . Sessao::getCodigoConta() . "
+                AND v.data LIKE '%$data%' AND v.total LIKE '%$busca%' OR v.situacao LIKE '%$busca%'
+                OR e.rua LIKE '%$busca%' OR e.numero LIKE '%$busca%' OR e.bairro LIKE '%$busca%'
+                OR e.cidade LIKE '%$busca%' OR e.estado LIKE '%$busca%' OR e.cep LIKE '%$busca%'");
+            $totalPaginas = ceil($totalRegistros / Paginacao::$limitePorPagina);
+            $paginacao = Paginacao::criarPaginacao('/venda/indexCompras', $paginaSelecionada, $totalPaginas, $busca, $data);
+
+            if (is_array($resultado))
+            {
+                    $this->setDados('vendas', $resultado);
+                    $this->setDados('paginacao', $paginacao);
+            }
+            else
+                Sessao::setMensagem($resultado->getMessage());
+    
+            $this->renderizar('venda/indexCompras');
+            Sessao::setMensagem(null);
+        }
+        else
+            $this->redirecionar('/conta/encaminharAcesso');
+    }
+
+    public function indexProdutosCompra($parametros)
+    {
+        if (Sessao::verificarAcesso('cliente'))
+        {
+            $venda = new Venda($parametros[0]);
+            $resultado_venda = $venda->localizar();
+            
+            $produtoVenda = new ProdutoVenda(0, $parametros[0]);
+            $resultado = $produtoVenda->listar();
+
+            if (is_array($resultado) && $resultado_venda instanceof Venda)
+            {
+                $this->setDados('venda', $resultado_venda);
+                $this->setDados('produtos_venda', $resultado);
+            }
+            else if ($resultado instanceof Exception)
+                Sessao::setMensagem($resultado->getMessage());
+            else
+                Sessao::setMensagem($resultado_venda->getMessage());
+    
+            $this->renderizar('venda/indexProdutosCompra');
+            Sessao::setMensagem(null);
+        }
+        else
+            $this->redirecionar('/conta/encaminharAcesso');
+    }
+
+    public function excluir($parametros)
+    {
+        if (Sessao::verificarAcesso('cliente'))
+        {
+            $codigo = $parametros[0];
+            $venda = new Venda($codigo);
+            $resultado = $venda->excluir();
+
+            if ($resultado instanceof Exception)
+                Sessao::setMensagem($resultado->getMessage());
+
+            $this->redirecionar('/');
+        }
+        else
+            $this->redirecionar('/conta/encaminharAcesso');
     }
 }

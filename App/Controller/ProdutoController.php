@@ -253,10 +253,18 @@ class ProdutoController extends BaseController
                 $this->setDados('departamentos', $resultado_departamento);
             }
             else
-            Sessao::setMensagem($resultado->getMessage());
-        
+                Sessao::setMensagem($resultado->getMessage());
+
+            if (Sessao::getFormulario() && Sessao::getValidacaoFormulario())
+            {
+                $this->setDados('formulario', Sessao::getFormulario());
+                $this->setDados('validacao', Sessao::getValidacaoFormulario());
+            }
+            
             $this->renderizar('produto/detalhes');
             Sessao::setMensagem(null);
+            Sessao::setFormulario(null);
+            Sessao::setValidacaoFormulario(null);
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');

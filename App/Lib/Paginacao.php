@@ -21,6 +21,8 @@ abstract class Paginacao
             $paginaAnterior = $paginaSelecionada;
         if ($paginaSeguinte > $totalPaginas)
             $paginaSeguinte = $paginaSelecionada;
+        if ($totalPaginas == 0)
+            $totalPaginas = 1;
         
         $paginacao = '
         <div class="row">

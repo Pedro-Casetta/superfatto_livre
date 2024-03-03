@@ -45,7 +45,7 @@
                 <div class="col-auto">
                     <label for="credencial" class="form-label">Credencial</label>
                     <input type="text" class="form-control border border-primary" id="credencial" name="credencial"
-                    value="<?= $dados['conta']->getCredencial() ?>" readonly>
+                    value="<?= $dados['conta']->getCredencial()->getNome() ?>" readonly>
                 </div>
             <?php } else if ($dados['conta']->getTipo() == 'cliente') {?>
                 <div class="col-auto">

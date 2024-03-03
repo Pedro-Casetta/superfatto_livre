@@ -93,7 +93,7 @@ class ProdutoCarrinhoDAO extends BaseDAO
         }
         catch (Exception $excecao) {
             if ($excecao->getCode() == 23000)
-                $erro = new Exception("Erro " . $excecao->getCode() . ". Esse produto já existe nesse carrinho.");
+                $erro = new Exception("Erro " . $excecao->getCode() . ". Esse produto já está no carrinho.");
             else
                 $erro = new Exception("Erro " . $excecao->getCode() . ". Erro na inserção dos dados");
             return $erro;

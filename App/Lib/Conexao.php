@@ -1,6 +1,5 @@
 <?php
 
-
 namespace App\Lib;
 
 use PDO;

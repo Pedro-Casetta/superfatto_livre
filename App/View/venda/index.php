@@ -40,7 +40,7 @@
               <th scope="col" style="width:5%;">Código</th>
               <th scope="col" style="width:15%;">Data</th>
               <th scope="col" style="width:25%;">Cliente</th>
-              <th scope="col" style="width:10%;">Total</th>
+              <th scope="col" style="width:10%;">Total (R$)</th>
               <th scope="col" style="width:15%;">Situação</th>
             </tr>
           </thead>
@@ -48,9 +48,9 @@
             <?php foreach ($dados['vendas'] as $venda) { ?>
               <tr>
                 <th scope="row"><?= $venda->getCodigo() ?></th>
-                <td><?= $venda->getData() ?></td>
+                <td><?= $venda->getDataView() ?></td>
                 <td><?= $venda->getCliente()->getNome() ?></td>
-                <td><?= $venda->getTotal() ?></td>
+                <td><?= $venda->getTotalView() ?></td>
                 <td><?= $venda->getSituacao() ?></td>
               </tr>
             <?php } ?>

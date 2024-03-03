@@ -38,9 +38,9 @@ class Pagamento implements Environment
         return $response;
     }
 
-    public function createOrder($token, $totalVenda, Endereco $endereco)
-    {
-        $total_formatado = number_format(floatval($totalVenda), 2);
+    public function createOrder($token, $totalVenda, Endereco $endereco, $idVenda)
+    {        
+        $totalVenda = strval($totalVenda);
         
         $request = new HttpRequest("v2/checkout/orders", "POST");
         $request->headers['Content-Type'] = "application/json";
@@ -49,7 +49,7 @@ class Pagamento implements Environment
         $request->body['intent'] = "CAPTURE";
         $request->body['purchase_units'] = [];
         $request->body['purchase_units'][] = [
-            'amount' => ['currency_code' => "BRL", 'value' => $total_formatado],
+            'amount' => ['currency_code' => "BRL", 'value' => $totalVenda],
             'shipping' => [
                 'type' => "SHIPPING",
                 'address' => [
@@ -62,7 +62,7 @@ class Pagamento implements Environment
                 ]]];
         $request->body['payment_source'] = ['paypal' => ['experience_context' => []]];
         $request->body['payment_source']['paypal']['experience_context']['return_url'] = "http://" . APP_HOST . "/venda/autorizarPagamento";
-        $request->body['payment_source']['paypal']['experience_context']['cancel_url'] = "http://" . APP_HOST . "/";
+        $request->body['payment_source']['paypal']['experience_context']['cancel_url'] = "http://" . APP_HOST . "/venda/excluir/" . $idVenda;
         $request->body['payment_source']['paypal']['experience_context']['brand_name'] = "SUPERFATTO LIVRE";
         $request->body['payment_source']['paypal']['experience_context']['locale'] = "pt-BR";
 
@@ -73,12 +73,26 @@ class Pagamento implements Environment
         return $response;
     }
 
-    public function authorizePayment($token, $idPedido)
+    public function authorizePayment($token, $idPagamento)
     {
-        $request = new HttpRequest("v2/checkout/orders/" . $idPedido . "/capture", "POST");
+        $request = new HttpRequest("v2/checkout/orders/" . $idPagamento . "/capture", "POST");
         $request->headers['Content-Type'] = "application/json";
         $request->headers['Authorization'] = "Bearer " . $token;
         $request->body = "";
+
+        $client = new HttpClient($this);
+        
+        $response = $client->execute($request);
+
+        return $response;
+    }
+
+    public function getOrder($idPagamento, $token)
+    {
+        $request = new HttpRequest("v2/checkout/orders/" . $idPagamento, "GET");
+        $request->headers['Content-Type'] = "application/json";
+        $request->headers['Authorization'] = "Bearer " . $token;
+        $request->body = [];
 
         $client = new HttpClient($this);
         

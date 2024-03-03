@@ -8,35 +8,6 @@ use PDO;
 
 class ProdutoVendaDAO extends BaseDAO
 {
-    public function localizar($cod_produto, $cod_venda)
-    {
-        try {
-            $pdoStatement = $this->select(
-                "SELECT pl.*, p.nome nome_produto, p.preco, p.imagem
-                FROM produto_lote pl, produto p
-                WHERE pl.cod_produto = $cod_produto AND pl.cod_lote = $cod_lote
-                AND p.codigo = pl.cod_produto");
-            
-            $arrayResultado = $pdoStatement->fetch(PDO::FETCH_ASSOC);
-
-            $produtoLote = new ProdutoLote(
-                $arrayResultado['cod_produto'],
-                $arrayResultado['cod_lote'],
-                $arrayResultado['quantidade'],
-                $arrayResultado['subtotal'],
-                $arrayResultado['nome_produto'],
-                $arrayResultado['preco'],
-                $arrayResultado['imagem']
-            );
-            
-            return $produtoLote;
-        }
-        catch (Exception $excecao) {
-            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
-            return $erro;
-        }
-    }
-
     public function listar($cod_venda)
     {
         try {
@@ -64,41 +35,6 @@ class ProdutoVendaDAO extends BaseDAO
             }
 
             return $produtosVenda;
-        }
-        catch (Exception $excecao) {
-            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
-            return $erro;
-        }
-    }
-
-    public function listarPaginacao($indice, $limitePorPagina, $busca = "", $cod_lote)
-    {
-        try {
-            $pdoStatement = $this->select("SELECT pl.*, p.nome, p.preco, p.imagem
-                FROM produto_lote pl, produto p
-                WHERE pl.cod_produto = p.codigo AND pl.cod_lote = $cod_lote
-            AND p.nome LIKE '%$busca%' LIMIT $indice, $limitePorPagina");
-
-            $arrayProdutosLote = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
-
-            $produtosLote = [];
-
-            foreach($arrayProdutosLote as $produtoLoteEncontrado)
-            {
-                $produtoLote = new ProdutoLote(
-                    $produtoLoteEncontrado['cod_produto'],
-                    $produtoLoteEncontrado['cod_lote'],
-                    $produtoLoteEncontrado['quantidade'],
-                    $produtoLoteEncontrado['subtotal'],
-                    $produtoLoteEncontrado['nome'],
-                    $produtoLoteEncontrado['preco'],
-                    $produtoLoteEncontrado['imagem']
-                );
-
-                $produtosLote[] = $produtoLote;
-            }
-
-            return $produtosLote;
         }
         catch (Exception $excecao) {
             $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");

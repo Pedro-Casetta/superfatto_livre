@@ -48,6 +48,14 @@ abstract class Conta
         return $resultado;
     }
 
+    public static function localizarNomeUsuario($nome_usuario)
+    {
+        $contaDAO = new ContaDAO();
+        $resultado = $contaDAO->localizarNomeUsuario($nome_usuario);
+
+        return $resultado;
+    }
+
     public function atualizar()
     {
         $contaDAO = new ContaDAO();

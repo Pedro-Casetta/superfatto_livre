@@ -45,7 +45,8 @@
                 <div class="col-6 col-md-4 col-lg-3">
                     <label for="credencial" class="form-label">Credencial</label>
                     <input type="text" class="form-control border border-primary" id="credencial" name="credencial"
-                    value="<?= $dados['conta']->getCredencial() ?>" required>
+                    value="<?= $dados['conta']->getCredencial()->getNome() ?>" required>
+                    <input type="hidden" name="cod_credencial" value="<?= $dados['conta']->getCredencial()->getCodigo() ?>">
                 </div>
             <?php } else if ($dados['conta']->getTipo() == 'cliente') {?>
                 <div class="col-6 col-md-4 col-lg-3">

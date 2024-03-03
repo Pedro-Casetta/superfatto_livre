@@ -36,12 +36,14 @@
     <?php if ($dados['conta']->getTipo() == 'administrador') { ?>
         <div class="col-auto">
           <label for="credencial" class="form-label">Credencial</label>
-          <input class="form-control border border-primary" id="credencial" name="credencial" value="<?= $dados['conta']->getCredencial() ?>" readonly>
+          <input class="form-control border border-primary" id="credencial"
+          name="credencial" value="<?= $dados['conta']->getCredencial()->getNome() ?>" readonly>
         </div>
     <?php } else if ($dados['conta']->getTipo() == 'cliente') { ?>
         <div class="col-auto">
           <label for="telefone" class="form-label">Telefone</label>
-          <input class="form-control border border-primary" id="telefone" name="telefone" value="<?= $dados['conta']->getTelefone() ?>" readonly>
+          <input class="form-control border border-primary" id="telefone" name="telefone"
+          value="<?= $dados['conta']->getTelefone() ?>" readonly>
         </div>
     <?php } ?>
     </div>

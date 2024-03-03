@@ -70,6 +70,20 @@ class Venda
         return $resultado;
     }
 
+    public function atualizar()
+    {
+        $vendaDAO = new VendaDAO();
+        $resultado = $vendaDAO->atualizar($this);
+
+        return $resultado;
+    }
+
+    public function excluir()
+    {
+        $vendaDAO = new VendaDAO();
+        $resultado = $vendaDAO->excluir($this);
+    }
+
     public function getCodigo() : int
     {
         return $this->codigo;
@@ -85,12 +99,24 @@ class Venda
         return $this->data;
     }
 
+    public function getDataView() : string
+    {
+        $data_formatada = explode("-", $this->data);
+        $data_formatada = $data_formatada[2] . '/' . $data_formatada[1] . '/' . $data_formatada[0];
+        return $data_formatada;
+    }
+
     public function setData(string $valor)
     {
         $this->data = $valor;
     }
 
-    public function getTotal() : string
+    public function getTotal() : float
+    {
+        return $this->total;
+    }
+    
+    public function getTotalView() : string
     {
         $total_formatado = number_format($this->total, 2, ',', '.');
         return $total_formatado;

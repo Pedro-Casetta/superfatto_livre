@@ -7,6 +7,8 @@ use App\Model\Entidades\Conta\Conta;
 use App\Model\Entidades\Conta\Administrador;
 use App\Model\Entidades\Conta\Cliente;
 use App\Model\DAO\ProdutoDAO;
+use App\Lib\Validador;
+use Exception;
 
 class ContaController extends BaseController
 {
@@ -16,18 +18,54 @@ class ContaController extends BaseController
         $produtoDAO = new ProdutoDAO();
         $resultado = $produtoDAO->listarDepartamentos();
         
-        if(is_array($resultado))
+        if (is_array($resultado))
             $this->setDados('departamentos', $resultado);
         else
             Sessao::setMensagem($resultado->getMessage());
+
+        if (Sessao::getFormulario() && Sessao::getValidacaoFormulario())
+        {
+            $this->setDados('formulario', Sessao::getFormulario());
+            $this->setDados('validacao', Sessao::getValidacaoFormulario());
+        }
         
         $this->renderizar('conta/cadastro');
 
         Sessao::setMensagem(null);
+        Sessao::setFormulario(null);
+        Sessao::setValidacaoFormulario(null);
     }
     
     public function cadastrar()
     {
+        $nome_validado = Validador::validarNome($_POST['nome']);
+        $email_validado = Validador::validarEmail($_POST['email']);
+        $usuario_validado = Validador::validarNomeUsuario($_POST['nome_usuario']);
+        $usuario_novo = Conta::localizarNomeUsuario($_POST['nome_usuario']);
+        $senha_validada = Validador::validarSenha($_POST['senha']);
+        $telefone_validado = (!empty($_POST['telefone']) ? Validador::validarTelefone($_POST['telefone']) : true);
+        $confirmacao_senha = ($_POST['senha'] == $_POST['confirma_senha'] ? true : false);
+
+        $validacao_formulario = [
+            'nome_validado' => $nome_validado,
+            'email_validado' => $email_validado,
+            'usuario_validado' => $usuario_validado,
+            'usuario_novo' => $usuario_novo,
+            'senha_validada' => $senha_validada,
+            'telefone_validado' => $telefone_validado,
+            'confirmacao_senha' => $confirmacao_senha
+        ];
+
+
+
+        if (in_array(false, $validacao_formulario))
+        {
+            Sessao::setFormulario($_POST);
+            Sessao::setValidacaoFormulario($validacao_formulario);
+            $this->redirecionar('/conta/encaminharCadastro');
+            exit;
+        }
+        
         if ($_POST['tipo'] == "cliente")
         {
             $conta = new Cliente(
@@ -37,8 +75,8 @@ class ContaController extends BaseController
                 $_POST['nome_usuario'],
                 $_POST['senha'],
                 $_POST['tipo'],
-                $_POST['telefone'],
-            );
+                $_POST['telefone']
+            );            
         }
         else if ($_POST['tipo'] == "administrador")
         {
@@ -49,8 +87,34 @@ class ContaController extends BaseController
                 $_POST['nome_usuario'],
                 $_POST['senha'],
                 $_POST['tipo'],
-                $_POST['credencial'],
+                0,
+                $_POST['credencial']
             );
+
+            $resultado_credencial = $conta->verificarCredencial();
+            
+            if (is_int($resultado_credencial))
+            {
+                $conta->getCredencial()->setCodigo($resultado_credencial);
+            }
+            else if ($resultado_credencial == "inválido")
+            {
+                Sessao::setMensagem("Credencial do administrador não confere!");
+                $this->redirecionar('/conta/encaminharCadastro');
+                exit;
+            }
+            else if ($resultado_credencial instanceof Exception)
+            {
+                Sessao::setMensagem($resultado_credencial->getMessage());
+                $this->redirecionar('/conta/encaminharCadastro');
+                exit;
+            }
+            else
+            {
+                Sessao::setMensagem("Erro ao verificar credencial!");
+                $this->redirecionar('/conta/encaminharCadastro');
+                exit;
+            }
         }
 
         $resultado = $conta->cadastrar();
@@ -171,6 +235,7 @@ class ContaController extends BaseController
                     $_POST['nome_usuario'],
                     "",
                     "",
+                    $_POST['cod_credencial'],
                     $_POST['credencial']
                 );
             }

@@ -4,7 +4,6 @@ namespace App\Controller;
 
 use App\Lib\Sessao;
 use App\Model\Entidades\ProdutoCarrinho;
-use App\Model\Entidades\Produto;
 use App\Model\Entidades\Carrinho;
 use App\Model\DAO\ProdutoDAO;
 use Exception;
@@ -48,19 +47,28 @@ class CarrinhoController extends BaseController
     public function inserirNoCarrinho()
     {
         if (Sessao::verificarAcesso('cliente'))
-        {            
-            $produtoCarrinho = new ProdutoCarrinho(
-                $_POST['produto_carrinho'],
-                $_POST['carrinho'],
-                $_POST['quantidade_carrinho']
-            );
+        {
+            if ($_POST['quantidade_carrinho'] <= $_POST['estoque'])
+            {
+                $produtoCarrinho = new ProdutoCarrinho(
+                    $_POST['produto_carrinho'],
+                    $_POST['carrinho'],
+                    $_POST['quantidade_carrinho']
+                );
 
-            $resultado = $produtoCarrinho->cadastrar();
+                $resultado = $produtoCarrinho->cadastrar();
 
-            if ($resultado instanceof Exception)
-                Sessao::setMensagem($resultado->getMessage());
+                if ($resultado instanceof Exception)
+                    Sessao::setMensagem($resultado->getMessage());
 
-            $this->redirecionar('/');
+                $this->redirecionar('/');
+            }
+            else
+            {
+                Sessao::setFormulario($_POST);
+                Sessao::setValidacaoFormulario(['quantidade_carrinho' => false]);
+                $this->redirecionar('/produto/detalhesProduto/' . $_POST['produto_carrinho']);
+            }
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -93,13 +101,22 @@ class CarrinhoController extends BaseController
             $cod_carrinho = Sessao::getCodigoConta();
             $quantidade = $_POST['quantidade'];
 
-            $produtoCarrinho = new ProdutoCarrinho($cod_produto, $cod_carrinho, $quantidade);
-            $resultado = $produtoCarrinho->atualizar();
-
-            if ($resultado instanceof Exception)
+            $produtoCarrinho = new ProdutoCarrinho($cod_produto, $cod_carrinho);
+            $resultado = $produtoCarrinho->localizar();
+            
+            if ($resultado instanceof ProdutoCarrinho)
+            {
+                $estoque = $resultado->getEstoque();
+                if ($quantidade <= $estoque && $quantidade > 0)
+                {
+                    $resultado->setQuantidade($quantidade);
+                    $resultado_atualizacao = $resultado->atualizar();
+                    if ($resultado_atualizacao instanceof Exception)
+                        Sessao::setMensagem($resultado_atualizacao->getMessage());
+                }
+            }
+            else if ($resultado instanceof Exception)
                 Sessao::setMensagem($resultado->getMessage());
-
-            $this->redirecionar('/carrinho/index');
         }
         else
         $this->redirecionar('/conta/encaminharAcesso');

@@ -65,4 +65,27 @@ class Sessao
         $_SESSION['codigo'] = $valor;
     }
     
+    public static function getFormulario()
+    {
+        if (isset($_SESSION['formulario']))
+            return $_SESSION['formulario'];
+        return false;
+    }
+
+    public static function setFormulario($valor)
+    {
+        $_SESSION['formulario'] = $valor;
+    }
+
+    public static function getValidacaoFormulario()
+    {
+        if (isset($_SESSION['validacao_formulario']))
+            return $_SESSION['validacao_formulario'];
+        return false;
+    }
+
+    public static function setValidacaoFormulario($valor)
+    {
+        $_SESSION['validacao_formulario'] = $valor;
+    }
 }

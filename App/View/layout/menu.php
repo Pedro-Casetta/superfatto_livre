@@ -83,6 +83,7 @@
           </button>
           <ul class="dropdown-menu dropdown-menu-end">
             <li><a class="dropdown-item" href="http://<?=APP_HOST?>/conta/encaminharPerfil">Perfil</a></li>
+            <li><a class="dropdown-item" href="http://<?=APP_HOST?>/venda/indexCompras">Histórico de compras</a></li>
             <li><hr class="dropdown-divider"></li>
             <li><a class="dropdown-item" href="http://<?=APP_HOST?>/conta/logout">Logout</a></li>
           </ul>

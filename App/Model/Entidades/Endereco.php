@@ -106,12 +106,12 @@ class Endereco
         $this->rua = $valor;
     }
 
-    public function getNumero() : string
+    public function getNumero() : int
     {
         return $this->numero;
     }
 
-    public function setNumero(string $valor)
+    public function setNumero(int $valor)
     {
         $this->numero = $valor;
     }

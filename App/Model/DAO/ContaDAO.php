@@ -35,14 +35,14 @@ class ContaDAO extends BaseDAO
 
             if ($conta instanceof Administrador)
             {
-                $credencial = $conta->getCredencial();
+                $credencial = $conta->getCredencial()->getCodigo();
 
                 $resultado = $this->insert(
                     'administrador',
-                    ':codigo, :credencial',
+                    ':codigo, :cod_credencial',
                     [
                         ':codigo' => $codigo,
-                        ':credencial' => $credencial
+                        ':cod_credencial' => $credencial
                     ]);
             }
             else if ($conta instanceof Cliente)
@@ -64,6 +64,26 @@ class ContaDAO extends BaseDAO
             $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no cadastro dos dados");
             return $erro;
         }
+    }
+
+    public function verificarCredencial(Administrador $administrador)
+    {
+        $credencialInformada = $administrador->getCredencial()->getNome();
+        
+        $pdoStatement = $this->select("SELECT * FROM credencial");
+        $arrayResultado = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
+
+        if (is_array($arrayResultado))
+        {
+            foreach($arrayResultado as $credencial)
+            {
+                if($credencial['nome'] == $credencialInformada)
+                    return $credencial['codigo'];
+            }
+            return "inválido";
+        }
+        else
+            return $arrayResultado;
     }
 
     public function acessar($nome_usuario, $senha)
@@ -113,8 +133,9 @@ class ContaDAO extends BaseDAO
     {
         try {
             if ($tipo == 'administrador') {
-                $pdoStatement = $this->select("SELECT c.*, a.credencial FROM conta c, administrador a
-                    WHERE c.codigo = $codigo AND a.codigo = $codigo");
+                $pdoStatement = $this->select("SELECT c.*, a.cod_credencial, cr.nome nome_credencial
+                FROM conta c, administrador a, credencial cr
+                WHERE c.codigo = $codigo AND a.codigo = $codigo AND cr.codigo = a.cod_credencial");
                 
                 $arrayResultado = $pdoStatement->fetch(PDO::FETCH_ASSOC);
 
@@ -125,7 +146,8 @@ class ContaDAO extends BaseDAO
                     $arrayResultado['nome_usuario'],
                     $arrayResultado['senha'],
                     $arrayResultado['tipo'],
-                    $arrayResultado['credencial']
+                    $arrayResultado['cod_credencial'],
+                    $arrayResultado['nome_credencial']
                 );
             }
             else if ($tipo == 'cliente') {
@@ -146,6 +168,22 @@ class ContaDAO extends BaseDAO
             }
             
             return $conta;
+        }
+        catch (Exception $excecao) {
+            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
+            return $erro;
+        }
+    }
+
+    public function localizarNomeUsuario($nome_usuario)
+    {
+        try {
+            $pdoStatement = $this->select("SELECT * FROM conta WHERE nome_usuario = '$nome_usuario'");
+            
+            if ($pdoStatement->fetch())
+                return false;
+            else
+                return true;
         }
         catch (Exception $excecao) {
             $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
@@ -174,17 +212,21 @@ class ContaDAO extends BaseDAO
 
             if ($conta instanceof Administrador)
             {
-                $credencial = $conta->getCredencial();
+                $codigo = $conta->getCredencial()->getCodigo();
+                $nome = $conta->getCredencial()->getNome();
 
                 $resultado = $this->update(
-                    'administrador',
-                    'credencial = :credencial',
+                    'credencial',
+                    'nome = :nome',
                     [
-                        ':credencial' => $credencial
-                    ]);
+                        ':nome' => $nome
+                    ],
+                    'codigo = ' . $codigo
+                );
             }
             else if ($conta instanceof Cliente)
             {
+                $codigo = $conta->getCodigo();
                 $telefone = $conta->getTelefone();
 
                 $resultado = $this->update(
@@ -192,7 +234,9 @@ class ContaDAO extends BaseDAO
                     'telefone = :telefone',
                     [
                         ':telefone' => $telefone
-                    ]);
+                    ],
+                    'codigo = ' . $codigo
+                );
             }
             
             return $resultado;
