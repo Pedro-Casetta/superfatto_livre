@@ -11,7 +11,7 @@ class EnderecoDAO extends BaseDAO
     public function localizar($codigo)
     {
         try {
-            $pdoStatement = $this->select("SELECT * FROM endereco WHERE codigo = $codigo");
+            $pdoStatement = $this->select("SELECT * FROM endereco WHERE codigo = '$codigo'");
 
             $arrayResultado = $pdoStatement->fetch(PDO::FETCH_ASSOC);
 

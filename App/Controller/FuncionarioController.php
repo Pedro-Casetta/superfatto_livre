@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Lib\Paginacao;
 use App\Lib\Sessao;
+use App\Lib\Validador;
 use App\Model\Entidades\Funcionario;
 
 class FuncionarioController extends BaseController
@@ -20,7 +21,7 @@ class FuncionarioController extends BaseController
             $funcionario = new Funcionario();
             $resultado = $funcionario->listarPaginacao($indice, Paginacao::$limitePorPagina, $busca);
 
-            $totalRegistros = $funcionario->contarTotalRegistros("funcionario", "nome LIKE '%$busca%'");
+            $totalRegistros = $funcionario->contarTotalRegistros("funcionario", "nome LIKE '%$busca%' OR setor LIKE '%$busca%'");
             $totalPaginas = ceil($totalRegistros / Paginacao::$limitePorPagina);
             $paginacao = Paginacao::criarPaginacao('/funcionario', $paginaSelecionada, $totalPaginas, $busca);
 
@@ -44,7 +45,15 @@ class FuncionarioController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
+            if (Sessao::getFormulario() && Sessao::getValidacaoFormulario())
+            {
+                $this->setDados('formulario', Sessao::getFormulario());
+                $this->setDados('validacao', Sessao::getValidacaoFormulario());
+            }
+            
             $this->renderizar('funcionario/cadastro');
+            Sessao::setFormulario(null);
+            Sessao::setValidacaoFormulario(null);
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -54,6 +63,26 @@ class FuncionarioController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
+            $cpf_validado = Validador::validarCpf($_POST['cpf']);
+            $nome_validado = Validador::validarNome($_POST['nome']);
+            $salario_validado = Validador::validarMonetario($_POST['salario']);
+
+            $validacao_formulario = [
+                'cpf_validado' => $cpf_validado,
+                'nome_validado' => $nome_validado,
+                'salario_validado' => $salario_validado
+            ];
+
+
+
+            if (in_array(false, $validacao_formulario))
+            {
+                Sessao::setFormulario($_POST);
+                Sessao::setValidacaoFormulario($validacao_formulario);
+                $this->redirecionar('/funcionario/encaminharCadastro');
+                exit;
+            }
+            
             $funcionario = new Funcionario(
                 0,
                 $_POST['cpf'],
@@ -92,7 +121,15 @@ class FuncionarioController extends BaseController
             else
                 Sessao::setMensagem($resultado->getMessage());
 
+            if (Sessao::getFormulario() && Sessao::getValidacaoFormulario())
+            {
+                $this->setDados('formulario', Sessao::getFormulario());
+                $this->setDados('validacao', Sessao::getValidacaoFormulario());
+            }
+            
             $this->renderizar('funcionario/edicao');
+            Sessao::setFormulario(null);
+            Sessao::setValidacaoFormulario(null);
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -102,6 +139,26 @@ class FuncionarioController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
+            $cpf_validado = Validador::validarCpf($_POST['cpf']);
+            $nome_validado = Validador::validarNome($_POST['nome']);
+            $salario_validado = Validador::validarMonetario($_POST['salario']);
+
+            $validacao_formulario = [
+                'cpf_validado' => $cpf_validado,
+                'nome_validado' => $nome_validado,
+                'salario_validado' => $salario_validado
+            ];
+
+
+
+            if (in_array(false, $validacao_formulario))
+            {
+                Sessao::setFormulario($_POST);
+                Sessao::setValidacaoFormulario($validacao_formulario);
+                $this->redirecionar('/funcionario/encaminharEdicao/'. $_POST['codigo']);
+                exit;
+            }
+            
             $funcionario = new Funcionario(
                 $_POST['codigo'],
                 $_POST['cpf'],

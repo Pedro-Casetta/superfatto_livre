@@ -5,6 +5,7 @@ namespace App\Controller;
 use App\Lib\Paginacao;
 use App\Lib\Sessao;
 use App\Lib\Upload;
+use App\Lib\Validador;
 use App\Model\Entidades\Produto;
 use App\Model\DAO\ProdutoDAO;
 use Exception;
@@ -65,8 +66,16 @@ class ProdutoController extends BaseController
             }
             else
                 Sessao::setMensagem($resultado->getMessage());
-        
+            
+            if (Sessao::getFormulario() && Sessao::getValidacaoFormulario())
+            {
+                $this->setDados('formulario', Sessao::getFormulario());
+                $this->setDados('validacao', Sessao::getValidacaoFormulario());
+            }
+            
             $this->renderizar('produto/cadastro');
+            Sessao::setFormulario(null);
+            Sessao::setValidacaoFormulario(null);
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -76,6 +85,24 @@ class ProdutoController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
+            $nome_validado = Validador::validarNomeProduto($_POST['nome']);
+            $preco_validado = Validador::validarMonetario($_POST['preco']);
+
+            $validacao_formulario = [
+                'nome_validado' => $nome_validado,
+                'preco_validado' => $preco_validado
+            ];
+
+
+
+            if (in_array(false, $validacao_formulario))
+            {
+                Sessao::setFormulario($_POST);
+                Sessao::setValidacaoFormulario($validacao_formulario);
+                $this->redirecionar('/produto/encaminharCadastro');
+                exit;
+            }
+            
             $upload = new Upload();
             $resultado_upload = $upload->subirImagem('produto');
             
@@ -129,7 +156,15 @@ class ProdutoController extends BaseController
             else
                 Sessao::setMensagem($resultado_departamento->getMessage());
 
+            if (Sessao::getFormulario() && Sessao::getValidacaoFormulario())
+            {
+                $this->setDados('formulario', Sessao::getFormulario());
+                $this->setDados('validacao', Sessao::getValidacaoFormulario());
+            }
+            
             $this->renderizar('produto/edicao');
+            Sessao::setFormulario(null);
+            Sessao::setValidacaoFormulario(null);
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -139,6 +174,22 @@ class ProdutoController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
+            $nome_validado = Validador::validarNomeProduto($_POST['nome']);
+            $preco_validado = Validador::validarMonetario($_POST['preco']);
+
+            $validacao_formulario = [
+                'nome_validado' => $nome_validado,
+                'preco_validado' => $preco_validado
+            ];
+
+            if (in_array(false, $validacao_formulario))
+            {
+                Sessao::setFormulario($_POST);
+                Sessao::setValidacaoFormulario($validacao_formulario);
+                $this->redirecionar('/produto/encaminharEdicao/' . $_POST['codigo']);
+                exit;
+            }
+            
             if ($_FILES['imagem']['error'] === UPLOAD_ERR_NO_FILE)
             {
                 $produto = new Produto(

@@ -30,9 +30,14 @@
               <i class="bi bi-box-seam fs-3">&nbsp;</i>Lote
             </a>
           </li>
-          <li class="nav-item bg-success">
+          <li class="nav-item bg-success me-lg-1">
             <a class="nav-link text-warning" href="http://<?=APP_HOST?>/produto">
               <i class="bi bi-shop fs-3">&nbsp;</i>Produtos
+            </a>
+          </li>
+          <li class="nav-item bg-success">
+            <a class="nav-link text-warning" href="http://<?=APP_HOST?>/departamento">
+              <i class="bi bi-diagram-3 fs-3">&nbsp;</i>Departamentos
             </a>
           </li>
         </ul>

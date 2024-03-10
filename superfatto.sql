@@ -54,7 +54,8 @@ CREATE TABLE IF NOT EXISTS `superfatto`.`conta` (
   `senha` VARCHAR(255) NULL,
   `tipo` VARCHAR(45) NULL,
   PRIMARY KEY (`codigo`),
-  UNIQUE INDEX `nome_usuario_UNIQUE` (`nome_usuario` ASC))
+  UNIQUE INDEX `nome_usuario_UNIQUE` (`nome_usuario` ASC),
+  UNIQUE INDEX `email_UNIQUE` (`email` ASC))
 ENGINE = InnoDB;
 
 
@@ -377,7 +378,7 @@ BEGIN
     select estoque into estoqueProduto from produto where codigo = new.cod_produto;
     
     update produto_carrinho set quantidade = estoqueProduto
-    where codigo = new.cod_produto AND quantidade > estoqueProduto;
+    where cod_produto = new.cod_produto AND quantidade > estoqueProduto;
     
     if (estoqueProduto = 0) then
 		delete from produto_carrinho where cod_produto = new.cod_produto;

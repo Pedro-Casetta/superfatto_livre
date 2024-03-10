@@ -23,22 +23,36 @@
           <div class="row mb-3">
             <div class="col-11 col-md-9 col-lg-6">
               <label for="nome" class="form-label">Nome</label>
-              <input type="text" class="form-control border border-primary" id="nome" name="nome"
-              value="<?= $dados['produto']->getNome() ?>" required>
+              <input type="text" class="form-control border border-primary
+              <?= (isset($dados['validacao']) && !$dados['validacao']['nome_validado'] ? 'is-invalid' : '') ?>"
+              id="nome" name="nome"
+              value="<?= (isset($dados['formulario'])) ? $dados['formulario']['nome'] : $dados['produto']->getNome() ?>" required>
+              <?php if (isset($dados['validacao']) && !$dados['validacao']['nome_validado']) { ?>
+                <div class="alert alert-danger mt-1">
+                  O nome deve conter apenas letras, números, espaços ou apóstrofos.
+                </div>
+              <?php } ?>
             </div>
           </div>
           <div class="row mb-3">
             <div class="col-6 col-md-4 col-lg-3">
               <label for="preco" class="form-label">Preço</label>
-              <input type="text" class="form-control border border-primary" id="preco" name="preco"
-              value="<?= $dados['produto']->getPreco() ?>" required>
+              <input type="text" class="form-control border border-primary
+              <?= (isset($dados['validacao']) && !$dados['validacao']['preco_validado'] ? 'is-invalid' : '') ?>"
+              id="preco" name="preco"
+              value="<?= (isset($dados['formulario'])) ? $dados['formulario']['preco'] : $dados['produto']->getPreco() ?>" required>
+              <?php if (isset($dados['validacao']) && !$dados['validacao']['preco_validado']) { ?>
+                <div class="alert alert-danger mt-1">
+                  O preço deve conter apenas dígitos ou ponto separando o valor dos centavos.
+                </div>
+              <?php } ?>
             </div>
           </div>
           <div class="row mb-3">
             <div class="col-6 col-md-4 col-lg-3">
               <label for="estoque" class="form-label">Estoque</label>
               <input type="number" min="0" class="form-control border border-primary" id="estoque" name="estoque"
-              value="<?= $dados['produto']->getEstoque() ?>" required>
+              value="<?= (isset($dados['formulario'])) ? $dados['formulario']['estoque'] : $dados['produto']->getEstoque() ?>" required>
             </div>
           </div>
           <div class="row mb-3">
@@ -60,7 +74,8 @@
                 <?php if (isset($dados['departamentos']) && !empty($dados['departamentos'])) { ?>
                   <?php foreach($dados['departamentos'] as $departamento) { ?>
                     <option value="<?= $departamento->getCodigo() ?>" 
-                    <?= ($departamento->getCodigo() == $dados['produto']->getDepartamento()->getCodigo()) ? 'selected' : '' ?>>
+                    <?=(isset($dados['formulario']) && $dados['formulario']['departamento'] == $departamento->getCodigo() ? 'selected' :
+                      ($departamento->getCodigo() == $dados['produto']->getDepartamento()->getCodigo() ? 'selected' : '')) ?>>
                       <?= $departamento->getNome() ?>
                     </option>
                 <?php } } ?>

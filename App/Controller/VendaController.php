@@ -11,7 +11,6 @@ use App\Model\Entidades\Carrinho;
 use App\Model\Entidades\Endereco;
 use App\Model\Entidades\Produto;
 use App\Model\Entidades\Pagamento;
-use App\Model\Entidades\NotaFiscal;
 use Exception;
 
 class VendaController extends BaseController
@@ -260,6 +259,13 @@ class VendaController extends BaseController
                     {
                         $produtoVenda = new ProdutoVenda($_POST['produto'], $resultado_venda['codigo'], $_POST['quantidade']);
                         $resultado_produto = $produtoVenda->cadastrar();
+
+                        if ($resultado_produto instanceof Exception)
+                        {
+                            Sessao::setMensagem($resultado_produto->getMessage());
+                            $this->redirecionar('/');
+                            exit;
+                        }
                     }
                     else
                     {
@@ -275,8 +281,15 @@ class VendaController extends BaseController
                                     $resultado_venda['codigo'],
                                     $produtoCarrinho->getQuantidade()
                                 );
-                                $produtoVenda->cadastrar();
+                                $resultado_produtoVenda = $produtoVenda->cadastrar();
                                 $produtoCarrinho->excluir();
+
+                                if ($resultado_produtoVenda instanceof Exception)
+                                {
+                                    Sessao::setMensagem($resultado_produtoVenda->getMessage());
+                                    $this->redirecionar('/conta/encaminharPerfil');
+                                    exit;
+                                }
                             }
                         }
                     }
@@ -289,19 +302,19 @@ class VendaController extends BaseController
                     else
                     {
                         Sessao::setMensagem($resultado_produto->getMessage());
-                        $this->redirecionar('/venda/salvarEndereco');
+                        $this->redirecionar('/');
                     }
                 }
                 else
                 {
                     Sessao::setMensagem($resultado_venda->getMessage());
-                    $this->redirecionar('/venda/salvarEndereco');
+                    $this->redirecionar('/');
                 }
             }
             else
             {
                 Sessao::setMensagem($resultado->getMessage());
-                $this->redirecionar('/venda/salvarEndereco');
+                $this->redirecionar('/');
             }
         }
     }

@@ -22,39 +22,69 @@
           <div class="row mb-3">
             <div class="col-11 col-md-9 col-lg-6">
               <label for="nome" class="form-label">Nome</label>
-              <input type="text" class="form-control border border-primary" id="nome" name="nome"
-              value="<?= $dados['conta']->getNome() ?>" required>
+              <input type="text" class="form-control border border-primary
+              <?= (isset($dados['validacao']) && !$dados['validacao']['nome_validado'] ? 'is-invalid' : '') ?>"
+              id="nome" name="nome"
+              value="<?= (isset($dados['formulario'])) ? $dados['formulario']['nome'] : $dados['conta']->getNome() ?>" required>
+              <?php if (isset($dados['validacao']) && !$dados['validacao']['nome_validado']) { ?>
+              <div class="alert alert-danger mt-1">
+                O nome deve conter apenas letras, espaços ou apóstrofos.
+              </div>
+            <?php } ?>
             </div>
         </div>
         <div class="row mb-3">
             <div class="col-6 col-md-4 col-lg-3">
               <label for="email" class="form-label">E-mail</label>
-              <input type="text" class="form-control border border-primary" id="email" name="email"
-              value="<?= $dados['conta']->getEmail() ?>" required>
+              <input type="text" class="form-control border border-primary
+              <?= (isset($dados['validacao']) && !$dados['validacao']['email_validado'] ? 'is-invalid' : '') ?>"
+              id="email" name="email"
+              value="<?= (isset($dados['formulario'])) ? $dados['formulario']['email'] : $dados['conta']->getEmail() ?>" required>
+              <?php if (isset($dados['validacao']) && !$dados['validacao']['email_validado']) { ?>
+                <div class="alert alert-danger mt-1">
+                  O formato de e-mail está incorreto.
+                </div>
+              <?php } else if (isset($dados['validacao']) && !$dados['validacao']['email_novo']) { ?>
+                <div class="alert alert-danger mt-1">
+                  Esse e-mail já está sendo utilizado.
+                </div>
+              <?php } ?>
             </div>
         </div>
         <div class="row mb-3">
           <div class="col-6 col-md-4 col-lg-3">
             <label for="nome_usuario" class="form-label">Nome de usuário</label>
-            <input type="text" class="form-control border border-primary" id="nome_usuario" name="nome_usuario"
-            value="<?= $dados['conta']->getNomeUsuario() ?>" required>
+            <input type="text" class="form-control border border-primary
+            <?= (isset($dados['validacao']) && !$dados['validacao']['usuario_validado'] ? 'is-invalid' : '') ?>"
+            id="nome_usuario" name="nome_usuario"
+            value="<?= 
+            (isset($dados['formulario'])) ? $dados['formulario']['nome_usuario'] : $dados['conta']->getNomeUsuario() ?>" required>
+            <?php if (isset($dados['validacao']) && !$dados['validacao']['usuario_validado']) { ?>
+              <div class="alert alert-danger mt-1">
+                O nome de usuário deve conter pelo menos 6 dígitos alfanuméricos (A a Z, 0 a 9).
+              </div>
+            <?php } else if (isset($dados['validacao']) && !$dados['validacao']['usuario_novo']) { ?>
+              <div class="alert alert-danger mt-1">
+                Esse nome de usuário já está sendo utilizado.
+              </div>
+            <?php } ?>
           </div>
         </div>
         <div class="row mb-4">
-            <?php if ($dados['conta']->getTipo() == 'administrador') {?>
-                <div class="col-6 col-md-4 col-lg-3">
-                    <label for="credencial" class="form-label">Credencial</label>
-                    <input type="text" class="form-control border border-primary" id="credencial" name="credencial"
-                    value="<?= $dados['conta']->getCredencial()->getNome() ?>" required>
-                    <input type="hidden" name="cod_credencial" value="<?= $dados['conta']->getCredencial()->getCodigo() ?>">
+          <?php if ($dados['conta']->getTipo() == 'cliente') {?>
+            <div class="col-6 col-md-4 col-lg-3">
+              <label for="telefone" class="form-label">Telefone</label>
+              <input type="text" class="form-control border border-primary
+              <?= (isset($dados['validacao']) && !$dados['validacao']['telefone_validado'] ? 'is-invalid' : '') ?>"
+              id="telefone" name="telefone"
+              value="<?= (isset($dados['formulario'])) ? $dados['formulario']['telefone'] : $dados['conta']->getTelefone() ?>" required>
+              <?php if (isset($dados['validacao']) && !$dados['validacao']['telefone_validado']) { ?>
+                <div class="alert alert-danger mt-1">
+                  O telefone deve conter pelo menos 8 dígitos, todos numéricos (0 a 9).
                 </div>
-            <?php } else if ($dados['conta']->getTipo() == 'cliente') {?>
-                <div class="col-6 col-md-4 col-lg-3">
-                    <label for="telefone" class="form-label">Telefone</label>
-                    <input type="text" class="form-control border border-primary" id="telefone" name="telefone"
-                    value="<?= $dados['conta']->getTelefone() ?>" required>
-                </div>
-            <?php } ?>
+              <?php } ?>
+            </div>
+          <?php } ?>
         </div>
         <div class="row">
           <div class="col-auto">

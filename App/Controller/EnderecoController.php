@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Lib\Paginacao;
 use App\Lib\Sessao;
+use App\Lib\Validador;
 use App\Model\Entidades\Endereco;
 
 class EnderecoController extends BaseController
@@ -47,8 +48,17 @@ class EnderecoController extends BaseController
     public function encaminharCadastro()
     {
         if (Sessao::verificarAcesso('cliente'))
-        {
+        {            
+            if (Sessao::getFormulario() && Sessao::getValidacaoFormulario())
+            {
+                $this->setDados('formulario', Sessao::getFormulario());
+                $this->setDados('validacao', Sessao::getValidacaoFormulario());
+            }
+            
             $this->renderizar('endereco/cadastro');
+            Sessao::setMensagem(null);
+            Sessao::setFormulario(null);
+            Sessao::setValidacaoFormulario(null);
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -56,6 +66,26 @@ class EnderecoController extends BaseController
 
     public function cadastrar()
     {
+        $rua_validada = Validador::validarNome($_POST['rua']);
+        $bairro_validado = Validador::validarNome($_POST['bairro']);
+        $cidade_validada = Validador::validarNome($_POST['cidade']);
+        $cep_validado = Validador::validarCep($_POST['cep']);
+
+        $validacao_formulario = [
+            'rua_validada' => $rua_validada,
+            'bairro_validado' => $bairro_validado,
+            'cidade_validada' => $cidade_validada,
+            'cep_validado' => $cep_validado
+            ];
+
+        if (in_array(false, $validacao_formulario))
+        {
+            Sessao::setFormulario($_POST);
+            Sessao::setValidacaoFormulario($validacao_formulario);
+            $this->redirecionar('/endereco/encaminharCadastro');
+            exit;
+        }
+        
         if (Sessao::verificarAcesso('cliente'))
         {
             $endereco = new Endereco(
@@ -99,7 +129,16 @@ class EnderecoController extends BaseController
             else
                 Sessao::setMensagem($resultado->getMessage());
 
+            if (Sessao::getFormulario() && Sessao::getValidacaoFormulario())
+            {
+                $this->setDados('formulario', Sessao::getFormulario());
+                $this->setDados('validacao', Sessao::getValidacaoFormulario());
+            }
+            
             $this->renderizar('endereco/edicao');
+            Sessao::setMensagem(null);
+            Sessao::setFormulario(null);
+            Sessao::setValidacaoFormulario(null);
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -109,6 +148,26 @@ class EnderecoController extends BaseController
     {
         if (Sessao::verificarAcesso('cliente'))
         {
+            $rua_validada = Validador::validarNome($_POST['rua']);
+            $bairro_validado = Validador::validarNome($_POST['bairro']);
+            $cidade_validada = Validador::validarNome($_POST['cidade']);
+            $cep_validado = Validador::validarCep($_POST['cep']);
+
+            $validacao_formulario = [
+                'rua_validada' => $rua_validada,
+                'bairro_validado' => $bairro_validado,
+                'cidade_validada' => $cidade_validada,
+                'cep_validado' => $cep_validado
+                ];
+
+            if (in_array(false, $validacao_formulario))
+            {
+                Sessao::setFormulario($_POST);
+                Sessao::setValidacaoFormulario($validacao_formulario);
+                $this->redirecionar('/endereco/encaminharEdicao/' . $_POST['codigo']);
+                exit;
+            }
+            
             $endereco = new Endereco(
                 $_POST['codigo'],
                 $_POST['rua'],

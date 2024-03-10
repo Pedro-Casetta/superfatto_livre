@@ -28,66 +28,97 @@
         <div class="row mb-3">
           <div class="col-6 col-md-4 col-lg-3">
             <label for="rua" class="form-label">Rua</label>
-            <input type="text" class="form-control border border-primary" id="rua" name="rua" required>
+            <input type="text" class="form-control border border-primary
+            <?= (isset($dados['validacao']) && !$dados['validacao']['rua_validada'] ? 'is-invalid' : '') ?>"
+            id="rua" name="rua" value="<?= (isset($dados['formulario'])) ? $dados['formulario']['rua'] : '' ?>" required>
+            <?php if (isset($dados['validacao']) && !$dados['validacao']['rua_validada']) { ?>
+              <div class="alert alert-danger mt-1">
+                O nome da rua deve conter apenas letras, espaços ou apóstrofos.
+              </div>
+            <?php } ?>
           </div>
         </div>
         <div class="row mb-3">
           <div class="col-11 col-md-9 col-lg-6">
             <label for="numero" class="form-label">Número</label>
-            <input type="number" class="form-control border border-primary" id="numero" name="numero" required>
+            <input type="number" class="form-control border border-primary"
+            id="numero" name="numero" value="<?= (isset($dados['formulario'])) ? $dados['formulario']['numero'] : '' ?>" required>
           </div>
         </div>
         <div class="row mb-3">
           <div class="col-11 col-md-9 col-lg-6">
             <label for="bairro" class="form-label">Bairro</label>
-            <input type="text" class="form-control border border-primary" id="bairro" name="bairro" required>
+            <input type="text" class="form-control border border-primary
+            <?= (isset($dados['validacao']) && !$dados['validacao']['bairro_validado'] ? 'is-invalid' : '') ?>"
+            id="bairro" name="bairro" value="<?= (isset($dados['formulario'])) ? $dados['formulario']['bairro'] : '' ?>" required>
+            <?php if (isset($dados['validacao']) && !$dados['validacao']['bairro_validado']) { ?>
+              <div class="alert alert-danger mt-1">
+                O nome do bairro deve conter apenas letras, espaços ou apóstrofos.
+              </div>
+            <?php } ?>
           </div>
         </div>
         <div class="row mb-4">
           <div class="col-11 col-md-9 col-lg-6">
             <label for="cidade" class="form-label">Cidade</label>
-            <input type="text" class="form-control border border-primary" id="cidade" name="cidade" required>
+            <input type="text" class="form-control border border-primary
+            <?= (isset($dados['validacao']) && !$dados['validacao']['cidade_validada'] ? 'is-invalid' : '') ?>"
+            id="cidade" name="cidade" value="<?= (isset($dados['formulario'])) ? $dados['formulario']['cidade'] : '' ?>" required>
+            <?php if (isset($dados['validacao']) && !$dados['validacao']['cidade_validada']) { ?>
+              <div class="alert alert-danger mt-1">
+                O nome da cidade deve conter apenas letras, espaços ou apóstrofos.
+              </div>
+            <?php } ?>
           </div>
         </div>
         <div class="row mb-4">
           <div class="col-11 col-md-9 col-lg-6">
             <label for="estado" class="form-label">Estado</label>
             <select class="form-select border border-primary" id="estado" name="estado" required>
-              <option value="" selected>Selecione o estado</option>
-                <option>AC</option>
-                <option>AL</option>
-                <option>AP</option>
-                <option>AM</option>
-                <option>BA</option>
-                <option>CE</option>
-                <option>DF</option>
-                <option>ES</option>
-                <option>GO</option>
-                <option>MA</option>
-                <option>MT</option>
-                <option>MS</option>
-                <option>MG</option>
-                <option>PA</option>
-                <option>PB</option>
-                <option>PR</option>
-                <option>PE</option>
-                <option>PI</option>
-                <option>RJ</option>
-                <option>RN</option>
-                <option>RS</option>
-                <option>RO</option>
-                <option>RR</option>
-                <option>SC</option>
-                <option>SP</option>
-                <option>SE</option>
-                <option>TO</option>
+              <option value="<?= (isset($dados['formulario'])) ? $dados['formulario']['estado'] : '' ?>" selected>
+                <?= (isset($dados['formulario']) ? $dados['formulario']['estado'] : 'Selecione o estado') ?>
+              </option>
+              <option>AC</option>
+              <option>AL</option>
+              <option>AP</option>
+              <option>AM</option>
+              <option>BA</option>
+              <option>CE</option>
+              <option>DF</option>
+              <option>ES</option>
+              <option>GO</option>
+              <option>MA</option>
+              <option>MT</option>
+              <option>MS</option>
+              <option>MG</option>
+              <option>PA</option>
+              <option>PB</option>
+              <option>PR</option>
+              <option>PE</option>
+              <option>PI</option>
+              <option>RJ</option>
+              <option>RN</option>
+              <option>RS</option>
+              <option>RO</option>
+              <option>RR</option>
+              <option>SC</option>
+              <option>SP</option>
+              <option>SE</option>
+              <option>TO</option>
             </select>
           </div>
         </div>
         <div class="row mb-4">
           <div class="col-11 col-md-9 col-lg-6">
             <label for="cep" class="form-label">CEP</label>
-            <input type="text" class="form-control border border-primary" id="cep" name="cep" required>
+            <input type="text" class="form-control border border-primary
+            <?= (isset($dados['validacao']) && !$dados['validacao']['cep_validado'] ? 'is-invalid' : '') ?>"
+            id="cep" name="cep" value="<?= (isset($dados['formulario'])) ? $dados['formulario']['cep'] : '' ?>" required>
+            <?php if (isset($dados['validacao']) && !$dados['validacao']['cep_validado']) { ?>
+              <div class="alert alert-danger mt-1">
+                O CEP deve ter 8 dígitos juntos ou separados por hífen (-).
+              </div>
+            <?php } ?>
           </div>
         </div>
         <div class="row">

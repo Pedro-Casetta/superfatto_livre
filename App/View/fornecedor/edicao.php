@@ -22,15 +22,29 @@
           <div class="row mb-3">
             <div class="col-6 col-md-4 col-lg-3">
               <label for="cnpj" class="form-label">CNPJ</label>
-              <input type="text" class="form-control border border-primary" id="cnpj" name="cnpj"
-              value="<?= $dados['fornecedor']->getCnpj() ?>" required>
+              <input type="text" class="form-control border border-primary
+              <?= (isset($dados['validacao']) && !$dados['validacao']['cnpj_validado'] ? 'is-invalid' : '') ?>"
+              id="cnpj" name="cnpj"
+              value="<?= (isset($dados['formulario'])) ? $dados['formulario']['cnpj'] : $dados['fornecedor']->getCnpj() ?>" required>
+              <?php if (isset($dados['validacao']) && !$dados['validacao']['cnpj_validado']) { ?>
+                <div class="alert alert-danger mt-1">
+                  O cnpj deve ter 14 dígitos juntos ou separados por ponto (.), barra (/) e hífen (-).
+                </div>
+              <?php } ?>
             </div>
           </div>
           <div class="row mb-3">
             <div class="col-11 col-md-9 col-lg-6">
               <label for="nome" class="form-label">Nome</label>
-              <input type="text" class="form-control border border-primary" id="nome" name="nome"
-              value="<?= $dados['fornecedor']->getNome() ?>" required>
+              <input type="text" class="form-control border border-primary
+              <?= (isset($dados['validacao']) && !$dados['validacao']['nome_validado'] ? 'is-invalid' : '') ?>"
+              id="nome" name="nome"
+              value="<?= (isset($dados['formulario'])) ? $dados['formulario']['nome'] : $dados['fornecedor']->getNome() ?>" required>
+              <?php if (isset($dados['validacao']) && !$dados['validacao']['nome_validado']) { ?>
+                <div class="alert alert-danger mt-1">
+                  O nome deve conter apenas letras, números, espaços ou apóstrofos.
+                </div>
+              <?php } ?>
             </div>
           </div>
           <div class="row mb-4">
@@ -39,8 +53,9 @@
               <select class="form-select border border-primary" id="departamento" name="departamento" required>
                 <?php if (isset($dados['departamentos']) && !empty($dados['departamentos'])) { ?>
                   <?php foreach($dados['departamentos'] as $departamento) { ?>
-                    <option value="<?= $departamento->getCodigo() ?>" 
-                    <?= ($departamento->getCodigo() == $dados['fornecedor']->getDepartamento()->getCodigo()) ? 'selected' : '' ?>>
+                    <option value="<?= $departamento->getCodigo() ?>"
+                    <?=(isset($dados['formulario']) && $dados['formulario']['departamento'] == $departamento->getCodigo() ? 'selected' :
+                      ($departamento->getCodigo() == $dados['fornecedor']->getDepartamento()->getCodigo() ? 'selected' : '')) ?>>
                       <?= $departamento->getNome() ?>
                     </option>
                 <?php } } ?>

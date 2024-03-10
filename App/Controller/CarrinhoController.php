@@ -107,7 +107,7 @@ class CarrinhoController extends BaseController
             if ($resultado instanceof ProdutoCarrinho)
             {
                 $estoque = $resultado->getEstoque();
-                if ($quantidade <= $estoque && $quantidade > 0)
+                if (!empty($quantidade) && $quantidade <= $estoque && $quantidade > 0)
                 {
                     $resultado->setQuantidade($quantidade);
                     $resultado_atualizacao = $resultado->atualizar();

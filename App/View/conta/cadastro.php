@@ -45,6 +45,10 @@
               <div class="alert alert-danger mt-1">
                 O formato de e-mail está incorreto.
               </div>
+            <?php } else if (isset($dados['validacao']) && !$dados['validacao']['email_novo']) { ?>
+              <div class="alert alert-danger mt-1">
+                Esse e-mail já está sendo utilizado.
+              </div>
             <?php } ?>
           </div>
         </div>
@@ -97,7 +101,8 @@
             id="campoCredencial">
               <div class="col p-0">
                 <label for="credencial" class="form-label">Credencial</label>
-                <input type="text" class="form-control border border-black" id="credencial" name="credencial">
+                <input type="text" class="form-control border border-black" id="credencial" name="credencial"
+                value="<?= (isset($dados['formulario'])) ? $dados['formulario']['credencial'] : '' ?>">
               </div>
             </div>
           </div>

@@ -62,6 +62,7 @@ class VendaDAO extends BaseDAO
                     $vendaEncontrada['data'],
                     $vendaEncontrada['total'],
                     $vendaEncontrada['situacao'],
+                    $vendaEncontrada['id_pagamento'],
                     $vendaEncontrada['cod_cliente'],
                     $vendaEncontrada['nome']
                 );

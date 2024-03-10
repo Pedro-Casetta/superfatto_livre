@@ -175,13 +175,39 @@ class ContaDAO extends BaseDAO
         }
     }
 
-    public function localizarNomeUsuario($nome_usuario)
+    public function localizarNomeUsuario($nome_usuario, $codigoConta = null)
     {
         try {
             $pdoStatement = $this->select("SELECT * FROM conta WHERE nome_usuario = '$nome_usuario'");
-            
-            if ($pdoStatement->fetch())
+            $resultado = $pdoStatement->fetch();
+
+            if ($resultado)
+            {
+                if (isset($codigoConta) && $codigoConta == $resultado['codigo'])
+                    return true;
                 return false;
+            }
+            else
+                return true;
+        }
+        catch (Exception $excecao) {
+            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
+            return $erro;
+        }
+    }
+
+    public function localizarEmail($email, $codigoConta = null)
+    {
+        try {
+            $pdoStatement = $this->select("SELECT * FROM conta WHERE email = '$email'");
+            $resultado = $pdoStatement->fetch();
+            
+            if ($resultado)
+            {
+                if (isset($codigoConta) && $codigoConta == $resultado['codigo'])
+                    return true;
+                return false;
+            }
             else
                 return true;
         }

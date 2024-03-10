@@ -4,6 +4,7 @@ namespace App\Controller;
 
 use App\Lib\Paginacao;
 use App\Lib\Sessao;
+use App\Lib\Validador;
 use App\Model\DAO\FornecedorDAO;
 use App\Model\Entidades\Fornecedor;
 use Exception;
@@ -65,7 +66,15 @@ class FornecedorController extends BaseController
             else
                 Sessao::setMensagem($resultado->getMessage());
         
+            if (Sessao::getFormulario() && Sessao::getValidacaoFormulario())
+            {
+                $this->setDados('formulario', Sessao::getFormulario());
+                $this->setDados('validacao', Sessao::getValidacaoFormulario());
+            }
+            
             $this->renderizar('fornecedor/cadastro');
+            Sessao::setFormulario(null);
+            Sessao::setValidacaoFormulario(null);
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -75,12 +84,27 @@ class FornecedorController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
+            $cnpj_validado = Validador::validarCnpj($_POST['cnpj']);
+            $nome_validado = Validador::validarNomeFornecedor($_POST['nome']);
+
+            $validacao_formulario = [
+                'cnpj_validado' => $cnpj_validado,
+                'nome_validado' => $nome_validado
+            ];
+
+            if (in_array(false, $validacao_formulario))
+            {
+                Sessao::setFormulario($_POST);
+                Sessao::setValidacaoFormulario($validacao_formulario);
+                $this->redirecionar('/fornecedor/encaminharCadastro');
+                exit;
+            }
+            
             $fornecedor = new Fornecedor(
                 0 ,
                 $_POST['cnpj'],
                 $_POST['nome'],
-                $_POST['departamento'],
-                ""
+                $_POST['departamento']
             );
 
             $resultado = $fornecedor->cadastrar();
@@ -118,7 +142,16 @@ class FornecedorController extends BaseController
             else
                 Sessao::setMensagem($resultado_departamento->getMessage());
 
+            if (Sessao::getFormulario() && Sessao::getValidacaoFormulario())
+            {
+                $this->setDados('formulario', Sessao::getFormulario());
+                $this->setDados('validacao', Sessao::getValidacaoFormulario());
+            }
+            
             $this->renderizar('fornecedor/edicao');
+            Sessao::setFormulario(null);
+            Sessao::setValidacaoFormulario(null);
+            
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');
@@ -128,6 +161,22 @@ class FornecedorController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
+            $cnpj_validado = Validador::validarCnpj($_POST['cnpj']);
+            $nome_validado = Validador::validarNomeFornecedor($_POST['nome']);
+
+            $validacao_formulario = [
+                'cnpj_validado' => $cnpj_validado,
+                'nome_validado' => $nome_validado
+            ];
+
+            if (in_array(false, $validacao_formulario))
+            {
+                Sessao::setFormulario($_POST);
+                Sessao::setValidacaoFormulario($validacao_formulario);
+                $this->redirecionar('/fornecedor/encaminharEdicao/' . $_POST['codigo']);
+                exit;
+            }
+            
             $fornecedor = new Fornecedor(
                 $_POST['codigo'],
                 $_POST['cnpj'],

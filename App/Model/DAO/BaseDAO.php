@@ -16,81 +16,56 @@ abstract class BaseDAO
 
     public function select($sql) 
     {
-        if(!empty($sql))
-        {
-            return $this->conexao->query($sql);
-        }
+        return $this->conexao->query($sql);
     }
 
     public function insert($tabela, $colunas, $valores) 
     {
-        if(!empty($tabela) && !empty($colunas) && !empty($valores))
-        {
-            $parametros = $colunas;
-            $colunas = str_replace(":", "", $colunas);
+        $parametros = $colunas;
+        $colunas = str_replace(":", "", $colunas);
+        $pdoStatement = $this->conexao->prepare("INSERT INTO $tabela ($colunas) VALUES ($parametros)");
+        $resultado = $pdoStatement->execute($valores);
 
-            $pdoStatement = $this->conexao->prepare("INSERT INTO $tabela ($colunas) VALUES ($parametros)");
-            $resultado = $pdoStatement->execute($valores);
-
-            return $resultado;
-        }else{
-            return false;
-        }
+        return $resultado;
     }
 
-    public function update($tabela, $colunas, $valores, $where=null)
+    public function update($tabela, $colunas, $valores, $where = null)
     {
-        if(!empty($tabela) && !empty($colunas))
+        if($where)
         {
-            if($where)
-            {
-                $where = " WHERE $where ";
-            }
-
-            $pdoStatement = $this->conexao->prepare("UPDATE $tabela SET $colunas $where");
-            $resultado = $pdoStatement->execute($valores);
-
-            return $resultado;
-        }else{
-            return false;
+            $where = " WHERE " . $where;
         }
+
+        $pdoStatement = $this->conexao->prepare("UPDATE $tabela SET $colunas $where");
+        $resultado = $pdoStatement->execute($valores);
+        
+        return $resultado;
     }
 
-    public function delete($tabela, $where=null)
+    public function delete($tabela, $where = null)
     {
-        if(!empty($tabela))
+        if($where)
         {
-
-            if($where)
-            {
-                $where = " WHERE $where ";
-            }
-
-            $pdoStatement = $this->conexao->prepare("DELETE FROM $tabela $where");
-            $resultado = $pdoStatement->execute();
-
-            return $resultado;
-        }else{
-            return false;
+            $where = " WHERE " . $where;
         }
+
+        $pdoStatement = $this->conexao->prepare("DELETE FROM $tabela $where");
+        $resultado = $pdoStatement->execute();
+        
+        return $resultado;
     }
 
-    public function contarTotalRegistros($coluna, $where = "")
+    public function contarTotalRegistros($coluna, $where = null)
     {
-        try {
-            if (empty($where))
-                $pdoStatement = $this->select("SELECT * FROM $coluna");
-            else
-                $pdoStatement = $this->select("SELECT * FROM " . $coluna . " WHERE " . $where);
-
-            $resultado = $pdoStatement->rowCount();
-
-            return $resultado;
+        if ($where)
+        {
+            $where = " WHERE " . $where;
         }
-        catch (Exception $excecao) {
-            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
-            return $erro;
-        }
+        
+        $pdoStatement = $this->select("SELECT * FROM $coluna $where");
+        $resultado = $pdoStatement->rowCount();
+        
+        return $resultado;
     }
 
     public function getConexao()

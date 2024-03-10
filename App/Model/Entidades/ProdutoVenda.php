@@ -25,14 +25,6 @@ class ProdutoVenda extends Produto
         $this->venda = new Venda($cod_venda, $data, $total, "");
     }
     
-    public function localizar()
-    {
-        $produtoVendaDAO = new ProdutoVendaDAO();
-        $resultado = $produtoVendaDAO->localizar($this->getCodigo(), $this->getVenda()->getCodigo());
-
-        return $resultado;
-    }
-    
     public function listar()
     {
         $produtoVendaDAO = new ProdutoVendaDAO();

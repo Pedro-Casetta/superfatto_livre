@@ -21,13 +21,28 @@
           <div class="row mb-3">
             <div class="col-6 col-md-4 col-lg-3">
               <label for="senha" class="form-label">Nova senha</label>
-              <input type="password" class="form-control border border-primary" id="senha" name="senha" required>
+              <input type="password" class="form-control border border-primary
+              <?= (isset($dados['validacao']) && !$dados['validacao']['senha_validada'] ? 'is-invalid' : '') ?>"
+              id="senha" name="senha" value="<?= (isset($dados['formulario'])) ? $dados['formulario']['senha'] : '' ?>" required>
+              <?php if (isset($dados['validacao']) && !$dados['validacao']['senha_validada']) { ?>
+                <div class="alert alert-danger mt-1">
+                  A senha deve conter pelo menos 6 dígitos.
+                </div>
+              <?php } ?>
             </div>
         </div>
         <div class="row mb-4">
             <div class="col-6 col-md-4 col-lg-3">
               <label for="confirma_senha" class="form-label">Confirmar nova senha</label>
-              <input type="password" class="form-control border border-primary" id="confirma_senha" name="confirma_senha" required>
+              <input type="password" class="form-control border border-primary
+              <?= (isset($dados['validacao']) && !$dados['validacao']['confirmacao_senha'] ? 'is-invalid' : '') ?>"
+              id="confirma_senha" name="confirma_senha"
+              value="<?= (isset($dados['formulario'])) ? $dados['formulario']['confirma_senha'] : '' ?>" required>
+              <?php if (isset($dados['validacao']) && !$dados['validacao']['confirmacao_senha']) { ?>
+                <div class="alert alert-danger mt-1">
+                  As senhas digitadas não conferem.
+                </div>
+              <?php } ?>
             </div>
         </div>
         <div class="row">
