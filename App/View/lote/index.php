@@ -48,10 +48,10 @@
   </div>
   
   <form action="http://<?=APP_HOST?>/lote/cadastrar" method="POST" class="row mb-3 form-inline">
-    <div class="col-4">
+    <div class="col-auto">
       <input type="date" class="form-control border border-primary" id="data" name="data" required>
     </div>
-    <div class="col-5">
+    <div class="col-auto">
         <select class="form-select border border-primary" id="fornecedor" name="fornecedor" required>
           <option value="" selected>Selecione o fornecedor</option>
             <?php if (isset($dados['fornecedores']) && !empty($dados['fornecedores'])) { ?>
@@ -91,7 +91,8 @@
                   <a href="http://<?=APP_HOST?>/produtoLote/index/<?= $lote->getCodigo() ?>" class="btn btn-warning d-block mb-1">
                     <i class="bi bi-eye">&ensp;</i>Visualizar Produtos
                   </a>
-                  <a href="http://<?=APP_HOST?>/lote/encaminharEdicao/<?= $lote->getCodigo() ?>" class="btn btn-info d-block mb-1">
+                  <a href="http://<?=APP_HOST?>/lote/encaminharEdicao/<?= $lote->getCodigo() ?>"
+                  class="btn btn-info d-block mb-1">
                     <i class="bi bi-pencil">&ensp;</i>Editar
                   </a>
                   <a href="http://<?=APP_HOST?>/lote/encaminharExclusao/<?= $lote->getCodigo() ?>"

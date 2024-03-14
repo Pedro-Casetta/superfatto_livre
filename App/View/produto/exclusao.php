@@ -21,28 +21,28 @@
           <input type="hidden" name="codigo" value="<?= $dados['produto']->getCodigo() ?>">
           <input type="hidden" name="imagem_atual" value="<?= $dados['produto']->getImagem() ?>">
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-10 col-md-6 col-lg-4">
               <label for="nome" class="form-label">Nome</label>
               <input type="text" class="form-control border border-primary" id="nome" name="nome"
               value="<?= $dados['produto']->getNome() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-6 col-md-4 col-lg-3">
+            <div class="col-auto">
               <label for="preco" class="form-label">Preço</label>
               <input type="text" class="form-control border border-primary" id="preco" name="preco"
               value="<?= $dados['produto']->getPrecoView() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-6 col-md-4 col-lg-3">
+            <div class="col-auto">
               <label for="estoque" class="form-label">Estoque</label>
               <input type="number" class="form-control border border-primary" id="estoque" name="estoque"
               value="<?= $dados['produto']->getEstoque() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-6 col-md-4 col-lg-3">
+            <div class="col-10 col-md-8 col-lg-5">
               <h4>Imagem atual:</h4>
               <img src="http://<?=APP_HOST?>/public/imagem/produto/<?=$dados['produto']->getImagem()?>" width="60%">
             </div>

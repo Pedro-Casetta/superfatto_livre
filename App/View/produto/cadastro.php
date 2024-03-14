@@ -25,7 +25,7 @@
           </div>
         </div>
         <div class="row mb-3">
-          <div class="col-11 col-md-9 col-lg-6">
+          <div class="col-10 col-md-6 col-lg-4">
             <label for="nome" class="form-label">Nome</label>
             <input type="text" class="form-control border border-primary
             <?= (isset($dados['validacao']) && !$dados['validacao']['nome_validado'] ? 'is-invalid' : '') ?>"
@@ -38,7 +38,7 @@
           </div>
         </div>
         <div class="row mb-3">
-          <div class="col-6 col-md-4 col-lg-3">
+          <div class="col-auto">
             <label for="preco" class="form-label">Preço</label>
             <input type="text" class="form-control border border-primary
             <?= (isset($dados['validacao']) && !$dados['validacao']['preco_validado'] ? 'is-invalid' : '') ?>"
@@ -51,14 +51,14 @@
           </div>
         </div>
         <div class="row mb-3">
-          <div class="col-6 col-md-4 col-lg-3">
+          <div class="col-auto">
             <label for="estoque" class="form-label">Estoque</label>
             <input type="number" min="0" class="form-control border border-primary"
              id="estoque" name="estoque" value="<?= (isset($dados['formulario'])) ? $dados['formulario']['estoque'] : '' ?>" required>
           </div>
         </div>
         <div class="row mb-3">
-          <div class="col-6 col-md-4 col-lg-3">
+          <div class="col-auto">
             <label for="imagem" class="form-label">Imagem</label>
             <input type="file" class="form-control border border-primary"
             id="imagem" name="imagem" accept="image/*" required>

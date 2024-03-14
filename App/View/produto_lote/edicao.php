@@ -36,7 +36,7 @@
             </div>
           </div>
           <div class="row mb-4">
-            <div class="col-6 col-md-4 col-lg-3">
+            <div class="col-auto">
               <label for="quantidade" class="form-label">Quantidade</label>
               <input type="number" min="1" class="form-control border border-primary" id="quantidade" name="quantidade"
               value="<?= $dados['produto_lote']->getQuantidade() ?>" required>

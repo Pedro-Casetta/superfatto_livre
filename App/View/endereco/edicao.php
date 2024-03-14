@@ -21,7 +21,7 @@
           <input type="hidden" name="codigo" value="<?= $dados['endereco']->getCodigo() ?>">
           <input type="hidden" name="cliente" value="<?= $dados['endereco']->getCliente()->getCodigo() ?>">
           <div class="row mb-3">
-            <div class="col-6 col-md-4 col-lg-3">
+            <div class="col-12 col-md-7 col-lg-4">
               <label for="rua" class="form-label">Rua</label>
               <input type="text" class="form-control border border-primary
               <?= (isset($dados['validacao']) && !$dados['validacao']['rua_validada'] ? 'is-invalid' : '') ?>"
@@ -35,14 +35,14 @@
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-5 col-md-3 col-lg-2">
               <label for="numero" class="form-label">Número</label>
               <input type="number" class="form-control border border-primary" id="numero" name="numero"
               value="<?= (isset($dados['formulario'])) ? $dados['formulario']['numero'] : $dados['endereco']->getNumero() ?>" required>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-12 col-md-7 col-lg-4">
               <label for="bairro" class="form-label">Bairro</label>
               <input type="text" class="form-control border border-primary
               <?= (isset($dados['validacao']) && !$dados['validacao']['bairro_validado'] ? 'is-invalid' : '') ?>"
@@ -56,7 +56,7 @@
             </div>
           </div>
           <div class="row mb-4">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-8 col-md-6 col-lg-3">
               <label for="cidade" class="form-label">Cidade</label>
               <input type="text" class="form-control border border-primary
               <?= (isset($dados['validacao']) && !$dados['validacao']['cidade_validada'] ? 'is-invalid' : '') ?>"
@@ -70,7 +70,7 @@
             </div>
           </div>
           <div class="row mb-4">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-auto">
               <label for="estado" class="form-label">Estado</label>
               <select class="form-select border border-primary" id="estado" name="estado" required>
                 <option value="<?= (isset($dados['formulario']) ?
@@ -108,7 +108,7 @@
             </div>
           </div>
           <div class="row mb-4">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-5 col-md-3 col-lg-2">
               <label for="cep" class="form-label">CEP</label>
               <input type="text" class="form-control border border-primary
               <?= (isset($dados['validacao']) && !$dados['validacao']['cep_validado'] ? 'is-invalid' : '') ?>"

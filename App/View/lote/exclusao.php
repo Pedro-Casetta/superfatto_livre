@@ -20,14 +20,14 @@
           </div>
           <input type="hidden" name="codigo" value="<?= $dados['lote']->getCodigo() ?>">
           <div class="row mb-3">
-            <div class="col-6 col-md-4 col-lg-3">
+            <div class="col-auto">
               <label for="data" class="form-label">Data</label>
               <input type="text" class="form-control border border-primary" id="data" name="data"
               value="<?= $dados['lote']->getData() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-10 col-md-6 col-lg-4">
               <label for="fornecedor" class="form-label">Fornecedor</label>
               <input type="text" class="form-control border border-primary" id="fornecedor" name="fornecedor"
               value="<?= $dados['lote']->getFornecedor()->getNome() ?>" readonly>

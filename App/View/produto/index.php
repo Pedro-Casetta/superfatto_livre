@@ -79,11 +79,12 @@
                   <img src="http://<?=APP_HOST?>/public/imagem/produto/<?= $produto->getImagem() ?>" width="60%">
                 </td>
                 <td>
-                  <a href="http://<?=APP_HOST?>/produto/encaminharEdicao/<?= $produto->getCodigo() ?>" class="btn btn-info">
+                  <a href="http://<?=APP_HOST?>/produto/encaminharEdicao/<?= $produto->getCodigo() ?>"
+                  class="btn btn-info editar">
                     <i class="bi bi-pencil">&ensp;</i>Editar
                   </a>
                   <a href="http://<?=APP_HOST?>/produto/encaminharExclusao/<?= $produto->getCodigo() ?>"
-                  class="btn btn-danger margem_celular">
+                  class="btn btn-danger excluir">
                     <i class="bi bi-x-lg">&ensp;</i>Excluir
                   </a>
                 </td>

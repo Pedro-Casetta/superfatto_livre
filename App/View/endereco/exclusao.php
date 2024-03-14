@@ -21,42 +21,42 @@
           <input type="hidden" name="codigo" value="<?= $dados['endereco']->getCodigo() ?>">
           <input type="hidden" name="cliente" value="<?= $dados['endereco']->getCliente()->getCodigo() ?>">
           <div class="row mb-3">
-            <div class="col-6 col-md-4 col-lg-3">
+            <div class="col-auto">
               <label for="rua" class="form-label">Rua</label>
               <input type="text" class="form-control border border-primary" id="rua" name="rua"
               value="<?= $dados['endereco']->getRua() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-auto">
               <label for="numero" class="form-label">Número</label>
               <input type="number" class="form-control border border-primary" id="numero" name="numero"
               value="<?= $dados['endereco']->getNumero() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-auto">
               <label for="bairro" class="form-label">Bairro</label>
               <input type="text" class="form-control border border-primary" id="bairro" name="bairro"
               value="<?= $dados['endereco']->getBairro() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-auto">
               <label for="cidade" class="form-label">Cidade</label>
               <input type="text" class="form-control border border-primary" id="cidade" name="cidade"
               value="<?= $dados['endereco']->getCidade() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-auto">
               <label for="estado" class="form-label">Estado</label>
               <input type="text" class="form-control border border-primary" id="estado" name="estado"
               value="<?= $dados['endereco']->getEstado() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-auto">
               <label for="cep" class="form-label">CEP</label>
               <input type="text" class="form-control border border-primary" id="cep" name="cep"
               value="<?= $dados['endereco']->getCep() ?>" readonly>

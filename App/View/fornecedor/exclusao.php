@@ -27,7 +27,7 @@
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-10 col-md-6 col-lg-4">
               <label for="nome" class="form-label">Nome</label>
               <input type="text" class="form-control border border-primary" id="nome" name="nome"
               value="<?= $dados['fornecedor']->getNome() ?>" readonly>

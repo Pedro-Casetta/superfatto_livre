@@ -51,7 +51,7 @@
   
   <form action="http://<?=APP_HOST?>/produtoLote/cadastrar" method="POST" class="row mb-3 form-inline">
     <input type="hidden" name="lote" value="<?= $dados['lote']->getCodigo() ?>">
-    <div class="col-5">
+    <div class="col-auto">
       <select class="form-select border border-primary" id="produto" name="produto" required>
         <option value="" selected>Selecione o produto</option>
           <?php if (isset($dados['produtos']) && !empty($dados['produtos'])) { ?>
@@ -61,10 +61,10 @@
           <?php } } } ?>
       </select>
     </div>
-    <div class="col-4">
+    <div class="col-auto">
       <input type="number" min="1" class="form-control border border-primary" id="quantidade" name="quantidade" required>
     </div>
-    <div class="col-2">
+    <div class="col-auto">
       <button type="submit" class="btn btn-success">
         <i class="bi bi-floppy">&ensp;</i>Cadastrar
       </button>
@@ -97,11 +97,11 @@
                 <td><?= $produtoLote->getSubtotal() ?></td>
                 <td>
                   <a href="http://<?=APP_HOST?>/produtoLote/encaminharEdicao/<?= $produtoLote->getLote()->getCodigo() .
-                  '/' . $produtoLote->getCodigo() ?>" class="btn btn-info">
+                  '/' . $produtoLote->getCodigo() ?>" class="btn btn-info editar">
                     <i class="bi bi-pencil">&ensp;</i>Editar
                   </a>
                   <a href="http://<?=APP_HOST?>/produtoLote/encaminharExclusao/<?= $produtoLote->getLote()->getCodigo() .
-                  '/' . $produtoLote->getCodigo() ?>" class="btn btn-danger margem_celular">
+                  '/' . $produtoLote->getCodigo() ?>" class="btn btn-danger excluir">
                     <i class="bi bi-x-lg">&ensp;</i>Excluir
                   </a>
                 </td>

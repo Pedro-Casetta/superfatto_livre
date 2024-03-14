@@ -20,28 +20,28 @@
           </div>
           <input type="hidden" name="codigo" value="<?= $dados['funcionario']->getCodigo() ?>">
           <div class="row mb-3">
-            <div class="col-6 col-md-4 col-lg-3">
+            <div class="col-10 col-md-6 col-lg-3">
               <label for="cpf" class="form-label">CPF</label>
               <input type="text" class="form-control border border-primary" id="cpf" name="cpf"
               value="<?= $dados['funcionario']->getCpf() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-10 col-md-6 col-lg-3">
               <label for="nome" class="form-label">Nome</label>
               <input type="text" class="form-control border border-primary" id="nome" name="nome"
               value="<?= $dados['funcionario']->getNome() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-10 col-md-6 col-lg-3">
               <label for="setor" class="form-label">Setor</label>
               <input type="text" class="form-control border border-primary" id="setor" name="setor"
               value="<?= $dados['funcionario']->getSetor() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-10 col-md-6 col-lg-3">
               <label for="salario" class="form-label">Salário</label>
               <input type="text" class="form-control border border-primary" id="salario" name="salario"
               value="<?= $dados['funcionario']->getSalarioView() ?>" readonly>

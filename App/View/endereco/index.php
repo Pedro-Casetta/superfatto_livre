@@ -60,11 +60,12 @@
                 <td><?= $endereco->getEstado() ?></td>
                 <td><?= $endereco->getCep() ?></td>
                 <td>
-                  <a href="http://<?=APP_HOST?>/endereco/encaminharEdicao/<?= $endereco->getCodigo() ?>" class="btn btn-info">
+                  <a href="http://<?=APP_HOST?>/endereco/encaminharEdicao/<?= $endereco->getCodigo() ?>"
+                  class="btn btn-info editar">
                     <i class="bi bi-pencil">&ensp;</i>Editar
                   </a>
                   <a href="http://<?=APP_HOST?>/endereco/encaminharExclusao/<?= $endereco->getCodigo() ?>"
-                  class="btn btn-danger margem_celular">
+                  class="btn btn-danger excluir">
                     <i class="bi bi-x-lg">&ensp;</i>Excluir
                   </a>
                 </td>

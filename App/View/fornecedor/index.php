@@ -44,7 +44,7 @@
     <div class="col-auto mx-auto me-0 ms-0">
       <form class="d-flex" method="GET" action="http://<?=APP_HOST?>/fornecedor">
         <input type="hidden" id="departamento" name="departamento" value="<?=(isset($_GET['departamento'])) ? $_GET['departamento'] : ''?>">
-        <input class="form-control me-2" type="search" size="25" id="busca" name="busca" placeholder="Nome do fornecedor">
+        <input class="form-control me-2" type="search" size="30" id="busca" name="busca" placeholder="Nome ou cnpj do fornecedor">
         <button class="btn btn-primary" type="submit">
           <i class="bi bi-search"></i>
         </button>
@@ -73,11 +73,12 @@
                 <td><?= $fornecedor->getNome() ?></td>
                 <td><?= $fornecedor->getDepartamento()->getNome() ?></td>
                 <td>
-                  <a href="http://<?=APP_HOST?>/fornecedor/encaminharEdicao/<?= $fornecedor->getCodigo() ?>" class="btn btn-info">
+                  <a href="http://<?=APP_HOST?>/fornecedor/encaminharEdicao/<?= $fornecedor->getCodigo() ?>"
+                  class="btn btn-info editar">
                     <i class="bi bi-pencil">&ensp;</i>Editar
                   </a>
                   <a href="http://<?=APP_HOST?>/fornecedor/encaminharExclusao/<?= $fornecedor->getCodigo() ?>"
-                  class="btn btn-danger margem_celular">
+                  class="btn btn-danger excluir">
                     <i class="bi bi-x-lg">&ensp;</i>Excluir
                   </a>
                 </td>

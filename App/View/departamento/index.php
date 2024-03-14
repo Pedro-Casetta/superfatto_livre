@@ -31,10 +31,10 @@
   </div>
   
   <form action="http://<?=APP_HOST?>/departamento/cadastrar" method="POST" class="row mb-3 form-inline">
-    <div class="col-4">
+    <div class="col-auto">
       <input type="text" class="form-control border border-primary" id="nome" name="nome" required>
     </div>
-    <div class="col-2">
+    <div class="col-auto">
       <button type="submit" class="btn btn-success">
         <i class="bi bi-floppy">&ensp;</i>Cadastrar
       </button>
@@ -59,11 +59,11 @@
                 <td><?= $departamento->getNome() ?></td>
                 <td>
                   <a href="http://<?=APP_HOST?>/departamento/encaminharEdicao/<?= $departamento->getCodigo()?>"
-                  class="btn btn-info">
+                  class="btn btn-info editar">
                     <i class="bi bi-pencil">&ensp;</i>Editar
                   </a>
                   <a href="http://<?=APP_HOST?>/departamento/encaminharExclusao/<?= $departamento->getCodigo()?>"
-                  class="btn btn-danger margem_celular">
+                  class="btn btn-danger excluir">
                     <i class="bi bi-x-lg">&ensp;</i>Excluir
                   </a>
                 </td>

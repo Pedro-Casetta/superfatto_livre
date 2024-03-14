@@ -66,9 +66,10 @@ class FornecedorDAO extends BaseDAO
     public function listarPaginacao($indice, $limitePorPagina, $busca = "", $departamento = "")
     {
         try {
-            $pdoStatement = $this->select("SELECT f.*, d.nome nome_departamento FROM fornecedor f, departamento d
-                WHERE d.codigo = f.cod_departamento
-            AND f.nome LIKE '%$busca%' AND d.nome LIKE '%$departamento%' LIMIT $indice, $limitePorPagina");
+            $pdoStatement = $this->select("SELECT f.*, d.nome nome_departamento FROM fornecedor f
+            INNER JOIN departamento d ON d.codigo = f.cod_departamento
+            WHERE f.cnpj LIKE '%$busca%' AND d.nome LIKE '%$departamento%'
+            OR f.nome LIKE '%$busca%' AND d.nome LIKE '%$departamento%' LIMIT $indice, $limitePorPagina");
 
             $arrayFornecedores = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
 

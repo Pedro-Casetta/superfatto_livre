@@ -25,7 +25,7 @@
           </div>
         </div>
         <div class="row mb-3">
-          <div class="col-6 col-md-4 col-lg-3">
+          <div class="col-10 col-md-6 col-lg-3">
             <label for="cpf" class="form-label">CPF</label>
             <input type="text" class="form-control border border-primary
             <?= (isset($dados['validacao']) && !$dados['validacao']['cpf_validado'] ? 'is-invalid' : '') ?>"
@@ -38,7 +38,7 @@
           </div>
         </div>
         <div class="row mb-3">
-          <div class="col-11 col-md-9 col-lg-6">
+          <div class="col-10 col-md-6 col-lg-3">
             <label for="nome" class="form-label">Nome</label>
             <input type="text" class="form-control border border-primary
             <?= (isset($dados['validacao']) && !$dados['validacao']['nome_validado'] ? 'is-invalid' : '') ?>"
@@ -51,14 +51,14 @@
           </div>
         </div>
         <div class="row mb-3">
-          <div class="col-11 col-md-9 col-lg-6">
+          <div class="col-10 col-md-6 col-lg-3">
             <label for="setor" class="form-label">Setor</label>
             <input type="text" class="form-control border border-primary" id="setor" name="setor"
             value="<?= (isset($dados['formulario'])) ? $dados['formulario']['setor'] : '' ?>" required>
           </div>
         </div>
         <div class="row mb-4">
-          <div class="col-11 col-md-9 col-lg-6">
+          <div class="col-10 col-md-6 col-lg-3">
             <label for="salario" class="form-label">Salário</label>
             <input type="text" class="form-control border border-primary
             <?= (isset($dados['validacao']) && !$dados['validacao']['salario_validado'] ? 'is-invalid' : '') ?>"

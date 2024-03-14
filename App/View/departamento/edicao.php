@@ -20,7 +20,7 @@
             </div>
           </div>
           <div class="row mb-4">
-            <div class="col-6 col-md-4 col-lg-3">
+            <div class="col-auto">
               <label for="nome" class="form-label">Nome do departamento</label>
               <input type="text" class="form-control border border-primary" id="nome" name="nome"
               value="<?= $dados['departamento']->getNome() ?>" required>

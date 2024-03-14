@@ -21,34 +21,34 @@
           <input type="hidden" id="produto" name="produto" value="<?= $dados['produto_lote']->getCodigo() ?>">
           <input type="hidden" id="lote" name="lote" value="<?= $dados['produto_lote']->getLote()->getCodigo() ?>">
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-10 col-md-6 col-lg-4">
               <label for="nome" class="form-label">Nome</label>
               <input type="text" class="form-control border border-primary" id="nome" name="nome"
               value="<?= $dados['produto_lote']->getNome() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-6 col-md-4 col-lg-3">
+            <div class="col-10 col-md-8 col-lg-5">
               <h4>Imagem:</h4>
               <img src="http://<?=APP_HOST?>/public/imagem/produto/<?=$dados['produto_lote']->getImagem()?>" width="60%">
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-6 col-md-4 col-lg-3">
+            <div class="col-auto">
               <label for="preco" class="form-label">Preço</label>
               <input type="text" class="form-control border border-primary" id="preco" name="preco"
               value="<?= $dados['produto_lote']->getPreco() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-6 col-md-4 col-lg-3">
+            <div class="col-auto">
               <label for="quantidade" class="form-label">Quantidade</label>
               <input type="number" class="form-control border border-primary" id="quantidade" name="quantidade"
               value="<?= $dados['produto_lote']->getQuantidade() ?>" readonly>
             </div>
           </div>
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-auto">
               <label for="subtotal" class="form-label">Subtotal</label>
               <input type="text" class="form-control border border-primary" id="subtotal" name="subtotal"
               value="<?= $dados['produto_lote']->getSubtotal() ?>" readonly>

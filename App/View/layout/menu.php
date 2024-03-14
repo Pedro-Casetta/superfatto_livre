@@ -53,7 +53,7 @@
         </div>
       <?php } else if ($sessao::getNomeUsuario() && $sessao::getTipoConta() == "cliente") { ?>
         <div class="col-auto dropdown mx-auto me-0 pe-2">
-          <a class="btn btn-secondary dropdown-toggle" href="#" data-bs-toggle="dropdown">
+          <a class="btn btn-dark dropdown-toggle" href="#" data-bs-toggle="dropdown">
             Departamento
           </a>
           <ul class="dropdown-menu">
@@ -95,7 +95,7 @@
         </div>
       <?php } else { ?>
         <div class="col-auto dropdown mx-auto me-0 pe-2">
-          <a class="btn btn-secondary dropdown-toggle" href="#" data-bs-toggle="dropdown">
+          <a class="btn btn-dark dropdown-toggle" href="#" data-bs-toggle="dropdown">
             Departamento
           </a>
           <ul class="dropdown-menu">
@@ -121,10 +121,10 @@
         </div>
         <ul class="navbar-nav">
           <li class="nav-item">
-            <a class="nav-link" href="http://<?=APP_HOST?>/conta/encaminharCadastro">Cadastrar-se</a>
+            <a class="btn btn-outline-success me-2" href="http://<?=APP_HOST?>/conta/encaminharCadastro">Cadastrar-se</a>
           </li>
           <li class="nav-item">
-            <a class="nav-link" href="http://<?=APP_HOST?>/conta/encaminharAcesso">Acessar</a>
+            <a class="btn btn-outline-info" href="http://<?=APP_HOST?>/conta/encaminharAcesso">Acessar</a>
           </li>
         </ul>
       <?php } ?>

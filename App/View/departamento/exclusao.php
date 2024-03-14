@@ -20,7 +20,7 @@
           </div>
           <input type="hidden" id="codigo" name="codigo" value="<?= $dados['departamento']->getCodigo() ?>">
           <div class="row mb-3">
-            <div class="col-11 col-md-9 col-lg-6">
+            <div class="col-auto">
               <label for="nome" class="form-label">Nome</label>
               <input type="text" class="form-control border border-primary" id="nome" name="nome"
               value="<?= $dados['departamento']->getNome() ?>" readonly>

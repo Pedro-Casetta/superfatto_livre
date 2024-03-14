@@ -28,9 +28,9 @@ class FornecedorController extends BaseController
             $resultado_departamento = $fornecedorDAO->listarDepartamentos();
 
             $totalRegistros = $fornecedor->contarTotalRegistros(
-                "fornecedor f, departamento d",
-                "d.codigo = f.cod_departamento
-            AND f.nome LIKE '%$busca%' AND d.nome LIKE '%$departamento%'");
+                "fornecedor f INNER JOIN departamento d ON d.codigo = f.cod_departamento",
+                "f.cnpj LIKE '%$busca%' AND d.nome LIKE '%$departamento%'
+                OR f.nome LIKE '%$busca%' AND d.nome LIKE '%$departamento%'");
             $totalPaginas = ceil($totalRegistros / Paginacao::$limitePorPagina);
             $paginacao = Paginacao::criarPaginacao('/fornecedor', $paginaSelecionada, $totalPaginas, $busca, $departamento);
 

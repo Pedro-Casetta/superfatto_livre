@@ -20,7 +20,7 @@
           </div>
           <input type="hidden" name="codigo" value="<?= $dados['lote']->getCodigo() ?>">
           <div class="row mb-3">
-            <div class="col-6 col-md-4 col-lg-3">
+            <div class="col-auto">
               <label for="data" class="form-label">Data</label>
               <input type="date" class="form-control border border-primary" id="data" name="data"
               value="<?= $dados['lote']->getData() ?>" required>
