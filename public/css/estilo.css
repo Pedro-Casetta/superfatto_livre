@@ -9,9 +9,3 @@ footer {
 nav {
     background-color: #ffd82d;
 }
-
-@media screen and (max-width: 1200px) {
-    .margem_celular {
-      margin-top: 10px;
-    }
-  }
