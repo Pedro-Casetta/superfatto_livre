@@ -15,11 +15,11 @@ class ProdutoVenda extends Produto
     
     public function __construct(int $cod_produto = 0, int $cod_venda = 0, int $quantidade = 0, float $subtotal = 0.0,
         
-        string $nome_produto = "",  float $preco = 0.0, string $imagem = "",
+        string $nome_produto = "",  float $preco = 0.0, int $estoque = 0, string $imagem = "",
 
         string $data = "", float $total = 0.0)
     {
-        parent::__construct($cod_produto, $nome_produto, $preco, 0, $imagem);
+        parent::__construct($cod_produto, $nome_produto, $preco, $estoque, $imagem);
         $this->quantidade = $quantidade;
         $this->subtotal = $subtotal;
         $this->venda = new Venda($cod_venda, $data, $total, "");
@@ -59,7 +59,8 @@ class ProdutoVenda extends Produto
 
     public function getSubtotal() : float
     {
-        return $this->subtotal;
+        $subtotal_formatado = number_format($this->subtotal, 2);
+        return $subtotal_formatado;
     }
 
     public function setSubtotal(float $valor)

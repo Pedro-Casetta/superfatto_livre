@@ -34,22 +34,22 @@
   <?php if (isset($dados['produtos_carrinho']) && !empty($dados['produtos_carrinho'])) {
     foreach($dados['produtos_carrinho'] as $produto) { ?>
       <div class="row mb-3 bg-success-subtle rounded w-75 mx-auto p-2">
-        <div class="col-auto">
+        <div class="col-12 col-lg-auto text-center">
           <img src="http://<?=APP_HOST?>/public/imagem/produto/<?= $produto->getImagem() ?>"
           class="border border-black border-2" width="150px" height="150px">
-          <h4 class="mt-1 text-center"><?= $produto->getNome() ?></h4>
+          <h4 class="mt-1"><?= $produto->getNome() ?></h4>
         </div>
-        <div class="col-auto my-auto ms-3">
-          <h4 class="text-center">Preço</h4>
-          <h5 class="text-center">R$ <?= $produto->getPrecoView() ?></h5>
+        <div class="col-12 col-lg-auto my-auto text-center">
+          <h4>Preço</h4>
+          <h5>R$ <?= $produto->getPrecoView() ?></h5>
         </div>
-        <div class="col-auto my-auto ms-3">
+        <div class="col-4 col-lg-auto my-auto">
           <a href="http://<?=APP_HOST?>/carrinho/diminuirQuantidade/<?= $produto->getCodigo() ?>"
           class="btn btn-danger <?= ($produto->getQuantidade() <= 1) ? 'disabled' : '' ?>">
             <i class="bi bi-dash"></i>
           </a>
         </div>
-        <div class="col-auto my-auto ms-3">
+        <div class="col-4 col-lg-auto my-auto">
           <input type="number" id="quantidade<?= $produto->getCodigo() ?>" value="<?= $produto->getQuantidade() ?>"
           class="form-control border border-primary"
           oninput="alterarQuantidadeProdutoCarrinho(
@@ -57,17 +57,17 @@
             '<?= APP_HOST ?>',
             '<?= $produto->getCodigo() ?>')" min="1" max="<?= $produto->getEstoque() ?>">
         </div>
-        <div class="col-auto my-auto ms-3">
+        <div class="col-4 col-lg-auto my-auto">
           <a href="http://<?=APP_HOST?>/carrinho/aumentarQuantidade/<?= $produto->getCodigo() ?>"
           class="btn btn-success <?= ($produto->getQuantidade() >= $produto->getEstoque()) ? 'disabled' : '' ?>">
               <i class="bi bi-plus"></i>
           </a>
         </div>    
-        <div class="col-auto my-auto ms-3">
-          <h4 class="text-center">Subtotal</h4>
+        <div class="col-12 col-lg-auto my-auto text-center">
+          <h4>Subtotal</h4>
           <h5>R$ <?= $produto->getSubtotalView() ?></h5>
         </div>
-        <div class="col-auto my-auto ms-3">
+        <div class="col-12 col-lg-auto my-auto text-center">
           <a href="http://<?=APP_HOST?>/carrinho/removerProduto/<?= $produto->getCodigo() ?>" class="btn btn-danger">
             <i class="bi bi-trash">&nbsp;</i>Remover
           </a>

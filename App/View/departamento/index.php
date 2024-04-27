@@ -16,7 +16,7 @@
   </div>
   <div class="row mb-3">
     <div class="col-auto">
-      <a href="http://<?=APP_HOST?>/lote" class="btn btn-secondary">
+      <a href="http://<?=APP_HOST?>/" class="btn btn-secondary">
         <i class="bi bi-arrow-left">&ensp;</i>Voltar
       </a>
     </div>

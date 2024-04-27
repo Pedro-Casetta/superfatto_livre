@@ -49,12 +49,6 @@
             <i class="bi bi-eye">&nbsp;</i>Visualizar itens
           </a>
         </div>
-        <div class="col-auto">
-          <a href="http://<?=APP_HOST?>/venda/realizarPagamentoPendente/<?= $venda->getCodigo() ?>"
-          class="btn btn-success <?= ($venda->getSituacao() == "Aguardando pagamento") ? '' : 'disabled' ?>">
-            <i class="bi bi-credit-card">&ensp;</i>Realizar pagamento pendente
-          </a>
-        </div>
       </div>
       <h5 class="row">Endereço de entrega:</h5>
       <div class="row ms-3">

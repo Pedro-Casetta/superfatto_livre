@@ -7,47 +7,40 @@
         <h2><?= $sessao::getMensagem() ?></h2>
       </div>
     </div>
-  <?php }
-  
-  if (isset($dados['nota_fiscal']) && !empty($dados['nota_fiscal']))
-  {
-    echo var_dump($dados['nota_fiscal']);
-  }
-
-  ?>
+  <?php } ?>
 
   <div class="row mb-3">
-    <?php if (isset($dados['produtos']) && !empty($dados['produtos'])) { ?>
-      <div class="col-auto">
+    <div class="col-12 col-lg-6">
+      <?php if (isset($dados['produtos']) && !empty($dados['produtos'])) { ?>
         <div class="row mb-3">
           <div class="col-auto">
             <h2>Itens comprados</h2>
           </div>
         </div>
-        <?php foreach ($dados['produtos'] as $produto) { ?>
-          <div class="row mb-3 bg-success-subtle rounded mx-auto p-2">
-            <div class="col-auto">
-                <img src="http://<?=APP_HOST?>/public/imagem/produto/<?= $produto->getImagem() ?>"
-                class="border border-black border-2" width="150px" height="150px">
-                <h4 class="mt-1 text-center"><?= $produto->getNome() ?></h4>
-            </div>
-            <div class="col-auto my-auto ms-3">
-              <h4 class="text-center">Preço</h4>
-              <h5 class="text-center">R$ <?= $produto->getPrecoView() ?></h5>
-            </div>
-            <div class="col-auto my-auto ms-3">
-              <h4 class="text-center">Quantidade</h4>
-              <h5 class="text-center"><?= $produto->getQuantidade() ?></h5> 
-            </div>
-            <div class="col-auto my-auto ms-3">
-              <h4 class="text-center">Subtotal</h4>
-              <h5 class="text-center">R$ <?= $produto->getSubtotalView() ?></h5>
-            </div>
+      <?php foreach ($dados['produtos'] as $produto) { ?>
+        <div class="row mb-3 bg-success-subtle rounded mx-auto p-2">
+          <div class="col-auto">
+              <img src="http://<?=APP_HOST?>/public/imagem/produto/<?= $produto->getImagem() ?>"
+              class="border border-black border-2" width="150px" height="150px">
+              <h4 class="mt-1 text-center"><?= $produto->getNome() ?></h4>
           </div>
-        <?php } } ?>
-      </div>
+          <div class="col-auto my-auto ms-3">
+            <h4 class="text-center">Preço</h4>
+            <h5 class="text-center">R$ <?= $produto->getPrecoView() ?></h5>
+          </div>
+          <div class="col-auto my-auto ms-3">
+            <h4 class="text-center">Quantidade</h4>
+            <h5 class="text-center"><?= $produto->getQuantidade() ?></h5> 
+          </div>
+          <div class="col-auto my-auto ms-3">
+            <h4 class="text-center">Subtotal</h4>
+            <h5 class="text-center">R$ <?= $produto->getSubtotalView() ?></h5>
+          </div>
+        </div>
+      <?php } } ?>
+    </div>
+    <div class="col-12 col-lg-6">
       <?php if (isset($dados['venda']) && !empty($dados['venda'])) { ?>
-      <div class="col-auto">
         <div class="row mb-3">
           <div class="col-auto">
             <h3>Obrigado pela compra!</h3>
@@ -89,7 +82,7 @@
             <h5><?= $dados['venda']->getEndereco()->getCep() ?></h5>
           </div>
         </div>
-      </div>
-    <?php } ?>
+      <?php } ?>
+    </div>
   </div>
 </div>

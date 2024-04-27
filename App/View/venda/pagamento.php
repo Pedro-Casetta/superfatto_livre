@@ -13,7 +13,8 @@
       <div class="col-auto">
         <a href="http://<?=APP_HOST?>/<?= 'venda/iniciarVenda' . 
           (isset($dados['carrinho']) ? 'Carrinho'
-          : 'Individual/' . $dados['produtos'][0]->getCodigo() . '/' . $dados['produtos'][0]->getQuantidade() )?>"
+          : 'Individual/' . $dados['produtos'][0]->getCodigo() . '/' . $dados['produtos'][0]->getQuantidade() .
+         '/' . $dados['produtos'][0]->getEstoque() )?>"
           class="btn btn-secondary">
           <i class="bi bi-arrow-left">&ensp;</i>Voltar
         </a>

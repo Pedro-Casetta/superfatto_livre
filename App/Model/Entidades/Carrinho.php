@@ -42,7 +42,8 @@ class Carrinho
 
     public function getTotal() : float
     {
-        return $this->total;
+        $total_formatado = number_format($this->total, 2);
+        return $total_formatado;
     }
     
     public function setTotal(float $valor)

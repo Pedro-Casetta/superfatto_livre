@@ -46,15 +46,9 @@
     </div>
   </div>
   <div class="row mb-3">
-  <div class="col-auto">
+    <div class="col-auto">
       <a href="http://<?=APP_HOST?>/venda/indexCompras" class="btn btn-secondary">
         <i class="bi bi-arrow-left">&ensp;</i>Voltar
-      </a>
-    </div>
-    <div class="col-auto">
-      <a href="http://<?=APP_HOST?>/venda/realizarPagamentoPendente/<?= $dados['venda']->getCodigo() ?>"
-      class="btn btn-success <?= ($dados['venda']->getSituacao() == "Aguardando pagamento") ? '' : 'disabled' ?>">
-        <i class="bi bi-credit-card">&ensp;</i>Realizar pagamento pendente
       </a>
     </div>
   </div>

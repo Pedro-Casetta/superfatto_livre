@@ -48,12 +48,12 @@ class CarrinhoController extends BaseController
     {
         if (Sessao::verificarAcesso('cliente'))
         {
-            if ($_POST['quantidade_carrinho'] <= $_POST['estoque'])
+            if ($_POST['quantidade'] <= $_POST['estoque'])
             {
                 $produtoCarrinho = new ProdutoCarrinho(
-                    $_POST['produto_carrinho'],
+                    $_POST['produto'],
                     $_POST['carrinho'],
-                    $_POST['quantidade_carrinho']
+                    $_POST['quantidade']
                 );
 
                 $resultado = $produtoCarrinho->cadastrar();
@@ -66,8 +66,8 @@ class CarrinhoController extends BaseController
             else
             {
                 Sessao::setFormulario($_POST);
-                Sessao::setValidacaoFormulario(['quantidade_carrinho' => false]);
-                $this->redirecionar('/produto/detalhesProduto/' . $_POST['produto_carrinho']);
+                Sessao::setValidacaoFormulario(['quantidade_validada' => false]);
+                $this->redirecionar('/produto/detalhesProduto/' . $_POST['produto']);
             }
         }
         else
@@ -114,13 +114,17 @@ class CarrinhoController extends BaseController
                     if ($resultado_atualizacao instanceof Exception)
                         Sessao::setMensagem($resultado_atualizacao->getMessage());
                 }
+                else
+                {
+                    Sessao::setMensagem("Essa quantidade de produto está indisponível no momento.");
+                }
             }
             else if ($resultado instanceof Exception)
                 Sessao::setMensagem($resultado->getMessage());
         }
         else
-        $this->redirecionar('/conta/encaminharAcesso');
-}
+            $this->redirecionar('/conta/encaminharAcesso');
+    }
 
 public function aumentarQuantidade($parametros)
 {

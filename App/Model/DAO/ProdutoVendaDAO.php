@@ -28,6 +28,7 @@ class ProdutoVendaDAO extends BaseDAO
                     $produtoVendaEncontrado['subtotal'],
                     $produtoVendaEncontrado['nome'],
                     $produtoVendaEncontrado['preco'],
+                    0,
                     $produtoVendaEncontrado['imagem']
                 );
 

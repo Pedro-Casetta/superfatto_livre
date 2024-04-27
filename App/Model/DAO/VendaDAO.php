@@ -82,11 +82,16 @@ class VendaDAO extends BaseDAO
     {
         try {
             $pdoStatement = $this->select("SELECT v.*, e.rua, e.numero, e.bairro, e.cidade, e.estado, e.cep
-            FROM venda v, endereco e
-            WHERE v.cod_endereco = e.codigo AND v.cod_cliente = $cod_cliente
-            AND v.data LIKE '%$data%' AND v.total LIKE '%$busca%' OR v.situacao LIKE '%$busca%'
-            OR e.rua LIKE '%$busca%' OR e.numero LIKE '%$busca%' OR e.bairro LIKE '%$busca%'
-            OR e.cidade LIKE '%$busca%' OR e.estado LIKE '%$busca%' OR e.cep LIKE '%$busca%'
+            FROM venda v
+            INNER JOIN endereco e ON e.codigo = v.cod_endereco AND v.cod_cliente = $cod_cliente
+            WHERE v.data LIKE '%$data%' AND v.total LIKE '%$busca%'
+            OR v.data LIKE '%$data%' AND v.situacao LIKE '%$busca%'
+            OR v.data LIKE '%$data%' AND e.rua LIKE '%$busca%'
+            OR v.data LIKE '%$data%' AND e.numero LIKE '%$busca%'
+            OR v.data LIKE '%$data%' AND e.bairro LIKE '%$busca%'
+            OR v.data LIKE '%$data%' AND e.cidade LIKE '%$busca%'
+            OR v.data LIKE '%$data%' AND e.estado LIKE '%$busca%'
+            OR v.data LIKE '%$data%' AND e.cep LIKE '%$busca%'
             LIMIT $indice, $limitePorPagina");
 
             $arrayVendas = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
