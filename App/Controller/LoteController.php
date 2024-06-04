@@ -6,7 +6,7 @@ use App\Lib\Paginacao;
 use App\Lib\Sessao;
 use App\Model\Entidades\Lote;
 use App\Model\Entidades\Fornecedor;
-use App\Model\DAO\FornecedorDAO;
+use App\Model\Entidades\Departamento;
 use Exception;
 
 class LoteController extends BaseController
@@ -27,8 +27,8 @@ class LoteController extends BaseController
             $fornecedor = new Fornecedor();
             $resultado_fornecedor = $fornecedor->listar();
 
-            $fornecedorDAO = new FornecedorDAO();
-            $resultado_departamento = $fornecedorDAO->listarDepartamentos();
+            $departamento_objeto = new Departamento();
+            $resultado_departamento = $departamento_objeto->listar();
 
             $totalRegistros = $lote->contarTotalRegistros(
                 "lote l, fornecedor f, departamento d",

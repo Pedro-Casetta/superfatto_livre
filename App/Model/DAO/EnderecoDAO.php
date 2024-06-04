@@ -71,9 +71,9 @@ class EnderecoDAO extends BaseDAO
         try {
             $pdoStatement = $this->select("SELECT * FROM endereco
                 WHERE cod_cliente = $cod_cliente
-            AND rua LIKE '%$busca%' OR numero LIKE '%$busca%'
+            AND (rua LIKE '%$busca%' OR numero LIKE '%$busca%'
             OR bairro LIKE '%$busca%' OR cidade LIKE '%$busca%'
-            OR estado LIKE '%$busca%' OR cep LIKE '%$busca%' LIMIT $indice, $limitePorPagina");
+            OR estado LIKE '%$busca%' OR cep LIKE '%$busca%') LIMIT $indice, $limitePorPagina");
 
             $arrayEnderecos = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
 

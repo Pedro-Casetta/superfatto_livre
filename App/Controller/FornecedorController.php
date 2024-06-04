@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Lib\Paginacao;
 use App\Lib\Sessao;
 use App\Lib\Validador;
-use App\Model\DAO\FornecedorDAO;
+use App\Model\Entidades\Departamento;
 use App\Model\Entidades\Fornecedor;
 use Exception;
 
@@ -24,8 +24,8 @@ class FornecedorController extends BaseController
             $fornecedor = new Fornecedor();
             $resultado = $fornecedor->listarPaginacao($indice, Paginacao::$limitePorPagina, $busca, $departamento);
 
-            $fornecedorDAO = new FornecedorDAO();
-            $resultado_departamento = $fornecedorDAO->listarDepartamentos();
+            $departamento_objeto = new Departamento();
+            $resultado_departamento = $departamento_objeto->listar();
 
             $totalRegistros = $fornecedor->contarTotalRegistros(
                 "fornecedor f INNER JOIN departamento d ON d.codigo = f.cod_departamento",
@@ -40,8 +40,10 @@ class FornecedorController extends BaseController
                 $this->setDados('paginacao', $paginacao);
                 $this->setDados('departamentos', $resultado_departamento);
             }
-            else
+            else if ($resultado instanceof Exception)
                 Sessao::setMensagem($resultado->getMessage());
+            else
+                Sessao::setMensagem($resultado_departamento->getMessage());
             
             $this->renderizar('fornecedor/index');
 
@@ -55,8 +57,8 @@ class FornecedorController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
-            $fornecedorDAO = new FornecedorDAO();
-            $resultado = $fornecedorDAO->listarDepartamentos();
+            $departamento_objeto = new Departamento();
+            $resultado = $departamento_objeto->listar();
             
             if (is_array($resultado))
             {
@@ -128,8 +130,8 @@ class FornecedorController extends BaseController
             $fornecedor = new Fornecedor($codigo);
             $resultado_fornecedor = $fornecedor->localizar();
 
-            $fornecedorDAO = new FornecedorDAO();
-            $resultado_departamento = $fornecedorDAO->listarDepartamentos();
+            $departamento_objeto = new Departamento();
+            $resultado_departamento = $departamento_objeto->listar();
 
             if ($resultado_fornecedor instanceof Fornecedor && is_array($resultado_departamento))
             {

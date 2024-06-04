@@ -6,7 +6,7 @@ use App\Lib\Sessao;
 use App\Model\Entidades\Conta\Conta;
 use App\Model\Entidades\Conta\Administrador;
 use App\Model\Entidades\Conta\Cliente;
-use App\Model\DAO\ProdutoDAO;
+use App\Model\Entidades\Departamento;
 use App\Lib\Validador;
 use Exception;
 
@@ -15,8 +15,8 @@ class ContaController extends BaseController
 
     public function encaminharCadastro()
     {
-        $produtoDAO = new ProdutoDAO();
-        $resultado = $produtoDAO->listarDepartamentos();
+        $departamento = new Departamento();
+        $resultado = $departamento->listar();
         
         if (is_array($resultado))
             $this->setDados('departamentos', $resultado);
@@ -119,7 +119,7 @@ class ContaController extends BaseController
         $resultado = $conta->cadastrar();
 
         if (is_bool($resultado) && $resultado)
-            Sessao::setMensagem("Dados inseridos com sucesso!");
+            Sessao::setMensagem("Conta cadastrada com sucesso!");
         else
             Sessao::setMensagem($resultado->getMessage());
 
@@ -128,8 +128,8 @@ class ContaController extends BaseController
 
     public function encaminharAcesso()
     {
-        $produtoDAO = new ProdutoDAO();
-        $resultado = $produtoDAO->listarDepartamentos();
+        $departamento = new Departamento();
+        $resultado = $departamento->listar();
         
         if(is_array($resultado))
                 $this->setDados('departamentos', $resultado);
@@ -180,8 +180,8 @@ class ContaController extends BaseController
 
             $resultado = Conta::localizar($codigo, $tipo);
 
-            $produtoDAO = new ProdutoDAO();
-            $resultado_departamento = $produtoDAO->listarDepartamentos();
+            $departamento = new Departamento();
+            $resultado_departamento = $departamento->listar();
 
             if ($resultado instanceof Conta && is_array($resultado_departamento))
             {

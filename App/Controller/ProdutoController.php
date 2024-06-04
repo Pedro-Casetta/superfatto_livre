@@ -7,7 +7,7 @@ use App\Lib\Sessao;
 use App\Lib\Upload;
 use App\Lib\Validador;
 use App\Model\Entidades\Produto;
-use App\Model\DAO\ProdutoDAO;
+use App\Model\Entidades\Departamento;
 use Exception;
 
 class ProdutoController extends BaseController
@@ -25,8 +25,8 @@ class ProdutoController extends BaseController
             $produto = new Produto();
             $resultado = $produto->listarPaginacao($indice, Paginacao::$limitePorPagina, $busca, $departamento);
 
-            $produtoDAO = new ProdutoDAO();
-            $resultado_departamento = $produtoDAO->listarDepartamentos();
+            $departamento_objeto = new Departamento();
+            $resultado_departamento = $departamento_objeto->listar();
 
             $totalRegistros = $produto->contarTotalRegistros(
                 "produto p, departamento d",
@@ -41,8 +41,10 @@ class ProdutoController extends BaseController
                 $this->setDados('paginacao', $paginacao);
                 $this->setDados('departamentos', $resultado_departamento);
             }
-            else
+            else if($resultado instanceof Exception)
                 Sessao::setMensagem($resultado->getMessage());
+            else
+                Sessao::setMensagem($resultado_departamento->getMessage());
             
             $this->renderizar('produto/index');
 
@@ -56,8 +58,8 @@ class ProdutoController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
-            $produtoDAO = new ProdutoDAO();
-            $resultado = $produtoDAO->listarDepartamentos();
+            $departamento_objeto = new Departamento();
+            $resultado = $departamento_objeto->listar();
             
             if (is_array($resultado))
             {
@@ -142,8 +144,8 @@ class ProdutoController extends BaseController
             $produto = new Produto($codigo);
             $resultado_produto = $produto->localizar();
 
-            $produtoDAO = new ProdutoDAO();
-            $resultado_departamento = $produtoDAO->listarDepartamentos();
+            $departamento_objeto = new Departamento();
+            $resultado_departamento = $departamento_objeto->listar();
 
             if ($resultado_produto instanceof Produto && is_array($resultado_departamento))
             {
@@ -295,16 +297,18 @@ class ProdutoController extends BaseController
             $produto = new Produto($codigo);
             $resultado = $produto->localizar();
 
-            $produtoDAO = new ProdutoDAO();
-            $resultado_departamento = $produtoDAO->listarDepartamentos();
+            $departamento_objeto = new Departamento();
+            $resultado_departamento = $departamento_objeto->listar();
 
             if ($resultado instanceof Produto && is_array($resultado_departamento))
             {
                 $this->setDados('produto', $resultado);
                 $this->setDados('departamentos', $resultado_departamento);
             }
-            else
+            else if($resultado instanceof Exception)
                 Sessao::setMensagem($resultado->getMessage());
+            else
+                Sessao::setMensagem($resultado_departamento->getMessage());
 
             if (Sessao::getFormulario() && Sessao::getValidacaoFormulario())
             {
@@ -316,6 +320,44 @@ class ProdutoController extends BaseController
             Sessao::setMensagem(null);
             Sessao::setFormulario(null);
             Sessao::setValidacaoFormulario(null);
+        }
+        else
+            $this->redirecionar('/conta/encaminharAcesso');
+    }
+
+    public function diminuirQuantidade()
+    {
+        if (Sessao::verificarAcesso('cliente'))
+        {
+            $quantidade = $_POST['quantidade'];
+            
+            if ($quantidade > 1)
+                $quantidade = $quantidade - 1;
+            
+            $formulario = ['quantidade' => $quantidade];
+            $validacao = ['quantidade_validada' => true];
+            
+            Sessao::setFormulario($formulario);
+            Sessao::setValidacaoFormulario($validacao);
+        }
+        else
+            $this->redirecionar('/conta/encaminharAcesso');
+    }
+
+    public function aumentarQuantidade()
+    {
+        if (Sessao::verificarAcesso('cliente'))
+        {
+            $quantidade = intval($_POST['quantidade']);
+            
+            if ($quantidade > 1)
+                $quantidade = $quantidade - 1;
+            
+            $formulario = ['quantidade' => $quantidade];
+            $validacao = ['quantidade_validada' => true];
+            
+            Sessao::setFormulario($formulario);
+            Sessao::setValidacaoFormulario($validacao);
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');

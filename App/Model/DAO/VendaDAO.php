@@ -47,9 +47,9 @@ class VendaDAO extends BaseDAO
     public function listarPaginacao($indice, $limitePorPagina, $busca = "", $data = "")
     {
         try {
-            $pdoStatement = $this->select("SELECT v.*, c.nome FROM venda v, conta c
-            WHERE v.cod_cliente = c.codigo AND c.nome LIKE '%$busca%'
-            AND v.data LIKE '%$data%' LIMIT $indice, $limitePorPagina");
+            $pdoStatement = $this->select("SELECT v.*, c.nome FROM venda v 
+            INNER JOIN conta c ON c.codigo = v.cod_cliente
+            WHERE c.nome LIKE '%$busca%' AND v.data LIKE '%$data%' LIMIT $indice, $limitePorPagina");
 
             $arrayVendas = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -152,50 +152,6 @@ class VendaDAO extends BaseDAO
         }
         catch (Exception $excecao) {
             $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no cadastro dos dados");
-            return $erro;
-        }
-    }
-
-    public function atualizar(Venda $venda)
-    {
-        try {
-            $codigo = $venda->getCodigo();
-            $situacao = $venda->getSituacao();
-            $idPagamento = $venda->getIdPagamento();
-            $cod_cliente = $venda->getCliente()->getCodigo();
-            $cod_endereco = $venda->getEndereco()->getCodigo();
-
-            $resultado = $this->update(
-                'venda',
-                'situacao = :situacao, id_pagamento = :id_pagamento,
-                cod_cliente = :cod_cliente, cod_endereco = :cod_endereco',
-                [
-                 ':situacao' => $situacao,
-                 ':id_pagamento' => $idPagamento,
-                 ':cod_cliente' => $cod_cliente,
-                 ':cod_endereco' => $cod_endereco
-                ],
-                'codigo = ' . $codigo
-            );
-            
-            return $resultado;
-        }
-        catch (Exception $excecao) {
-            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro na atualização dos dados");
-            return $erro;
-        }
-    }
-
-    public function excluir(Venda $venda)
-    {
-        try {
-            $codigo = $venda->getCodigo();
-            $resultado = $this->delete('venda', 'codigo = ' . $codigo);
-
-            return $resultado;
-        }
-        catch (Exception $excecao) {
-            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro na exclusão dos dados");
             return $erro;
         }
     }

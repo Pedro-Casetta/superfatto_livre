@@ -32,7 +32,8 @@
   
   <form action="http://<?=APP_HOST?>/departamento/cadastrar" method="POST" class="row mb-3 form-inline">
     <div class="col-auto">
-      <input type="text" class="form-control border border-primary" id="nome" name="nome" required>
+      <input type="text" class="form-control border border-primary" size="25"
+      id="nome" name="nome" placeholder="Nome do departamento" required>
     </div>
     <div class="col-auto">
       <button type="submit" class="btn btn-success">

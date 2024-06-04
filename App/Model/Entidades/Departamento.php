@@ -23,6 +23,14 @@ class Departamento
         return $resultado;
     }
 
+    public function listar()
+    {
+        $departamentoDAO = new DepartamentoDAO();
+        $resultado = $departamentoDAO->listar();
+        
+        return $resultado;
+    }
+
     public function listarPaginacao($indice, $limitePorPagina, $busca = "")
     {
         $departamentoDAO = new DepartamentoDAO();

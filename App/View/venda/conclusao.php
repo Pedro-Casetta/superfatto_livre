@@ -41,28 +41,29 @@
     </div>
     <div class="col-12 col-lg-6">
       <?php if (isset($dados['venda']) && !empty($dados['venda'])) { ?>
-        <div class="row mb-3">
-          <div class="col-auto">
-            <h3>Obrigado pela compra!</h3>
+        <div class="row mb-1">
+          <div class="col-auto alert alert-success">
+            <i class="bi bi-check-circle h1"></i>
+            <h1 class="d-inline">Obrigado pela compra!</h1>
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="col-auto">
+        <div class="row mb-1">
+          <div class="col-auto alert alert-info p-2">
             <h3>Data da compra: <?= $dados['venda']->getDataView() ?></h3>
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="col-auto">
+        <div class="row mb-1">
+          <div class="col-auto alert alert-info p-2">
             <h3>Total: R$ <?= $dados['venda']->getTotalView() ?></h3>
           </div>
         </div>
-        <div class="row mb-3">
-          <div class="col-auto">
+        <div class="row mb-1">
+          <div class="col-auto alert alert-info p-2">
             <h3>Situação: <?= $dados['venda']->getSituacao() ?></h3>
           </div>
         </div>
         <h4 class="row">Endereço de entrega:</h4>
-        <div class="row mb-3">
+        <div class="row mb-1 alert alert-info">
           <div class="col-auto px-1">
             <h5><?= $dados['venda']->getEndereco()->getRua() ?>,</h5>
           </div>

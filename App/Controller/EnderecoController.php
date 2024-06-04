@@ -6,6 +6,8 @@ use App\Lib\Paginacao;
 use App\Lib\Sessao;
 use App\Lib\Validador;
 use App\Model\Entidades\Endereco;
+use App\Model\Entidades\Departamento;
+use Exception;
 
 class EnderecoController extends BaseController
 {
@@ -14,12 +16,15 @@ class EnderecoController extends BaseController
     {
         if (Sessao::verificarAcesso('cliente'))
         {
+            $departamento = new Departamento();
+            $resultado_departamento = $departamento->listar();
+            
             $paginaSelecionada = (isset($_GET['paginaSelecionada'])) ? $_GET['paginaSelecionada'] : 1;
             $busca = (isset($_GET['busca'])) ? $_GET['busca'] : "";
             $indice = Paginacao::calcularIndice($paginaSelecionada);
             
-            $endereco = new Endereco();
-            $resultado = $endereco->listarPaginacao($indice, Paginacao::$limitePorPagina, $busca, Sessao::getCodigoConta());
+            $endereco = new Endereco(0,"",0,"","","","", Sessao::getCodigoConta());
+            $resultado = $endereco->listarPaginacao($indice, Paginacao::$limitePorPagina, $busca);
 
             $totalRegistros = $endereco->contarTotalRegistros("endereco",
             "cod_cliente = " . Sessao::getCodigoConta() . "
@@ -29,10 +34,11 @@ class EnderecoController extends BaseController
             $totalPaginas = ceil($totalRegistros / Paginacao::$limitePorPagina);
             $paginacao = Paginacao::criarPaginacao('/endereco', $paginaSelecionada, $totalPaginas, $busca);
 
-            if(is_array($resultado))
+            if(is_array($resultado) && is_array($resultado_departamento))
             {
                 $this->setDados('enderecos', $resultado);
                 $this->setDados('paginacao', $paginacao);
+                $this->setDados('departamentos', $resultado_departamento);
             }
             else
                 Sessao::setMensagem($resultado->getMessage());
@@ -48,12 +54,18 @@ class EnderecoController extends BaseController
     public function encaminharCadastro()
     {
         if (Sessao::verificarAcesso('cliente'))
-        {            
-            if (Sessao::getFormulario() && Sessao::getValidacaoFormulario())
+        {
+            $departamento = new Departamento();
+            $resultado_departamento = $departamento->listar();
+            
+            if (Sessao::getFormulario() && Sessao::getValidacaoFormulario() && is_array($resultado_departamento))
             {
                 $this->setDados('formulario', Sessao::getFormulario());
                 $this->setDados('validacao', Sessao::getValidacaoFormulario());
+                $this->setDados('departamentos', $resultado_departamento);                
             }
+            else
+                Sessao::setMensagem($resultado_departamento->getMessage());
             
             $this->renderizar('endereco/cadastro');
             Sessao::setMensagem(null);
@@ -120,14 +132,19 @@ class EnderecoController extends BaseController
             $endereco = new Endereco($codigo);
             $resultado = $endereco->localizar();
 
+            $departamento = new Departamento();
+            $resultado_departamento = $departamento->listar();
 
-            if ($resultado instanceof Endereco)
+            if ($resultado instanceof Endereco && is_array($resultado_departamento))
             {
                 $this->setDados('endereco', $resultado);
+                $this->setDados('departamentos', $resultado_departamento);
                 Sessao::setMensagem(null);
             }
-            else
+            else if ($resultado instanceof Exception)
                 Sessao::setMensagem($resultado->getMessage());
+            else
+                Sessao::setMensagem($resultado_departamento->getMessage());
 
             if (Sessao::getFormulario() && Sessao::getValidacaoFormulario())
             {
@@ -197,17 +214,22 @@ class EnderecoController extends BaseController
         if (Sessao::verificarAcesso('cliente'))
         {
             $codigo = $parametros[0];
-
             $endereco = new Endereco($codigo);
             $resultado = $endereco->localizar();
 
-            if ($resultado instanceof Endereco)
+            $departamento = new Departamento();
+            $resultado_departamento = $departamento->listar();
+
+            if ($resultado instanceof Endereco && is_array($resultado_departamento))
             {
                 $this->setDados('endereco', $resultado);
+                $this->setDados('departamentos', $resultado_departamento);
                 Sessao::setMensagem(null);
             }
-            else
+            else if ($resultado instanceof Exception)
                 Sessao::setMensagem($resultado->getMessage());
+            else
+                Sessao::setMensagem($resultado_departamento->getMessage());
 
             $this->renderizar('endereco/exclusao');
         }

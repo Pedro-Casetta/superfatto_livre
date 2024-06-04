@@ -54,7 +54,7 @@
       <?php } else if ($sessao::getNomeUsuario() && $sessao::getTipoConta() == "cliente") { ?>
         <div class="col-auto dropdown mx-auto me-0 pe-2">
           <a class="btn btn-dark dropdown-toggle" href="#" data-bs-toggle="dropdown">
-            Departamento
+            <?= (isset($_GET['departamento']) && !empty($_GET['departamento'])) ? $_GET['departamento'] : 'Departamento' ?>
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="http://<?=APP_HOST?>/">
@@ -96,7 +96,7 @@
       <?php } else { ?>
         <div class="col-auto dropdown mx-auto me-0 pe-2">
           <a class="btn btn-dark dropdown-toggle" href="#" data-bs-toggle="dropdown">
-            Departamento
+            <?= (isset($_GET['departamento']) && !empty($_GET['departamento'])) ? $_GET['departamento'] : 'Departamento' ?>
           </a>
           <ul class="dropdown-menu">
             <li><a class="dropdown-item" href="http://<?=APP_HOST?>/">

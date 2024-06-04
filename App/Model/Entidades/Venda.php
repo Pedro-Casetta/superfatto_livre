@@ -70,20 +70,6 @@ class Venda
         return $resultado;
     }
 
-    public function atualizar()
-    {
-        $vendaDAO = new VendaDAO();
-        $resultado = $vendaDAO->atualizar($this);
-
-        return $resultado;
-    }
-
-    public function excluir()
-    {
-        $vendaDAO = new VendaDAO();
-        $resultado = $vendaDAO->excluir($this);
-    }
-
     public function getCodigo() : int
     {
         return $this->codigo;

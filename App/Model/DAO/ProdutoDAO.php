@@ -70,9 +70,9 @@ class ProdutoDAO extends BaseDAO
     public function listarPaginacao($indice, $limitePorPagina, $busca = "", $departamento = "")
     {
         try {
-            $pdoStatement = $this->select("SELECT p.*, d.nome nome_departamento FROM produto p, departamento d
-                WHERE d.codigo = p.cod_departamento
-            AND p.nome LIKE '%$busca%' AND d.nome LIKE '%$departamento%' LIMIT $indice, $limitePorPagina");
+            $pdoStatement = $this->select("SELECT p.*, d.nome nome_departamento FROM produto p
+            INNER JOIN departamento d ON d.codigo = p.cod_departamento
+            WHERE p.nome LIKE '%$busca%' AND d.nome LIKE '%$departamento%' LIMIT $indice, $limitePorPagina");
 
             $arrayProdutos = $pdoStatement->fetchAll(PDO::FETCH_ASSOC);
 
@@ -97,21 +97,6 @@ class ProdutoDAO extends BaseDAO
         }
         catch (Exception $excecao) {
             $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
-            return $erro;
-        }
-    }
-
-    public function listarDepartamentos()
-    {
-        try {
-            $pdoStatement = $this->select("SELECT * FROM departamento");
-            $pdoStatement->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "App\\Model\\Entidades\\Departamento");
-            $arrayDepartamento = $pdoStatement->fetchAll();
-
-            return $arrayDepartamento;
-        }
-        catch (Exception $excecao) {
-            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados dos departamentos");
             return $erro;
         }
     }

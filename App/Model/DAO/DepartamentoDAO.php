@@ -24,6 +24,21 @@ class DepartamentoDAO extends BaseDAO
         }
     }
 
+    public function listar()
+    {
+        try {
+            $pdoStatement = $this->select("SELECT * FROM departamento");
+            $pdoStatement->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "App\\Model\\Entidades\\Departamento");
+            $departamentos = $pdoStatement->fetchAll();
+
+            return $departamentos;
+        }
+        catch (Exception $excecao) {
+            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados dos departamentos");
+            return $erro;
+        }
+    }
+
     public function listarPaginacao($indice, $limitePorPagina, $busca = "")
     {
         try {

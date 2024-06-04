@@ -46,8 +46,7 @@
                 <?= (isset($dados['validacao']) && !$dados['validacao']['quantidade_validada'] ? 'is-invalid' : '') ?>"
                 id="quantidade" name="quantidade"
                 oninput="alterarQuantidadeInserirCarrinho()"
-                value="<?= (isset($dados['formulario'])) ? $dados['formulario']['quantidade'] : '1' ?>" required>
-                
+                value="<?= (isset($dados['formulario']) ? $dados['formulario']['quantidade'] : 1 )?>" required>
               </div>
               <div class="col-3 col-lg-auto my-auto mb-0">
                 <a href="#" onclick="aumentarQuantidadeProduto()"
@@ -73,7 +72,7 @@
             <input type="hidden" name="produto" value="<?= $dados['produto']->getCodigo() ?>">
             <input type="hidden" name="carrinho" value="<?= $sessao::getCodigoConta() ?>">
             <input type="hidden" id="quantidade_carrinho" name="quantidade"
-            value="<?= (isset($dados['formulario'])) ? $dados['formulario']['quantidade'] : '1' ?>">
+            value="<?= (isset($dados['formulario']) ? $dados['formulario']['quantidade'] : 1 )?>">
             <input type="hidden" name="estoque" value="<?= $dados['produto']->getEstoque() ?>">
             <div class="row mb-5">
               <div class="col-auto">

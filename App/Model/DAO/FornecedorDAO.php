@@ -96,21 +96,6 @@ class FornecedorDAO extends BaseDAO
         }
     }
 
-    public function listarDepartamentos()
-    {
-        try {
-            $pdoStatement = $this->select("SELECT * FROM departamento");
-            $pdoStatement->setFetchMode(PDO::FETCH_CLASS | PDO::FETCH_PROPS_LATE, "App\\Model\\Entidades\\Departamento");
-            $arrayDepartamento = $pdoStatement->fetchAll();
-
-            return $arrayDepartamento;
-        }
-        catch (Exception $excecao) {
-            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados dos departamentos");
-            return $erro;
-        }
-    }
-
     public function cadastrar(Fornecedor $fornecedor)
     {
         try {

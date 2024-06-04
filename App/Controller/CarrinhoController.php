@@ -5,7 +5,7 @@ namespace App\Controller;
 use App\Lib\Sessao;
 use App\Model\Entidades\ProdutoCarrinho;
 use App\Model\Entidades\Carrinho;
-use App\Model\DAO\ProdutoDAO;
+use App\Model\Entidades\Departamento;
 use Exception;
 
 class CarrinhoController extends BaseController
@@ -22,8 +22,8 @@ class CarrinhoController extends BaseController
             $carrinho = new Carrinho($cod_carrinho);
             $resultado_carrinho = $carrinho->localizar();
 
-            $produtoDAO = new ProdutoDAO();
-            $resultado_departamento = $produtoDAO->listarDepartamentos();
+            $departamento = new Departamento();
+            $resultado_departamento = $departamento->listar();
 
             if (is_array($resultado_produto) && $resultado_carrinho instanceof Carrinho && is_array($resultado_departamento))
             {
@@ -33,8 +33,10 @@ class CarrinhoController extends BaseController
             }
             else if ($resultado_produto instanceof Exception)
                 Sessao::setMensagem($resultado_produto->getMessage());
-            else
+            else if ($resultado_carrinho instanceof Exception)
                 Sessao::setMensagem($resultado_carrinho->getMessage());
+            else
+                Sessao::setMensagem($resultado_departamento->getMessage());
     
             $this->renderizar('carrinho/index');
 

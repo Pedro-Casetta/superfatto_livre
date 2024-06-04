@@ -9,6 +9,7 @@ use App\Model\Entidades\Venda;
 use App\Model\Entidades\ProdutoVenda;
 use App\Model\Entidades\ProdutoCarrinho;
 use App\Model\Entidades\Carrinho;
+use App\Model\Entidades\Departamento;
 use App\Model\Entidades\Endereco;
 use App\Model\Entidades\Produto;
 use App\Model\Entidades\Pagamento;
@@ -21,17 +22,17 @@ class VendaController extends BaseController
     {
         if (Sessao::verificarAcesso('administrador'))
         {
-            $paginaSelecionada = (isset($_POST['paginaSelecionada'])) ? $_POST['paginaSelecionada'] : 1;
-            $busca = (isset($_POST['busca'])) ? $_POST['busca'] : "";
-            $data = (isset($_POST['data'])) ? $_POST['data'] : "";
+            $paginaSelecionada = (isset($_GET['paginaSelecionada'])) ? $_GET['paginaSelecionada'] : 1;
+            $busca = (isset($_GET['busca'])) ? $_GET['busca'] : "";
+            $data = (isset($_GET['data'])) ? $_GET['data'] : "";
             $indice = Paginacao::calcularIndice($paginaSelecionada);
             
             $venda = new Venda();
             $resultado = $venda->listarPaginacao($indice, Paginacao::$limitePorPagina, $busca, $data);
 
             $totalRegistros = $venda->contarTotalRegistros(
-                "venda v, conta c",
-                "v.cod_cliente = c.codigo AND c.nome LIKE '%$busca%' AND v.data LIKE '%$data%'");
+                "venda v INNER JOIN conta c ON c.codigo = v.cod_cliente",
+                "c.nome LIKE '%$busca%' AND v.data LIKE '%$data%'");
             $totalPaginas = ceil($totalRegistros / Paginacao::$limitePorPagina);
             $paginacao = Paginacao::criarPaginacao('/venda', $paginaSelecionada, $totalPaginas, $busca, $data);
 
@@ -64,6 +65,14 @@ class VendaController extends BaseController
                 $produto = new Produto($cod_produto);
                 $resultado = $produto->localizar();
 
+                $departamento = new Departamento();
+                $resultado_departamento = $departamento->listar();
+                
+                if (is_array($resultado_departamento))
+                    $this->setDados('departamentos', $resultado_departamento);
+                else
+                    Sessao::setMensagem($resultado_departamento->getMessage());
+                
                 if ($resultado instanceof Produto)
                 {
                     $subtotal = $quantidade * $resultado->getPreco();
@@ -124,6 +133,9 @@ class VendaController extends BaseController
             $carrinho = new Carrinho(Sessao::getCodigoConta());
             $resultado = $carrinho->localizar();
             
+            $departamento = new Departamento();
+            $resultado_departamento = $departamento->listar();
+                        
             if ($resultado instanceof Carrinho)
             {
                 $this->setDados('carrinho', $resultado);
@@ -149,6 +161,11 @@ class VendaController extends BaseController
                 $this->setDados('formulario', Sessao::getFormulario());
                 $this->setDados('validacao', Sessao::getValidacaoFormulario());
             }
+
+            if (is_array($resultado_departamento))
+                $this->setDados('departamentos', $resultado_departamento);
+            else
+                Sessao::setMensagem($resultado_departamento->getMessage());
                 
             $this->renderizar('venda/endereco');
             Sessao::setMensagem(null);
@@ -268,6 +285,14 @@ class VendaController extends BaseController
                 }
                 else
                     Sessao::setMensagem($resultado_produto->getMessage());
+
+                $departamento = new Departamento();
+                $resultado_departamento = $departamento->listar();
+
+                if (is_array($resultado_departamento))
+                    $this->setDados('departamentos', $resultado_departamento);
+                else
+                    Sessao::setMensagem($resultado_departamento->getMessage());
                 
                 $this->renderizar('venda/pagamento');
                 Sessao::setMensagem(null);
@@ -370,47 +395,61 @@ class VendaController extends BaseController
 
     public function encaminharConclusao()
     {
-        $venda = new Venda(0, '', 0.0,
-        'Pagamento efetuado, entrega em andamento.',
-        $_GET['token'],
-        Sessao::getCodigoConta(),
-        '',
-        $_GET['endereco']
-        );
-        $resultado = $venda->cadastrar();
+        $venda = new Venda(0, "", 0.0, "", $_GET['token']);
+        $resultado = $venda->localizar();
 
-        if (is_array($resultado) && $resultado['resultado'])
+        if (!$resultado instanceof Venda)
         {
-            $arrayProdutos = explode(",", $_GET['produtos']);
-            $arrayQuantidades = explode(",", $_GET['quantidades']);
+            $venda = new Venda(0, '', 0.0,
+            'Pagamento efetuado, entrega em andamento.',
+            $_GET['token'],
+            Sessao::getCodigoConta(),
+            '',
+            $_GET['endereco']
+            );
+            $resultado = $venda->cadastrar();
 
-            for ($i = 0; $i < count($arrayProdutos); $i++)
+            if (is_array($resultado) && $resultado['resultado'])
             {
-                $produtoVenda = new ProdutoVenda($arrayProdutos[$i], $resultado['codigo'], $arrayQuantidades[$i]);
-                $resultado_produto = $produtoVenda->cadastrar();
+                $arrayProdutos = explode(",", $_GET['produtos']);
+                $arrayQuantidades = explode(",", $_GET['quantidades']);
 
-                if ($resultado_produto instanceof Exception)
-                    Sessao::setMensagem($resultado_produto->getMessage());
+                for ($i = 0; $i < count($arrayProdutos); $i++)
+                {
+                    $produtoVenda = new ProdutoVenda($arrayProdutos[$i], $resultado['codigo'], $arrayQuantidades[$i]);
+                    $resultado_produto = $produtoVenda->cadastrar();
+
+                    if ($resultado_produto instanceof Exception)
+                        Sessao::setMensagem($resultado_produto->getMessage());
+                }
+
+                $venda->setCodigo($resultado['codigo']);
+                $resultado = $venda->localizar();
             }
-
-            $venda->setCodigo($resultado['codigo']);
-            $resultado = $venda->localizar();
-
-            $produtoVenda = new ProdutoVenda(0, $venda->getCodigo());
-            $resultado_produto = $produtoVenda->listar();
-            
-            if ($resultado instanceof Venda && is_array($resultado_produto))
-            {
-                $this->setDados('venda', $resultado);
-                $this->setDados('produtos', $resultado_produto);
-            }
-            else if ($resultado instanceof Exception)
-                Sessao::setMensagem($resultado->getMessage());
             else
-                Sessao::setMensagem($resultado_produto->getMessage());
+                Sessao::setMensagem($resultado->getMessage());
         }
-        else
+    
+        $produtoVenda = new ProdutoVenda(0, $resultado->getCodigo());
+        $resultado_produto = $produtoVenda->listar();
+
+        if ($resultado instanceof Venda && is_array($resultado_produto))
+        {
+            $this->setDados('venda', $resultado);
+            $this->setDados('produtos', $resultado_produto);
+        }
+        else if ($resultado instanceof Exception)
             Sessao::setMensagem($resultado->getMessage());
+        else
+            Sessao::setMensagem($resultado_produto->getMessage());
+    
+        $departamento = new Departamento();
+        $resultado_departamento = $departamento->listar();
+        
+        if (is_array($resultado_departamento))
+            $this->setDados('departamentos', $resultado_departamento);
+        else
+            Sessao::setMensagem($resultado_departamento->getMessage());
         
         $this->renderizar('venda/conclusao');
         Sessao::setMensagem(null);
@@ -479,23 +518,6 @@ class VendaController extends BaseController
     
             $this->renderizar('venda/indexProdutosCompra');
             Sessao::setMensagem(null);
-        }
-        else
-            $this->redirecionar('/conta/encaminharAcesso');
-    }
-
-    public function excluir($parametros)
-    {
-        if (Sessao::verificarAcesso('cliente'))
-        {
-            $codigo = $parametros[0];
-            $venda = new Venda($codigo);
-            $resultado = $venda->excluir();
-
-            if ($resultado instanceof Exception)
-                Sessao::setMensagem($resultado->getMessage());
-
-            $this->redirecionar('/');
         }
         else
             $this->redirecionar('/conta/encaminharAcesso');

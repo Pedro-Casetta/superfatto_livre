@@ -6,7 +6,8 @@ namespace App\Controller;
 use App\Lib\Paginacao;
 use App\Lib\Sessao;
 use App\Model\Entidades\Produto;
-use App\Model\DAO\ProdutoDAO;
+use App\Model\Entidades\Departamento;
+use Exception;
 
 class HomeController extends BaseController
 {
@@ -26,13 +27,12 @@ class HomeController extends BaseController
             $produto = new Produto();
             $resultado = $produto->listarPaginacao($indice, Paginacao::$limitePorPagina, $busca, $departamento);
 
-            $produtoDAO = new ProdutoDAO();
-            $resultado_departamento = $produtoDAO->listarDepartamentos();
+            $departamento_objeto = new Departamento();
+            $resultado_departamento = $departamento_objeto->listar();
 
             $totalRegistros = $produto->contarTotalRegistros(
-                "produto p, departamento d",
-                "d.codigo = p.cod_departamento
-            AND p.nome LIKE '%$busca%' AND d.nome LIKE '%$departamento%'");
+                "produto p INNER JOIN departamento d ON d.codigo = p.cod_departamento",
+                "p.nome LIKE '%$busca%' AND d.nome LIKE '%$departamento%'");
             $totalPaginas = ceil($totalRegistros / Paginacao::$limitePorPagina);
             $paginacao = Paginacao::criarPaginacao('/', $paginaSelecionada, $totalPaginas, $busca, $departamento);
             
@@ -42,8 +42,10 @@ class HomeController extends BaseController
                 $this->setDados('paginacao', $paginacao);
                 $this->setDados('departamentos', $resultado_departamento);
             }
-            else
+            else if ($resultado instanceof Exception)
                 Sessao::setMensagem($resultado->getMessage());
+            else
+                Sessao::setMensagem($resultado_departamento->getMessage());
             
             $this->renderizar('home/index');
         }
