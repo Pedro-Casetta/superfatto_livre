@@ -59,8 +59,7 @@ class ProdutoVenda extends Produto
 
     public function getSubtotal() : float
     {
-        $subtotal_formatado = number_format($this->subtotal, 2);
-        return $subtotal_formatado;
+        return $this->subtotal;
     }
 
     public function setSubtotal(float $valor)

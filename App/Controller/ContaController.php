@@ -98,6 +98,7 @@ class ContaController extends BaseController
             }
             else if ($resultado_credencial == "inválido")
             {
+                Sessao::setFormulario($_POST);
                 Sessao::setMensagem("Credencial do administrador não confere!");
                 $this->redirecionar('/conta/encaminharCadastro');
                 exit;

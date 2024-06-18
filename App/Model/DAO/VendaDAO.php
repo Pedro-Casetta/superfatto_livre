@@ -19,24 +19,29 @@ class VendaDAO extends BaseDAO
             
             $arrayResultado = $pdoStatement->fetch(PDO::FETCH_ASSOC);
 
-            $venda = new Venda(
-                $arrayResultado['codigo'],
-                $arrayResultado['data'],
-                $arrayResultado['total'],
-                $arrayResultado['situacao'],
-                $arrayResultado['id_pagamento'],
-                $arrayResultado['cod_cliente'],
-                $arrayResultado['nome'],
-                $arrayResultado['cod_endereco'],
-                $arrayResultado['rua'],
-                $arrayResultado['numero'],
-                $arrayResultado['bairro'],
-                $arrayResultado['cidade'],
-                $arrayResultado['estado'],
-                $arrayResultado['cep']
-            );
-            
-            return $venda;
+            if ($arrayResultado)
+            {
+                $venda = new Venda(
+                    $arrayResultado['codigo'],
+                    $arrayResultado['data'],
+                    $arrayResultado['total'],
+                    $arrayResultado['situacao'],
+                    $arrayResultado['id_pagamento'],
+                    $arrayResultado['cod_cliente'],
+                    $arrayResultado['nome'],
+                    $arrayResultado['cod_endereco'],
+                    $arrayResultado['rua'],
+                    $arrayResultado['numero'],
+                    $arrayResultado['bairro'],
+                    $arrayResultado['cidade'],
+                    $arrayResultado['estado'],
+                    $arrayResultado['cep']
+                );
+                
+                return $venda;
+            }
+            else
+                return false;
         }
         catch (Exception $excecao) {
             $erro = new Exception("Erro " . $excecao->getCode() . ". Erro no acesso aos dados");
