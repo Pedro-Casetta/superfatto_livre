@@ -470,8 +470,8 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `superfatto`;
-INSERT INTO `superfatto`.`conta` (`codigo`, `nome`, `email`, `nome_usuario`, `senha`, `tipo`) VALUES (1, 'Pedro Casetta', 'pedro@email.com', 'pedro123', '$2y$10$rnrNZqaUNroigAVy5uBVVOxvn.Il/KmZ/oxqUwmhyaE7VA049WGBG', 'administrador');
-INSERT INTO `superfatto`.`conta` (`codigo`, `nome`, `email`, `nome_usuario`, `senha`, `tipo`) VALUES (2, 'Liane', 'liane@email.com', 'liane123', '$2y$10$rnrNZqaUNroigAVy5uBVVOxvn.Il/KmZ/oxqUwmhyaE7VA049WGBG', 'cliente');
+INSERT INTO `superfatto`.`conta` (`codigo`, `nome`, `email`, `nome_usuario`, `senha`, `tipo`) VALUES (1, 'Pedro Casetta', 'administrador@email.com', 'adm123', '$2y$10$rnrNZqaUNroigAVy5uBVVOxvn.Il/KmZ/oxqUwmhyaE7VA049WGBG', 'administrador');
+INSERT INTO `superfatto`.`conta` (`codigo`, `nome`, `email`, `nome_usuario`, `senha`, `tipo`) VALUES (2, 'Cliente Teste', 'cliente@email.com', 'cliente123', '$2y$10$rnrNZqaUNroigAVy5uBVVOxvn.Il/KmZ/oxqUwmhyaE7VA049WGBG', 'cliente');
 
 COMMIT;
 
