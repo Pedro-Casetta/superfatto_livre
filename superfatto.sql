@@ -491,11 +491,11 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `superfatto`;
-INSERT INTO `superfatto`.`credencial` (`codigo`, `nome`) VALUES (1, 'abc123');
+INSERT INTO `superfatto`.`credencial` (`codigo`, `nome`) VALUES (1, 'fatec123');
 INSERT INTO `superfatto`.`credencial` (`codigo`, `nome`) VALUES (2, 'fatec321');
-INSERT INTO `superfatto`.`credencial` (`codigo`, `nome`) VALUES (3, 'cpssp246');
+INSERT INTO `superfatto`.`credencial` (`codigo`, `nome`) VALUES (3, 'sistema123');
 INSERT INTO `superfatto`.`credencial` (`codigo`, `nome`) VALUES (4, 'djo4492');
-INSERT INTO `superfatto`.`credencial` (`codigo`, `nome`) VALUES (5, 'jfk9382');
+INSERT INTO `superfatto`.`credencial` (`codigo`, `nome`) VALUES (5, 'abc123');
 
 COMMIT;
 
