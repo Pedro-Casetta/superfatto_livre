@@ -99,7 +99,7 @@
           <div class="col-5">
             <label for="numero" class="form-label">Número</label>
             <input type="number" class="form-control border border-primary"
-            id="numero" name="numero" value="<?= (isset($dados['formulario'])) ? $dados['formulario']['numero'] : '' ?>">
+            id="numero" name="numero" min="0"  value="<?= (isset($dados['formulario'])) ? $dados['formulario']['numero'] : '' ?>">
           </div>
         </div>
         <div class="row mb-3">

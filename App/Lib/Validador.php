@@ -70,7 +70,7 @@ class Validador
 
     public static function validarNomeFornecedor(string $nome_fornecedor)
     {
-        if (preg_match("/^[a-zA-Z0-9\s\']+$/u", $nome_fornecedor))
+        if (preg_match("/^[a-zA-ZÀ-ÖØ-öø-ÿ0-9\s\'\/]+$/u", $nome_fornecedor))
             return true;
         else
             return false;

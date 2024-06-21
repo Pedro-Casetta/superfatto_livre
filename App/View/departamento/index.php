@@ -56,7 +56,7 @@
           <tbody class="table-group-divider table-warning border-success text-center">
             <?php foreach ($dados['departamentos'] as $departamento) { ?>
               <tr>
-                <td><?= $departamento->getCodigo() ?></td>
+                <th><?= $departamento->getCodigo() ?></th>
                 <td><?= $departamento->getNome() ?></td>
                 <td>
                   <a href="http://<?=APP_HOST?>/departamento/encaminharEdicao/<?= $departamento->getCodigo()?>"

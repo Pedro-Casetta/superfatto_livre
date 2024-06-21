@@ -28,4 +28,18 @@ class CarrinhoDAO extends BaseDAO
             return $erro;
         }
     }
+
+    public function limpar(Carrinho $carrinho)
+    {
+        try {
+            $codigo = $carrinho->getCodigo();
+            $resultado = $this->delete('produto_carrinho', 'cod_carrinho = ' . $codigo);
+
+            return $resultado;
+        }
+        catch (Exception $excecao) {
+            $erro = new Exception("Erro " . $excecao->getCode() . ". Erro na exclusão dos dados");
+            return $erro;
+        }
+    }
 }

@@ -58,10 +58,14 @@ class EnderecoController extends BaseController
             $departamento = new Departamento();
             $resultado_departamento = $departamento->listar();
             
-            if (Sessao::getFormulario() && Sessao::getValidacaoFormulario() && is_array($resultado_departamento))
+            if (Sessao::getFormulario() && Sessao::getValidacaoFormulario())
             {
                 $this->setDados('formulario', Sessao::getFormulario());
                 $this->setDados('validacao', Sessao::getValidacaoFormulario());
+            }
+            
+            if (is_array($resultado_departamento))
+            {
                 $this->setDados('departamentos', $resultado_departamento);                
             }
             else

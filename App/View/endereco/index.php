@@ -53,7 +53,7 @@
           <tbody class="table-group-divider table-warning border-success text-center">
             <?php foreach ($dados['enderecos'] as $endereco) { ?>
               <tr>
-                <th scope="row"><?= $endereco->getRua() ?></th>
+                <td><?= $endereco->getRua() ?></td>
                 <td><?= $endereco->getNumero() ?></td>
                 <td><?= $endereco->getBairro() ?></td>
                 <td><?= $endereco->getCidade() ?></td>

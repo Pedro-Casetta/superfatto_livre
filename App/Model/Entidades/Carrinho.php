@@ -24,6 +24,15 @@ class Carrinho
         return $resultado;
     }
 
+    public function limpar()
+    {
+        $carrinhoDAO = new CarrinhoDAO();
+        $resultado = $carrinhoDAO->limpar($this);
+
+        return $resultado;
+    }
+
+    
     public function getCodigo() : int
     {
         return $this->codigo;

@@ -423,8 +423,9 @@ class VendaController extends BaseController
                         Sessao::setMensagem($resultado_produto->getMessage());
                 }
 
-                $venda->setCodigo($resultado['codigo']);
                 $resultado = $venda->localizar();
+                $carrinho = new Carrinho(Sessao::getCodigoConta());
+                $resultado_carrinho = $carrinho->limpar();
             }
             else
                 Sessao::setMensagem($resultado->getMessage());
