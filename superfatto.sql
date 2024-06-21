@@ -576,10 +576,7 @@ COMMIT;
 START TRANSACTION;
 USE `superfatto`;
 INSERT INTO `superfatto`.`produto_lote` (`cod_produto`, `cod_lote`, `quantidade`, `subtotal`) VALUES (1, 1, 1, 0.0);
-INSERT INTO `superfatto`.`produto_lote` (`cod_produto`, `cod_lote`, `quantidade`, `subtotal`) VALUES (2, 1, 2, 0.0);
 INSERT INTO `superfatto`.`produto_lote` (`cod_produto`, `cod_lote`, `quantidade`, `subtotal`) VALUES (3, 1, 3, 0.0);
-INSERT INTO `superfatto`.`produto_lote` (`cod_produto`, `cod_lote`, `quantidade`, `subtotal`) VALUES (4, 1, 4, 0.0);
-INSERT INTO `superfatto`.`produto_lote` (`cod_produto`, `cod_lote`, `quantidade`, `subtotal`) VALUES (5, 1, 5, 0.0);
 
 COMMIT;
 
@@ -589,7 +586,7 @@ COMMIT;
 -- -----------------------------------------------------
 START TRANSACTION;
 USE `superfatto`;
-INSERT INTO `superfatto`.`endereco` (`codigo`, `rua`, `numero`, `bairro`, `cidade`, `estado`, `cep`, `cod_cliente`) VALUES (1, 'General Tenório', 1945, 'Jardim Nova Ipiranga', 'Presidente Bernardes', 'SP', '67384293', 2);
+INSERT INTO `superfatto`.`endereco` (`codigo`, `rua`, `numero`, `bairro`, `cidade`, `estado`, `cep`, `cod_cliente`) VALUES (1, 'Rua General Tenório', 1945, 'Jardim Nova Ipiranga', 'Presidente Bernardes', 'SP', '67384293', 2);
 
 COMMIT;
 
